@@ -1,0 +1,12 @@
+targets:
+  $default:
+    auto_apply_builders: false
+    builders:
+      jaspr_builder|jaspr_web_builder:
+        enabled: true
+      jaspr_builder|jaspr_server_builder:
+        enabled: true
+      jaspr_builder|jaspr_styles_builder:
+        enabled: false
+      jaspr_builder|jaspr_router_builder:
+        enabled: false
