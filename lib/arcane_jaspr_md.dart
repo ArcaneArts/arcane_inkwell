@@ -44,12 +44,22 @@ export 'src/layout/kb_footer.dart';
 export 'src/layout/kb_breadcrumbs.dart';
 export 'src/layout/kb_toc.dart';
 export 'src/layout/kb_page_nav.dart';
+export 'src/layout/kb_related_pages.dart';
+export 'src/layout/kb_changelog.dart';
 
 // Theme
 export 'src/theme/kb_stylesheet.dart';
 
 // Scripts
 export 'src/scripts/kb_scripts.dart';
+
+// Extensions
+export 'src/extensions/reading_time_extension.dart';
+export 'src/extensions/callout_extension.dart';
+
+// Utils
+export 'src/utils/sitemap_generator.dart';
+export 'src/utils/changelog_parser.dart';
 
 // Main app
 export 'src/app/knowledge_base_app.dart';

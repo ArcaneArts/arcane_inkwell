@@ -4,6 +4,8 @@ import '../navigation/nav_builder.dart';
 import '../layout/kb_layout.dart';
 import '../theme/kb_stylesheet.dart';
 import '../scripts/kb_scripts.dart';
+import '../extensions/reading_time_extension.dart';
+import '../extensions/callout_extension.dart';
 
 /// Configuration for creating a knowledge base application.
 ///
@@ -42,8 +44,10 @@ class KnowledgeBaseApp {
 
     // Default extensions for markdown processing
     final List<PageExtension> defaultExtensions = <PageExtension>[
+      const CalloutExtension(),
       HeadingAnchorsExtension(),
       const TableOfContentsExtension(),
+      const ReadingTimeExtension(),
     ];
 
     return ContentApp(
@@ -79,8 +83,10 @@ class KnowledgeBaseApp {
 
     // Default extensions for markdown processing
     final List<PageExtension> defaultExtensions = <PageExtension>[
+      const CalloutExtension(),
       HeadingAnchorsExtension(),
       const TableOfContentsExtension(),
+      const ReadingTimeExtension(),
     ];
 
     return ContentApp(

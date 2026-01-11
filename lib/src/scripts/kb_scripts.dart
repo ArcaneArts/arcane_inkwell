@@ -10,44 +10,27 @@ class KBScripts {
 (function() {
   'use strict';
 
-  // Theme utilities
+  // Theme utilities (theme toggling is handled by Dart component via setState)
   const ThemeManager = {
-    storageKey: 'kb-theme-mode',
+    storageKey: 'arcane-theme-mode',
 
     init() {
-      const savedTheme = localStorage.getItem(this.storageKey);
-      const root = document.getElementById('kb-root');
+      // Theme is now handled by the stateful component
+      // This just handles localStorage persistence when the class changes
+      const root = document.getElementById('arcane-root');
       if (!root) return;
 
-      if (savedTheme) {
-        root.classList.remove('dark', 'light');
-        root.classList.add(savedTheme);
-      }
+      // Save current theme to localStorage when it changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'class') {
+            const isDark = root.classList.contains('dark');
+            localStorage.setItem(this.storageKey, isDark ? 'dark' : 'light');
+          }
+        });
+      });
 
-      this.updateToggleIcon();
-    },
-
-    toggle() {
-      const root = document.getElementById('kb-root');
-      if (!root) return;
-
-      const isDark = root.classList.contains('dark');
-      root.classList.remove('dark', 'light');
-      root.classList.add(isDark ? 'light' : 'dark');
-      localStorage.setItem(this.storageKey, isDark ? 'light' : 'dark');
-      this.updateToggleIcon();
-    },
-
-    updateToggleIcon() {
-      const root = document.getElementById('kb-root');
-      const toggle = document.querySelector('.kb-theme-toggle');
-      if (!root || !toggle) return;
-
-      const isDark = root.classList.contains('dark');
-      const sunIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
-      const moonIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
-
-      toggle.innerHTML = isDark ? sunIcon : moonIcon;
+      observer.observe(root, { attributes: true });
     }
   };
 
@@ -72,13 +55,17 @@ class KBScripts {
         const section = item.closest('.kb-nav-section');
         const sectionTitle = section ?
           section.querySelector('.kb-nav-section-header span')?.textContent.trim() : '';
+        const excerpt = item.dataset.excerpt || '';
+        const description = item.dataset.description || '';
 
         if (title && path) {
           this.index.push({
             title,
             path,
             section: sectionTitle || '',
-            searchText: (title + ' ' + sectionTitle).toLowerCase()
+            excerpt,
+            description,
+            searchText: (title + ' ' + sectionTitle + ' ' + excerpt + ' ' + description).toLowerCase()
           });
         }
       });
@@ -88,18 +75,28 @@ class KBScripts {
       if (!query || query.length < this.minQueryLength) return [];
 
       const q = query.toLowerCase();
-      const results = this.index.filter(item =>
-        item.searchText.includes(q)
-      );
+      const words = q.split(/\\s+/).filter(w => w.length > 1);
 
-      // Sort by relevance (title match first)
-      results.sort((a, b) => {
-        const aTitle = a.title.toLowerCase().includes(q);
-        const bTitle = b.title.toLowerCase().includes(q);
-        if (aTitle && !bTitle) return -1;
-        if (!aTitle && bTitle) return 1;
-        return 0;
+      const results = this.index.filter(item => {
+        // Match if any word is found
+        return words.some(word => item.searchText.includes(word));
+      }).map(item => {
+        // Calculate relevance score
+        let score = 0;
+        const titleLower = item.title.toLowerCase();
+
+        words.forEach(word => {
+          if (titleLower.includes(word)) score += 10;
+          if (titleLower.startsWith(word)) score += 5;
+          if (item.description && item.description.toLowerCase().includes(word)) score += 3;
+          if (item.excerpt && item.excerpt.toLowerCase().includes(word)) score += 1;
+        });
+
+        return { ...item, score };
       });
+
+      // Sort by relevance score
+      results.sort((a, b) => b.score - a.score);
 
       return results.slice(0, this.maxResults);
     },
@@ -380,6 +377,33 @@ class KBScripts {
     }
   };
 
+  // Back to top button
+  const BackToTopManager = {
+    threshold: 300,
+
+    init() {
+      const button = document.querySelector('.kb-back-to-top');
+      if (!button) return;
+
+      // Show/hide based on scroll position
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > this.threshold) {
+          button.classList.add('visible');
+        } else {
+          button.classList.remove('visible');
+        }
+      });
+
+      // Scroll to top on click
+      button.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
+  };
+
   // Initialize all managers on DOMContentLoaded
   document.addEventListener('DOMContentLoaded', () => {
     ThemeManager.init();
@@ -389,10 +413,9 @@ class KBScripts {
     NavCollapseManager.init();
     TocManager.init();
     HighlightManager.init();
+    BackToTopManager.init();
   });
 
-  // Expose theme toggle globally
-  window.kbToggleTheme = () => ThemeManager.toggle();
 })();
 ''';
   }
@@ -401,8 +424,8 @@ class KBScripts {
   String generateThemeInit() {
     return '''
 (function() {
-  const theme = localStorage.getItem('kb-theme-mode') || 'dark';
-  document.documentElement.className = theme;
+  // Theme preference is loaded from localStorage but applied via Dart component
+  window.arcaneThemeMode = localStorage.getItem('arcane-theme-mode') || 'dark';
 })();
 ''';
   }

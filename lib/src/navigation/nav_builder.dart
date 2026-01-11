@@ -69,14 +69,16 @@ class NavBuilder {
           pagePath = pathPrefix.isEmpty ? '/$slug' : '$pathPrefix/$slug';
         }
 
-        // Parse frontmatter
+        // Parse frontmatter and extract content
         final content = await entity.readAsString();
         final frontmatter = _parseFrontmatter(content);
+        final excerpt = _extractExcerpt(content);
 
         final item = NavItem.fromFrontmatter(
           path: pagePath,
           frontmatter: frontmatter,
           fallbackTitle: NavItem.filenameToTitle(filename),
+          excerpt: excerpt,
         );
 
         items.add(item);
@@ -167,6 +169,53 @@ class NavBuilder {
     return null;
   }
 
+  /// Extract a content excerpt for search indexing.
+  String _extractExcerpt(String content, {int maxLength = 500}) {
+    String text = content;
+
+    // Remove frontmatter
+    if (text.startsWith('---')) {
+      final int endIndex = text.indexOf('---', 3);
+      if (endIndex > 0) {
+        text = text.substring(endIndex + 3);
+      }
+    }
+
+    // Remove markdown formatting
+    text = text
+        // Remove code blocks
+        .replaceAll(RegExp(r'```[\s\S]*?```'), ' ')
+        // Remove inline code
+        .replaceAll(RegExp(r'`[^`]+`'), ' ')
+        // Remove images
+        .replaceAll(RegExp(r'!\[.*?\]\(.*?\)'), ' ')
+        // Remove links (keep text)
+        .replaceAll(RegExp(r'\[([^\]]+)\]\([^)]+\)'), r'$1')
+        // Remove headers markers
+        .replaceAll(RegExp(r'^#+\s*', multiLine: true), '')
+        // Remove bold/italic markers
+        .replaceAll(RegExp(r'[*_]{1,2}([^*_]+)[*_]{1,2}'), r'$1')
+        // Remove HTML tags
+        .replaceAll(RegExp(r'<[^>]+>'), ' ')
+        // Remove blockquotes
+        .replaceAll(RegExp(r'^>\s*', multiLine: true), '')
+        // Normalize whitespace
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    // Truncate to max length
+    if (text.length > maxLength) {
+      text = text.substring(0, maxLength);
+      // Try to break at a word boundary
+      final int lastSpace = text.lastIndexOf(' ');
+      if (lastSpace > maxLength - 50) {
+        text = text.substring(0, lastSpace);
+      }
+    }
+
+    return text;
+  }
+
   /// Parse YAML frontmatter from markdown content.
   Map<String, dynamic> _parseFrontmatter(String content) {
     final frontmatterRegex = RegExp(r'^---\s*\n([\s\S]*?)\n---', multiLine: true);
@@ -224,9 +273,9 @@ class NavManifest {
     return sorted;
   }
 
-  /// Get visible root items.
+  /// Get visible root items (excludes hidden and draft items).
   List<NavItem> get visibleItems =>
-      sortedItems.where((item) => !item.hidden).toList();
+      sortedItems.where((item) => !item.hidden && !item.draft).toList();
 
   /// Convert to JSON for client-side use.
   Map<String, dynamic> toJson() {
@@ -243,8 +292,10 @@ class NavManifest {
       'icon': item.icon,
       'order': item.order,
       'hidden': item.hidden,
+      'draft': item.draft,
       'description': item.description,
       'tags': item.tags,
+      'excerpt': item.excerpt,
     };
   }
 
@@ -279,11 +330,13 @@ class NavManifest {
       icon: json['icon'] as String?,
       order: json['order'] as int? ?? 999,
       hidden: json['hidden'] as bool? ?? false,
+      draft: json['draft'] as bool? ?? false,
       description: json['description'] as String?,
       tags: (json['tags'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      excerpt: json['excerpt'] as String?,
     );
   }
 

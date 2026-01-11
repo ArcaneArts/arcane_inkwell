@@ -54,6 +54,12 @@ class SiteConfig {
   /// Optional sidebar footer link URL.
   final String? sidebarFooterUrl;
 
+  /// Git branch for edit links (default: 'main').
+  final String editBranch;
+
+  /// Whether to show "Edit this page" links.
+  final bool showEditLink;
+
   const SiteConfig({
     required this.name,
     this.description,
@@ -73,6 +79,8 @@ class SiteConfig {
     this.socialLinks = const [],
     this.sidebarFooter,
     this.sidebarFooterUrl,
+    this.editBranch = 'main',
+    this.showEditLink = true,
   });
 
   /// Get the full URL for a path, including the base URL.
@@ -84,6 +92,32 @@ class SiteConfig {
 
   /// Get the asset prefix for static assets.
   String get assetPrefix => baseUrl.isEmpty ? '' : baseUrl;
+
+  /// Generate the GitHub edit URL for a given page path.
+  String? editUrl(String pagePath) {
+    if (githubUrl == null || !showEditLink) return null;
+
+    // Convert URL path to file path
+    String filePath = pagePath;
+    if (filePath == '/' || filePath.isEmpty) {
+      filePath = 'index.md';
+    } else {
+      // Remove leading slash
+      filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
+      // Check if it's a section index or regular page
+      if (!filePath.endsWith('.md')) {
+        filePath = '$filePath.md';
+      }
+    }
+
+    // Build full path to content file
+    final String contentPath = '$contentDirectory/$filePath';
+
+    // Generate GitHub edit URL
+    final String repoUrl =
+        githubUrl!.endsWith('/') ? githubUrl!.substring(0, githubUrl!.length - 1) : githubUrl!;
+    return '$repoUrl/edit/$editBranch/$contentPath';
+  }
 }
 
 /// Theme mode options for the knowledge base.

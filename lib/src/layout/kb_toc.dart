@@ -20,9 +20,9 @@ class KBToc extends StatelessComponent {
         padding: PaddingPreset.lg,
       ),
       children: [
-        ArcaneDiv(
+        const ArcaneDiv(
           classes: 'kb-toc-title',
-          styles: const ArcaneStyleData(
+          styles: ArcaneStyleData(
             fontWeight: FontWeight.w600,
             fontSize: FontSize.sm,
             textColor: TextColor.primary,

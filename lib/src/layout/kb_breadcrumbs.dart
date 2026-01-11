@@ -3,7 +3,7 @@ import 'package:arcane_jaspr/arcane_jaspr.dart' hide TableOfContents;
 import '../config/site_config.dart';
 import '../navigation/nav_item.dart';
 
-/// Breadcrumbs navigation component.
+/// Breadcrumbs navigation component using ArcaneBreadcrumbs.
 class KBBreadcrumbs extends StatelessComponent {
   final SiteConfig config;
   final String currentPath;
@@ -15,62 +15,33 @@ class KBBreadcrumbs extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    final List<_Crumb> crumbs = _buildCrumbs();
+    final List<BreadcrumbItem> items = _buildItems();
 
-    if (crumbs.isEmpty) {
+    if (items.isEmpty) {
       return const ArcaneDiv(children: []);
     }
 
-    final List<Component> children = <Component>[];
-    for (int i = 0; i < crumbs.length; i++) {
-      if (i > 0) {
-        children.add(ArcaneDiv(
-          classes: 'kb-breadcrumbs-separator',
-          styles: const ArcaneStyleData(
-            textColor: TextColor.mutedForeground,
-            paddingStringCustom: '0 4px',
-          ),
-          children: [ArcaneText('/')],
-        ));
-      }
-      if (i < crumbs.length - 1) {
-        children.add(ArcaneLink(
-          href: crumbs[i].path,
-          styles: const ArcaneStyleData(
-            textColor: TextColor.mutedForeground,
-            textDecoration: TextDecoration.none,
-          ),
-          child: ArcaneText(crumbs[i].title),
-        ));
-      } else {
-        children.add(ArcaneDiv(
-          styles: const ArcaneStyleData(
-            textColor: TextColor.primary,
-          ),
-          children: [ArcaneText(crumbs[i].title)],
-        ));
-      }
-    }
-
     return ArcaneDiv(
-      classes: 'kb-breadcrumbs',
       styles: const ArcaneStyleData(
-        display: Display.flex,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        fontSize: FontSize.sm,
         margin: MarginPreset.bottomMd,
       ),
-      children: children,
+      children: [
+        ArcaneBreadcrumbs(
+          items: items,
+          separator: BreadcrumbSeparator.chevron,
+          size: BreadcrumbSize.sm,
+        ),
+      ],
     );
   }
 
-  List<_Crumb> _buildCrumbs() {
+  List<BreadcrumbItem> _buildItems() {
     if (currentPath == '/' || currentPath.isEmpty) {
-      return <_Crumb>[];
+      return <BreadcrumbItem>[];
     }
 
-    final List<_Crumb> crumbs = <_Crumb>[
-      _Crumb(title: 'Home', path: config.fullPath('/')),
+    final List<BreadcrumbItem> items = <BreadcrumbItem>[
+      BreadcrumbItem(label: 'Home', href: config.fullPath('/')),
     ];
 
     final List<String> segments = currentPath
@@ -83,19 +54,12 @@ class KBBreadcrumbs extends StatelessComponent {
       pathSoFar += '/${segments[i]}';
       final bool isLast = i == segments.length - 1;
 
-      crumbs.add(_Crumb(
-        title: NavItem.filenameToTitle(segments[i]),
-        path: isLast ? '' : config.fullPath(pathSoFar),
+      items.add(BreadcrumbItem(
+        label: NavItem.filenameToTitle(segments[i]),
+        href: isLast ? null : config.fullPath(pathSoFar),
       ));
     }
 
-    return crumbs;
+    return items;
   }
-}
-
-class _Crumb {
-  final String title;
-  final String path;
-
-  const _Crumb({required this.title, required this.path});
 }

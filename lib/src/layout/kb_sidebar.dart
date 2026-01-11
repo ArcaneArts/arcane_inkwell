@@ -5,7 +5,7 @@ import '../navigation/nav_item.dart';
 import '../navigation/nav_section.dart';
 import '../navigation/nav_builder.dart';
 
-/// The sidebar navigation component.
+/// The sidebar navigation component using Arcane components.
 class KBSidebar extends StatelessComponent {
   final SiteConfig config;
   final NavManifest manifest;
@@ -19,34 +19,62 @@ class KBSidebar extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return ArcaneDiv(
-      classes: 'kb-sidebar',
-      styles: const ArcaneStyleData(
-        position: Position.fixed,
-        top: '64px',
-        left: '0',
-        widthCustom: '280px',
-        heightCustom: 'calc(100vh - 64px)',
-        padding: PaddingPreset.lg,
-        background: Background.surface,
-        borderRight: BorderPreset.subtle,
-        overflowY: OverflowAxis.auto,
-      ),
+    return ArcaneScrollRail(
+      width: '280px',
+      topOffset: '64px',
+      showBorder: true,
+      padding: '0',
+      scrollPersistenceId: 'kb-sidebar',
       children: [
+        // Header with site name
         ArcaneDiv(
-          classes: 'kb-nav',
           styles: const ArcaneStyleData(
-            display: Display.flex,
-            flexDirection: FlexDirection.column,
-            gap: Gap.xs,
+            padding: PaddingPreset.md,
+            borderBottom: BorderPreset.subtle,
           ),
           children: [
-            // Root-level items first
-            ...manifest.visibleItems.map((NavItem item) => _buildNavItem(item)),
+            ArcaneLink(
+              href: config.fullPath('/'),
+              styles: const ArcaneStyleData(
+                textDecoration: TextDecoration.none,
+              ),
+              child: ArcaneDiv(
+                styles: const ArcaneStyleData(
+                  fontWeight: FontWeight.bold,
+                  fontSize: FontSize.lg,
+                  textColor: TextColor.primary,
+                ),
+                children: [ArcaneText(config.name)],
+              ),
+            ),
+            if (config.description != null)
+              ArcaneDiv(
+                styles: const ArcaneStyleData(
+                  fontSize: FontSize.sm,
+                  textColor: TextColor.mutedForeground,
+                  margin: MarginPreset.topXs,
+                ),
+                children: [ArcaneText(config.description!)],
+              ),
+          ],
+        ),
+
+        // Navigation
+        ArcaneNav(
+          styles: const ArcaneStyleData(
+            padding: PaddingPreset.sm,
+          ),
+          children: [
+            // Root-level items first (always visible, no section)
+            if (manifest.visibleItems.isNotEmpty)
+              _buildFixedSection(
+                'Pages',
+                ArcaneIcon.fileText(size: IconSize.sm),
+                manifest.visibleItems.map((item) => _buildNavItem(item)).toList(),
+              ),
 
             // Then sections
-            ...manifest.sortedSections
-                .map((NavSection sec) => _buildSection(sec)),
+            ...manifest.sortedSections.map((section) => _buildSection(section)),
           ],
         ),
 
@@ -56,7 +84,7 @@ class KBSidebar extends StatelessComponent {
             classes: 'kb-sidebar-footer',
             styles: const ArcaneStyleData(
               margin: MarginPreset.topLg,
-              padding: PaddingPreset.topMd,
+              padding: PaddingPreset.md,
               borderTop: BorderPreset.subtle,
               textColor: TextColor.mutedForeground,
               fontSize: FontSize.sm,
@@ -80,87 +108,110 @@ class KBSidebar extends StatelessComponent {
     );
   }
 
+  /// Build a fixed section that's always expanded (no toggle)
+  Component _buildFixedSection(
+      String title, Component icon, List<Component> items) {
+    return ArcaneDiv(
+      classes: 'sidebar-tree-nav',
+      styles: const ArcaneStyleData(
+        margin: MarginPreset.bottomMd,
+      ),
+      children: [
+        // Section header
+        ArcaneDiv(
+          styles: const ArcaneStyleData(
+            display: Display.flex,
+            gap: Gap.sm,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            fontSize: FontSize.xs,
+            fontWeight: FontWeight.w500,
+            padding: PaddingPreset.horizontalSm,
+            margin: MarginPreset.bottomXs,
+            textColor: TextColor.mutedForeground,
+          ),
+          children: [
+            icon,
+            ArcaneText(title),
+          ],
+        ),
+        // Items with tree lines
+        div(classes: 'sidebar-tree-items', [
+          for (final item in items) div(classes: 'sidebar-tree-item sidebar-tree-leaf', [item]),
+        ]),
+      ],
+    );
+  }
+
+  /// Build a collapsible section using ArcaneDisclosure
+  Component _buildSection(NavSection section) {
+    final bool shouldExpand =
+        section.shouldExpandFor(currentPath) || !section.collapsed;
+
+    return ArcaneDisclosure.minimal(
+      open: shouldExpand,
+      showTreeLines: false, // We use custom tree lines CSS
+      summary: ArcaneRow(
+        gapSize: Gap.sm,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (section.icon != null) _buildIcon(section.icon!),
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              fontSize: FontSize.xs,
+              fontWeight: FontWeight.w500,
+              textColor: TextColor.mutedForeground,
+            ),
+            children: [ArcaneText(section.title)],
+          ),
+        ],
+      ),
+      // Items with tree structure
+      child: div(
+        classes: 'sidebar-tree-items',
+        attributes: {'data-path': section.path},
+        [
+          // Items in this section
+          for (final item in section.visibleItems)
+            div(classes: 'sidebar-tree-item sidebar-tree-leaf', [_buildNavItem(item)]),
+
+          // Nested sections (folders)
+          for (final nested in section.sortedSections)
+            div(classes: 'sidebar-tree-item sidebar-tree-folder', [_buildSection(nested)]),
+        ],
+      ),
+    );
+  }
+
+  /// Build a navigation item that links to a page
   Component _buildNavItem(NavItem item) {
     final bool isActive = _isActive(item.path);
     final String fullPath = config.fullPath(item.path);
 
     return ArcaneLink(
       href: fullPath,
-      classes: 'kb-nav-item${isActive ? ' active' : ''}',
       styles: ArcaneStyleData(
         display: Display.flex,
-        crossAxisAlignment: CrossAxisAlignment.center,
         gap: Gap.sm,
-        padding: PaddingPreset.sm,
-        borderRadius: Radius.md,
-        textColor: isActive ? TextColor.primary : TextColor.mutedForeground,
-        background: isActive ? Background.muted : null,
         fontSize: FontSize.sm,
+        borderRadius: Radius.md,
+        transition: Transition.allFast,
+        crossAxisAlignment: CrossAxisAlignment.center,
         textDecoration: TextDecoration.none,
+        padding: PaddingPreset.buttonSm,
+        // Active state: accent color text with muted background
+        textColor: isActive ? TextColor.accent : TextColor.mutedForeground,
+        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+        background: isActive ? Background.muted : Background.transparent,
+        borderLeft: isActive ? BorderPreset.accentThick : null,
       ),
       child: ArcaneRow(
         gapSize: Gap.sm,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (item.icon != null) _buildIcon(item.icon!),
-          ArcaneText(item.title),
+          ArcaneSpan(child: ArcaneText(item.title)),
         ],
       ),
-    );
-  }
-
-  Component _buildSection(NavSection section) {
-    final bool shouldExpand =
-        section.shouldExpandFor(currentPath) || !section.collapsed;
-
-    return ArcaneDiv(
-      classes: 'kb-nav-section sidebar-tree-nav${shouldExpand ? '' : ' collapsed'}',
-      styles: const ArcaneStyleData(
-        margin: MarginPreset.topSm,
-      ),
-      children: [
-        // Section header
-        ArcaneDiv(
-          classes: 'kb-nav-section-header',
-          styles: const ArcaneStyleData(
-            display: Display.flex,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            gap: Gap.sm,
-            padding: PaddingPreset.sm,
-            cursor: Cursor.pointer,
-            fontSize: FontSize.sm,
-            fontWeight: FontWeight.w500,
-            textColor: TextColor.onSurfaceVariant,
-          ),
-          children: [
-            // Chevron icon
-            ArcaneIcon.chevronDown(size: IconSize.xs),
-            if (section.icon != null) _buildIcon(section.icon!),
-            ArcaneText(section.title),
-          ],
-        ),
-
-        // Section items with tree structure
-        ArcaneDiv(
-          classes: 'kb-nav-section-items sidebar-tree-items',
-          styles: const ArcaneStyleData(
-            paddingStringCustom: '0 0 0 16px',
-          ),
-          children: [
-            // Items in this section - wrapped in tree-item
-            ...section.visibleItems.map((NavItem item) => ArcaneDiv(
-                  classes: 'sidebar-tree-item',
-                  children: [_buildNavItem(item)],
-                )),
-
-            // Nested sections - wrapped in tree-item
-            ...section.sortedSections.map((NavSection nested) => ArcaneDiv(
-                  classes: 'sidebar-tree-item',
-                  children: [_buildSection(nested)],
-                )),
-          ],
-        ),
-      ],
     );
   }
 
@@ -279,11 +330,11 @@ class KBSidebar extends StatelessComponent {
       'bookmark' => ArcaneIcon.bookmark(size: IconSize.sm),
       'tag' => ArcaneIcon.tag(size: IconSize.sm),
       'tags' => ArcaneIcon.tags(size: IconSize.sm),
+      'info' => ArcaneIcon.info(size: IconSize.sm),
 
       // Alerts & Info
       'alert-triangle' => ArcaneIcon.triangleAlert(size: IconSize.sm),
       'alert-circle' => ArcaneIcon.circleAlert(size: IconSize.sm),
-      'info' => ArcaneIcon.info(size: IconSize.sm),
       'help-circle' => ArcaneIcon.help(size: IconSize.sm),
       'check' => ArcaneIcon.check(size: IconSize.sm),
       'check-circle' => ArcaneIcon.circleCheck(size: IconSize.sm),

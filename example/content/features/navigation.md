@@ -3,6 +3,10 @@ title: Navigation
 description: Sidebar, breadcrumbs, and page navigation
 icon: compass
 order: 1
+tags:
+  - navigation
+  - organization
+author: Arcane Arts
 ---
 
 ## Sidebar Navigation

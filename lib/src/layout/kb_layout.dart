@@ -9,8 +9,8 @@ import 'kb_header.dart';
 import 'kb_sidebar.dart';
 import 'kb_footer.dart';
 import 'kb_breadcrumbs.dart';
-import 'kb_toc.dart';
 import 'kb_page_nav.dart';
+import 'kb_related_pages.dart';
 
 /// The main layout wrapper for knowledge base pages.
 class KBLayout extends PageLayoutBase {
@@ -74,11 +74,11 @@ class KBLayout extends PageLayoutBase {
 
     // Load external CSS (Google Fonts, etc.)
     if (stylesheet.externalCssUrls.isNotEmpty) {
-      yield link(rel: 'preconnect', href: 'https://fonts.googleapis.com');
-      yield link(
+      yield const link(rel: 'preconnect', href: 'https://fonts.googleapis.com');
+      yield const link(
         rel: 'preconnect',
         href: 'https://fonts.gstatic.com',
-        attributes: const {'crossorigin': ''},
+        attributes: {'crossorigin': ''},
       );
       for (final String url in stylesheet.externalCssUrls) {
         yield link(rel: 'stylesheet', href: url);
@@ -86,11 +86,6 @@ class KBLayout extends PageLayoutBase {
     }
 
     // Highlight.js for syntax highlighting
-    yield const link(
-      rel: 'stylesheet',
-      href:
-          'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css',
-    );
     yield const script(
       attributes: {
         'src':
@@ -110,23 +105,89 @@ class KBLayout extends PageLayoutBase {
 
   @override
   Component buildBody(Page page, Component child) {
-    final String currentPath = page.url;
     final Map<String, dynamic> pageData = page.data.page;
-    final String? pageTitle = pageData['title'] as String?;
-    final String? pageDescription = pageData['description'] as String?;
     final TableOfContents? toc = page.data['toc'] as TableOfContents?;
 
-    // Determine theme class based on config
-    final String themeClass =
-        config.defaultTheme == KBThemeMode.light ? '' : 'dark';
+    // Return stateful themed page wrapper
+    return ThemedKBPage(
+      config: config,
+      manifest: manifest,
+      stylesheet: stylesheet,
+      scripts: scripts,
+      currentPath: page.url,
+      pageTitle: pageData['title'] as String?,
+      pageDescription: pageData['description'] as String?,
+      pageAuthor: pageData['author'] as String?,
+      readingTime: pageData['readingTime'] as int?,
+      pageTags: (pageData['tags'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      isDraft: pageData['draft'] as bool? ?? false,
+      toc: toc,
+      content: child,
+    );
+  }
+}
+
+/// Stateful themed page wrapper for dynamic theme toggling.
+class ThemedKBPage extends StatefulComponent {
+  final SiteConfig config;
+  final NavManifest manifest;
+  final KBStylesheet stylesheet;
+  final KBScripts scripts;
+  final String currentPath;
+  final String? pageTitle;
+  final String? pageDescription;
+  final String? pageAuthor;
+  final int? readingTime;
+  final List<String> pageTags;
+  final bool isDraft;
+  final TableOfContents? toc;
+  final Component content;
+
+  const ThemedKBPage({
+    required this.config,
+    required this.manifest,
+    required this.stylesheet,
+    required this.scripts,
+    required this.currentPath,
+    this.pageTitle,
+    this.pageDescription,
+    this.pageAuthor,
+    this.readingTime,
+    this.pageTags = const [],
+    this.isDraft = false,
+    this.toc,
+    required this.content,
+  });
+
+  @override
+  State<ThemedKBPage> createState() => _ThemedKBPageState();
+}
+
+class _ThemedKBPageState extends State<ThemedKBPage> {
+  bool _isDark = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _isDark = component.config.defaultTheme != KBThemeMode.light;
+  }
+
+  void _toggleTheme() {
+    setState(() => _isDark = !_isDark);
+  }
+
+  @override
+  Component build(BuildContext context) {
+    final String themeClass = _isDark ? 'dark' : '';
 
     return ArcaneThemeProvider(
-      stylesheet: stylesheet,
-      brightness: config.defaultTheme == KBThemeMode.light
-          ? Brightness.light
-          : Brightness.dark,
+      stylesheet: component.stylesheet,
+      brightness: _isDark ? Brightness.dark : Brightness.light,
       child: ArcaneDiv(
-        id: 'kb-root',
+        id: 'arcane-root',
         classes: themeClass,
         styles: const ArcaneStyleData(
           minHeight: '100vh',
@@ -135,123 +196,351 @@ class KBLayout extends PageLayoutBase {
           fontFamily: FontFamily.sans,
         ),
         children: [
-          // Header
-          KBHeader(config: config),
-
-          // Main layout
-          ArcaneDiv(
-            classes: 'kb-layout',
-            styles: const ArcaneStyleData(
-              display: Display.flex,
-              flexGrow: 1,
-            ),
-            children: [
-              // Sidebar
-              KBSidebar(
-                config: config,
-                manifest: manifest,
-                currentPath: currentPath,
-              ),
-
-              // Main content
-              ArcaneDiv(
-                classes: 'kb-main',
-                styles: const ArcaneStyleData(
-                  flexGrow: 1,
-                  padding: PaddingPreset.xl,
-                ),
-                children: [
-                  ArcaneDiv(
-                    classes: 'kb-content-wrapper',
-                    styles: const ArcaneStyleData(
-                      display: Display.flex,
-                      gap: Gap.xl,
-                      maxWidth: MaxWidth.container,
-                      margin: MarginPreset.autoX,
-                    ),
-                    children: [
-                      // Content area
-                      ArcaneDiv(
-                        classes: 'kb-content',
-                        styles: const ArcaneStyleData(
-                          flex: FlexPreset.expand,
-                          minWidth: '0',
-                        ),
-                        children: [
-                          // Breadcrumbs
-                          KBBreadcrumbs(
-                            config: config,
-                            currentPath: currentPath,
-                          ),
-
-                          // Page header
-                          if (pageTitle != null || pageDescription != null)
-                            ArcaneDiv(
-                              classes: 'kb-page-header',
-                              styles: const ArcaneStyleData(
-                                margin: MarginPreset.bottomLg,
-                              ),
-                              children: [
-                                if (pageTitle != null)
-                                  ArcaneDiv(
-                                    styles: const ArcaneStyleData(
-                                      fontSize: FontSize.xl3,
-                                      fontWeight: FontWeight.bold,
-                                      textColor: TextColor.primary,
-                                      margin: MarginPreset.bottomMd,
-                                    ),
-                                    children: [ArcaneText(pageTitle)],
-                                  ),
-                                if (pageDescription != null)
-                                  ArcaneDiv(
-                                    styles: const ArcaneStyleData(
-                                      fontSize: FontSize.lg,
-                                      textColor: TextColor.mutedForeground,
-                                    ),
-                                    children: [ArcaneText(pageDescription)],
-                                  ),
-                              ],
-                            ),
-
-                          // Subpages (for section index pages)
-                          KBSubpages(
-                            config: config,
-                            manifest: manifest,
-                            currentPath: currentPath,
-                          ),
-
-                          // Markdown content
-                          div(classes: 'prose', [child]),
-
-                          // Previous/Next navigation
-                          KBPageNav(
-                            config: config,
-                            manifest: manifest,
-                            currentPath: currentPath,
-                          ),
-                        ],
-                      ),
-
-                      // Table of contents
-                      if (config.tocEnabled && toc != null) KBToc(toc: toc),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+          // Header with theme toggle callback
+          KBHeader(
+            config: component.config,
+            isDark: _isDark,
+            onThemeToggle: _toggleTheme,
           ),
 
+          // Main layout
+          _buildMainLayout(),
+
           // Footer
-          if (config.footerText != null || config.copyright != null)
-            KBFooter(config: config),
+          if (component.config.footerText != null ||
+              component.config.copyright != null)
+            KBFooter(config: component.config),
+
+          // Back to top button
+          _buildBackToTop(),
 
           // Scripts
-          script(content: scripts.generate()),
+          script(content: component.scripts.generate()),
 
           // Component interactivity scripts from arcane_jaspr
           const ArcaneScriptsComponent(),
         ],
       ),
+    );
+  }
+
+  Component _buildMainLayout() {
+    return ArcaneDiv(
+      classes: 'kb-layout',
+      styles: const ArcaneStyleData(
+        display: Display.flex,
+        flexGrow: 1,
+      ),
+      children: [
+        // Sidebar
+        KBSidebar(
+          config: component.config,
+          manifest: component.manifest,
+          currentPath: component.currentPath,
+        ),
+
+        // Main content area
+        ArcaneDiv(
+          classes: 'kb-main',
+          styles: const ArcaneStyleData(
+            flexGrow: 1,
+            padding: PaddingPreset.xl,
+          ),
+          children: [
+            ArcaneDiv(
+              classes: 'kb-content-wrapper',
+              styles: const ArcaneStyleData(
+                display: Display.flex,
+                gap: Gap.xl,
+                maxWidth: MaxWidth.container,
+                margin: MarginPreset.autoX,
+              ),
+              children: [
+                // Content area
+                _buildContentArea(),
+
+                // Table of contents
+                if (component.config.tocEnabled && component.toc != null)
+                  _buildTableOfContents(),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Component _buildContentArea() {
+    return ArcaneDiv(
+      classes: 'kb-content',
+      styles: const ArcaneStyleData(
+        flex: FlexPreset.expand,
+        minWidth: '0',
+      ),
+      children: [
+        // Breadcrumbs
+        KBBreadcrumbs(
+          config: component.config,
+          currentPath: component.currentPath,
+        ),
+
+        // Draft banner
+        if (component.isDraft) _buildDraftBanner(),
+
+        // Page header
+        if (component.pageTitle != null || component.pageDescription != null)
+          _buildPageHeader(),
+
+        // Subpages (for section index pages)
+        KBSubpages(
+          config: component.config,
+          manifest: component.manifest,
+          currentPath: component.currentPath,
+        ),
+
+        // Markdown content
+        div(classes: 'prose', [component.content]),
+
+        // Related pages (based on shared tags)
+        KBRelatedPages(
+          config: component.config,
+          manifest: component.manifest,
+          currentPath: component.currentPath,
+          currentTags: component.pageTags,
+        ),
+
+        // Edit on GitHub link
+        if (component.config.editUrl(component.currentPath) != null)
+          _buildEditLink(),
+
+        // Previous/Next navigation
+        KBPageNav(
+          config: component.config,
+          manifest: component.manifest,
+          currentPath: component.currentPath,
+        ),
+      ],
+    );
+  }
+
+  Component _buildDraftBanner() {
+    return ArcaneDiv(
+      classes: 'kb-draft-banner',
+      styles: const ArcaneStyleData(
+        display: Display.flex,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        gap: Gap.sm,
+        padding: PaddingPreset.md,
+        margin: MarginPreset.bottomLg,
+        background: Background.muted,
+        border: BorderPreset.subtle,
+        borderRadius: Radius.md,
+        fontSize: FontSize.sm,
+      ),
+      children: [
+        ArcaneIcon.pencil(size: IconSize.sm),
+        const ArcaneText('This page is a draft and not published yet.'),
+      ],
+    );
+  }
+
+  Component _buildPageHeader() {
+    return ArcaneDiv(
+      classes: 'kb-page-header',
+      styles: const ArcaneStyleData(
+        margin: MarginPreset.bottomLg,
+      ),
+      children: [
+        if (component.pageTitle != null)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              fontSize: FontSize.xl3,
+              fontWeight: FontWeight.bold,
+              textColor: TextColor.primary,
+              margin: MarginPreset.bottomMd,
+            ),
+            children: [ArcaneText(component.pageTitle!)],
+          ),
+        if (component.pageDescription != null)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              fontSize: FontSize.lg,
+              textColor: TextColor.mutedForeground,
+            ),
+            children: [ArcaneText(component.pageDescription!)],
+          ),
+        // Page metadata (author, reading time)
+        if (component.pageAuthor != null || component.readingTime != null)
+          _buildPageMeta(),
+        // Tags
+        if (component.pageTags.isNotEmpty) _buildTags(),
+      ],
+    );
+  }
+
+  Component _buildPageMeta() {
+    return ArcaneDiv(
+      classes: 'kb-page-meta',
+      styles: const ArcaneStyleData(
+        display: Display.flex,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        gap: Gap.md,
+        margin: MarginPreset.topMd,
+        fontSize: FontSize.sm,
+        textColor: TextColor.mutedForeground,
+      ),
+      children: [
+        if (component.pageAuthor != null)
+          ArcaneRow(
+            gapSize: Gap.xs,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ArcaneIcon.user(size: IconSize.xs),
+              ArcaneText(component.pageAuthor!),
+            ],
+          ),
+        if (component.pageAuthor != null && component.readingTime != null)
+          const ArcaneText('·'),
+        if (component.readingTime != null)
+          ArcaneRow(
+            gapSize: Gap.xs,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ArcaneIcon.clock(size: IconSize.xs),
+              ArcaneText('${component.readingTime} min read'),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Component _buildTags() {
+    return ArcaneDiv(
+      classes: 'kb-tags',
+      styles: const ArcaneStyleData(
+        display: Display.flex,
+        flexWrap: FlexWrap.wrap,
+        gap: Gap.xs,
+        margin: MarginPreset.topMd,
+      ),
+      children: component.pageTags
+          .map((String tag) => ArcaneDiv(
+                classes: 'kb-tag',
+                styles: const ArcaneStyleData(
+                  display: Display.inlineFlex,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  gap: Gap.xs,
+                  padding: PaddingPreset.sm,
+                  background: Background.muted,
+                  borderRadius: Radius.full,
+                  fontSize: FontSize.xs,
+                  textColor: TextColor.mutedForeground,
+                ),
+                children: [
+                  ArcaneIcon.tag(size: IconSize.xs),
+                  ArcaneText(tag),
+                ],
+              ))
+          .toList(),
+    );
+  }
+
+  Component _buildEditLink() {
+    return ArcaneDiv(
+      classes: 'kb-edit-link',
+      styles: const ArcaneStyleData(
+        margin: MarginPreset.topLg,
+        padding: PaddingPreset.topMd,
+        borderTop: BorderPreset.subtle,
+      ),
+      children: [
+        ArcaneLink.external(
+          href: component.config.editUrl(component.currentPath)!,
+          styles: const ArcaneStyleData(
+            display: Display.inlineFlex,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            gap: Gap.xs,
+            fontSize: FontSize.sm,
+            textColor: TextColor.mutedForeground,
+            textDecoration: TextDecoration.none,
+          ),
+          child: ArcaneRow(
+            gapSize: Gap.xs,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ArcaneIcon.pencil(size: IconSize.sm),
+              const ArcaneText('Edit this page on GitHub'),
+              ArcaneIcon.externalLink(size: IconSize.xs),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Table of contents sidebar using Arcane styling
+  Component _buildTableOfContents() {
+    return ArcaneDiv(
+      styles: const ArcaneStyleData(
+        widthCustom: '240px',
+        flexShrink: 0,
+        position: Position.sticky,
+        overflow: Overflow.auto,
+        top: '80px',
+        alignSelf: CrossAxisAlignment.start,
+        maxHeight: 'calc(100vh - 100px)',
+      ),
+      children: [
+        ArcaneDiv(
+          styles: const ArcaneStyleData(
+            padding: PaddingPreset.md,
+            borderRadius: Radius.lg,
+            background: Background.surface,
+            border: BorderPreset.subtle,
+          ),
+          children: [
+            ArcaneDiv(
+              styles: const ArcaneStyleData(
+                fontSize: FontSize.xs,
+                fontWeight: FontWeight.w700,
+                margin: MarginPreset.bottomMd,
+                textTransform: TextTransform.uppercase,
+                letterSpacing: LetterSpacing.wide,
+                textColor: TextColor.onSurfaceVariant,
+                padding: PaddingPreset.bottomMd,
+                borderBottom: BorderPreset.subtle,
+              ),
+              children: [const ArcaneText('On this page')],
+            ),
+            div(classes: 'toc-content', [component.toc!.build()]),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Component _buildBackToTop() {
+    return ArcaneDiv(
+      classes: 'kb-back-to-top',
+      styles: const ArcaneStyleData(
+        position: Position.fixed,
+        bottom: '24px',
+        right: '24px',
+        widthCustom: '40px',
+        heightCustom: '40px',
+        display: Display.flex,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        background: Background.surface,
+        border: BorderPreset.subtle,
+        borderRadius: Radius.full,
+        cursor: Cursor.pointer,
+        opacity: Opacity.transparent,
+        pointerEvents: PointerEvents.none,
+        zIndexCustom: '50',
+        transition: Transition.allFast,
+      ),
+      children: [ArcaneIcon.arrowUp(size: IconSize.sm)],
     );
   }
 }

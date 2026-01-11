@@ -13,9 +13,17 @@ Transform markdown directories into documentation websites. Built on Jaspr and a
 - External link indicators
 - Folder ignore capability
 - Breadcrumb navigation
-- Client-side search
+- Full-text search with content indexing
 - Previous/next page navigation
 - Subpages grid for section index pages
+- Edit on GitHub links
+- Back-to-top button
+- Reading time and author display
+- Callout/admonition blocks (GitHub-style)
+- Tags with related pages
+- Draft mode for WIP content
+- Sitemap generation
+- Changelog display component
 
 ## Installation
 

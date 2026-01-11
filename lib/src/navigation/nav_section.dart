@@ -107,9 +107,9 @@ class NavSection {
     return sorted;
   }
 
-  /// Get visible items (not hidden).
+  /// Get visible items (not hidden or draft).
   List<NavItem> get visibleItems =>
-      sortedItems.where((item) => !item.hidden).toList();
+      sortedItems.where((item) => !item.hidden && !item.draft).toList();
 
   /// Check if this section should be expanded for a given path.
   bool shouldExpandFor(String currentPath) {

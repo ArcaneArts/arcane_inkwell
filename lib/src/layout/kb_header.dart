@@ -5,8 +5,14 @@ import '../config/site_config.dart';
 /// The header component for the knowledge base.
 class KBHeader extends StatelessComponent {
   final SiteConfig config;
+  final bool isDark;
+  final VoidCallback? onThemeToggle;
 
-  const KBHeader({required this.config});
+  const KBHeader({
+    required this.config,
+    this.isDark = true,
+    this.onThemeToggle,
+  });
 
   @override
   Component build(BuildContext context) {
@@ -26,6 +32,21 @@ class KBHeader extends StatelessComponent {
         zIndexCustom: '50',
       ),
       children: [
+        // Mobile hamburger menu
+        ArcaneDiv(
+          classes: 'kb-hamburger kb-sidebar-toggle',
+          styles: const ArcaneStyleData(
+            display: Display.none,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            widthCustom: '36px',
+            heightCustom: '36px',
+            textColor: TextColor.onSurfaceVariant,
+            cursor: Cursor.pointer,
+          ),
+          children: [ArcaneIcon.menu(size: IconSize.md)],
+        ),
+
         // Logo/site name
         ArcaneLink(
           href: config.fullPath('/'),
@@ -117,19 +138,46 @@ class KBHeader extends StatelessComponent {
             // Theme toggle
             if (config.themeToggleEnabled)
               ArcaneDiv(
+                id: 'theme-toggle',
                 classes: 'kb-theme-toggle',
                 styles: const ArcaneStyleData(
-                  display: Display.flex,
+                  display: Display.inlineFlex,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   widthCustom: '36px',
                   heightCustom: '36px',
                   textColor: TextColor.mutedForeground,
+                  background: Background.transparent,
                   border: BorderPreset.subtle,
                   borderRadius: Radius.md,
                   cursor: Cursor.pointer,
+                  transition: Transition.allFast,
                 ),
-                children: [ArcaneIcon.sun(size: IconSize.md)],
+                events: onThemeToggle != null
+                    ? {'click': (_) => onThemeToggle!()}
+                    : null,
+                children: [
+                  // Sun icon (shown in dark mode)
+                  ArcaneDiv(
+                    classes: 'theme-icon-sun',
+                    styles: ArcaneStyleData(
+                      display: isDark ? Display.flex : Display.none,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                    children: [ArcaneIcon.sun(size: IconSize.sm)],
+                  ),
+                  // Moon icon (shown in light mode)
+                  ArcaneDiv(
+                    classes: 'theme-icon-moon',
+                    styles: ArcaneStyleData(
+                      display: isDark ? Display.none : Display.flex,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                    children: [ArcaneIcon.moon(size: IconSize.sm)],
+                  ),
+                ],
               ),
           ],
         ),
@@ -139,6 +187,7 @@ class KBHeader extends StatelessComponent {
 
   Component _buildSearch() {
     return ArcaneDiv(
+      classes: 'kb-search',
       styles: const ArcaneStyleData(
         position: Position.relative,
       ),
@@ -150,17 +199,38 @@ class KBHeader extends StatelessComponent {
             top: '50%',
             transformCustom: 'translateY(-50%)',
             textColor: TextColor.mutedForeground,
+            zIndexCustom: '2',
           ),
           children: [ArcaneIcon.search(size: IconSize.sm)],
         ),
-        input(
+        const input(
           type: InputType.text,
           attributes: {
-            'placeholder': 'Search...',
+            'placeholder': 'Search... (Ctrl+K)',
             'class': 'kb-search-input',
             'style':
-                'width: 240px; padding: 0.5rem 1rem 0.5rem 2.5rem; background: var(--arcane-muted); border: 1px solid var(--arcane-border); border-radius: var(--arcane-radius-md); color: var(--arcane-on-surface); font-size: 0.875rem;',
+                'width: 260px; padding: 0.5rem 1rem 0.5rem 2.5rem; background: var(--arcane-muted); border: 1px solid var(--arcane-border); border-radius: var(--arcane-radius-md); color: var(--arcane-on-surface); font-size: 0.875rem;',
           },
+        ),
+        // Search results dropdown
+        const ArcaneDiv(
+          classes: 'kb-search-results',
+          styles: ArcaneStyleData(
+            position: Position.absolute,
+            top: '100%',
+            left: '0',
+            right: '0',
+            margin: MarginPreset.topXs,
+            background: Background.surface,
+            border: BorderPreset.subtle,
+            borderRadius: Radius.md,
+            display: Display.none,
+            flexDirection: FlexDirection.column,
+            maxHeight: '400px',
+            overflowY: OverflowAxis.auto,
+            zIndexCustom: '100',
+          ),
+          children: [],
         ),
       ],
     );

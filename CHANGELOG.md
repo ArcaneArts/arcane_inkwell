@@ -24,3 +24,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KBStylesheet for CSS customization
 - KBColors for theme color palettes
 - Example project with sample documentation
+- Edit on GitHub link with configurable branch (`editBranch`, `showEditLink` in SiteConfig)
+- Back-to-top button (appears after scrolling down 300px)
+- Page metadata display (author, reading time) in page headers
+- Reading time extension (`ReadingTimeExtension`) auto-calculates from content
+- Callout/admonition blocks with GitHub-style syntax (`> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!IMPORTANT]`, `> [!CAUTION]`)
+- Mobile hamburger menu button in header
+- Full-text search indexing content excerpts (not just titles)
+- Content excerpts added to NavItem for search
+- Tags display in page headers with visual badges
+- Related pages section based on shared tags (`KBRelatedPages` component)
+- Draft mode support (`draft: true` in frontmatter) with draft banner
+- Draft pages hidden from navigation but accessible directly
+- Sitemap generation utility (`SitemapGenerator` class)
+- Changelog parser utility (`ChangelogParser` class) for Keep a Changelog format
+- Changelog display component (`KBChangelog`) with styled timeline
+
+### Changed
+
+- Search now indexes page content excerpts for better results
+- Search results show relevance-based scoring
+- `visibleItems` now excludes both `hidden` and `draft` pages
+- JSON5 section config now preferred over YAML (`_section.json5`)

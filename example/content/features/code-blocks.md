@@ -3,6 +3,10 @@ title: Code Blocks
 description: Syntax highlighting for multiple languages
 icon: code
 order: 3
+tags:
+  - code
+  - syntax-highlighting
+author: Arcane Arts
 ---
 
 ## Dart

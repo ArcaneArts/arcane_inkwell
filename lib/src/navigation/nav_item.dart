@@ -15,11 +15,17 @@ class NavItem {
   /// Whether this item is hidden from navigation.
   final bool hidden;
 
+  /// Whether this item is a draft (hidden from nav + shows draft badge).
+  final bool draft;
+
   /// Optional description for search indexing.
   final String? description;
 
   /// Tags for filtering/search.
   final List<String> tags;
+
+  /// Content excerpt for full-text search (first ~200 chars).
+  final String? excerpt;
 
   const NavItem({
     required this.title,
@@ -27,8 +33,10 @@ class NavItem {
     this.icon,
     this.order = 999,
     this.hidden = false,
+    this.draft = false,
     this.description,
     this.tags = const [],
+    this.excerpt,
   });
 
   /// Create from frontmatter data.
@@ -36,6 +44,7 @@ class NavItem {
     required String path,
     required Map<String, dynamic> frontmatter,
     required String fallbackTitle,
+    String? excerpt,
   }) {
     return NavItem(
       title: frontmatter['title'] as String? ?? fallbackTitle,
@@ -43,11 +52,13 @@ class NavItem {
       icon: frontmatter['icon'] as String?,
       order: frontmatter['order'] as int? ?? 999,
       hidden: frontmatter['hidden'] as bool? ?? false,
+      draft: frontmatter['draft'] as bool? ?? false,
       description: frontmatter['description'] as String?,
       tags: (frontmatter['tags'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      excerpt: excerpt,
     );
   }
 

@@ -2,7 +2,6 @@
 library;
 
 import 'package:jaspr/server.dart';
-import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr_md/arcane_jaspr_md.dart' hide runApp;
 
 import 'main.server.options.dart';
@@ -17,6 +16,8 @@ void main() async {
         description: 'Arcane Jaspr MD demo site',
         contentDirectory: 'content',
         githubUrl: 'https://github.com/ArcaneArts/arcane_jaspr_md',
+        showEditLink: true,
+        editBranch: 'main',
         headerLinks: [
           NavLink(label: 'Docs', href: '/'),
           NavLink(
@@ -29,7 +30,7 @@ void main() async {
         sidebarFooterUrl: 'https://github.com/ArcaneArts/arcane_jaspr_md/releases',
       ),
       // Use ShadcnStylesheet as the base (this is also the default)
-      stylesheet: const KBStylesheet(base: CodexStylesheet(accent: CodexAccent.orange)),
+      stylesheet: const KBStylesheet(base: ShadcnStylesheet(theme: ShadcnTheme.mint)),
     ),
   );
 }

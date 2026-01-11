@@ -85,8 +85,8 @@ class KBPageNav extends StatelessComponent {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ArcaneIcon.arrowLeft(size: IconSize.sm),
-                    ArcaneDiv(
-                      styles: const ArcaneStyleData(
+                    const ArcaneDiv(
+                      styles: ArcaneStyleData(
                         fontSize: FontSize.sm,
                         textColor: TextColor.mutedForeground,
                       ),
@@ -136,8 +136,8 @@ class KBPageNav extends StatelessComponent {
                   gapSize: Gap.xs,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ArcaneDiv(
-                      styles: const ArcaneStyleData(
+                    const ArcaneDiv(
+                      styles: ArcaneStyleData(
                         fontSize: FontSize.sm,
                         textColor: TextColor.mutedForeground,
                       ),
@@ -231,9 +231,9 @@ class KBSubpages extends StatelessComponent {
         margin: MarginPreset.bottomXl,
       ),
       children: [
-        ArcaneDiv(
+        const ArcaneDiv(
           classes: 'kb-subpages-title',
-          styles: const ArcaneStyleData(
+          styles: ArcaneStyleData(
             fontWeight: FontWeight.w600,
             fontSize: FontSize.sm,
             textColor: TextColor.mutedForeground,

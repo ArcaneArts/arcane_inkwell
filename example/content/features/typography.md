@@ -3,6 +3,10 @@ title: Typography
 description: Headings, lists, and text formatting
 icon: type
 order: 2
+tags:
+  - typography
+  - formatting
+author: Arcane Arts
 ---
 
 ## Headings
