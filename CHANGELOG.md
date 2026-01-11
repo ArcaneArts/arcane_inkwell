@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [x.x.x]
 
+### Changed
+
+- Rebranded package from `arcane_jaspr_md` to `arcane_inkwell`
+
 ### Added
 
-- Initial release of arcane_jaspr_md
+- Initial release of arcane_inkwell
 - Auto-generated navigation from directory structure
 - YAML frontmatter support for page metadata (title, description, order, icon, hidden, tags)
 - Section configuration via `_section.yaml` files

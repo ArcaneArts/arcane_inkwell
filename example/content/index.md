@@ -1,10 +1,10 @@
 ---
-title: Arcane Jaspr MD
+title: Arcane Inkwell
 description: Transform markdown into documentation sites
 order: 0
 ---
 
-This example demonstrates all visual features of **arcane_jaspr_md**.
+This example demonstrates all visual features of **Arcane Inkwell**.
 
 ## What You'll See
 

@@ -1,6 +1,6 @@
 ---
 title: Features
-description: Explore what arcane_jaspr_md can do
+description: Explore what Arcane Inkwell can do
 order: 0
 hidden: true
 ---

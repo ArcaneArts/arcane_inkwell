@@ -1,6 +1,6 @@
 ---
 title: Guide
-description: Learn how to use arcane_jaspr_md
+description: Learn how to use Arcane Inkwell
 order: 0
 hidden: true
 ---

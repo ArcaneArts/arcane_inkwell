@@ -1,4 +1,4 @@
-# Arcane Jaspr MD
+# Arcane Inkwell
 
 Transform markdown directories into documentation websites. Built on Jaspr and arcane_jaspr.
 
@@ -29,9 +29,9 @@ Transform markdown directories into documentation websites. Built on Jaspr and a
 
 ```yaml
 dependencies:
-  arcane_jaspr_md:
+  arcane_inkwell:
     git:
-      url: https://github.com/ArcaneArts/arcane_jaspr_md
+      url: https://github.com/ArcaneArts/arcane_inkwell
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ Create a documentation site from markdown files:
 ```dart
 // lib/main.server.dart
 import 'package:jaspr/server.dart';
-import 'package:arcane_jaspr_md/arcane_jaspr_md.dart' hide runApp;
+import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
 import 'main.server.options.dart';
 
 void main() async {
@@ -162,7 +162,7 @@ SiteConfig(
   showToc: true,
   showBreadcrumbs: true,
   headerLinks: [...],
-  footerText: 'Built with arcane_jaspr_md',
+  footerText: 'Built with Arcane Inkwell',
   copyright: '2025 Company Name',
   sidebarFooter: 'v1.0.0',       // Always visible at sidebar bottom
   sidebarFooterUrl: 'https://...', // Optional link

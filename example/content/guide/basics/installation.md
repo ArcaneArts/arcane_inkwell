@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Add arcane_jaspr_md to your project
+description: Add Arcane Inkwell to your project
 icon: download
 order: 1
 ---
@@ -11,9 +11,9 @@ Notice the **breadcrumbs** above the title showing: Guide > Basics > Installatio
 
 ```yaml
 dependencies:
-  arcane_jaspr_md:
+  arcane_inkwell:
     git:
-      url: https://github.com/ArcaneArts/arcane_jaspr_md
+      url: https://github.com/ArcaneArts/arcane_inkwell
 ```
 
 ## Install

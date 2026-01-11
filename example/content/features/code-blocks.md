@@ -39,9 +39,9 @@ function greet(name) {
 
 ```yaml
 dependencies:
-  arcane_jaspr_md:
+  arcane_inkwell:
     git:
-      url: https://github.com/ArcaneArts/arcane_jaspr_md
+      url: https://github.com/ArcaneArts/arcane_inkwell
 ```
 
 ## Bash

@@ -1,5 +1,5 @@
-name: arcane_jaspr_md_example
-description: Example knowledge base using arcane_jaspr_md
+name: arcane_inkwell_example
+description: Example knowledge base using arcane_inkwell
 version: 0.1.0
 publish_to: none
 
@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   web: ^1.1.1
-  arcane_jaspr_md:
+  arcane_inkwell:
     path: ../
   jaspr: ^0.22.1
   jaspr_content: ^0.4.5

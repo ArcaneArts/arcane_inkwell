@@ -1,7 +1,7 @@
-name: arcane_jaspr_md
+name: arcane_inkwell
 description: Transform markdown files into beautiful knowledgebase websites with auto-generated navigation, search, and theming.
 version: 0.1.0
-repository: https://github.com/ArcaneArts/arcane_jaspr_md
+repository: https://github.com/ArcaneArts/arcane_inkwell
 
 environment:
   sdk: ^3.10.0
