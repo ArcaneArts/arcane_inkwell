@@ -30,7 +30,8 @@ void main() async {
         sidebarFooterUrl: 'https://github.com/ArcaneArts/arcane_inkwell/releases',
       ),
       // Single line theming - swap themes by changing this line:
-      stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.midnight),
+      stylesheet: const CodexStylesheet(theme: CodexTheme.purple),
+      // stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.midnight),
     ),
   );
 }
