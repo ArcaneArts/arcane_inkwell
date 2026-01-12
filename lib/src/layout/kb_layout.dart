@@ -4,6 +4,7 @@ import 'package:jaspr_content/jaspr_content.dart';
 import '../config/site_config.dart';
 import '../navigation/nav_builder.dart';
 import '../scripts/kb_scripts.dart';
+import '../styles/kb_styles.dart';
 import 'kb_sidebar.dart';
 
 /// The main layout wrapper for knowledge base pages.
@@ -59,6 +60,13 @@ class KBLayout extends PageLayoutBase {
       tag: 'style',
       attributes: const {'id': 'arcane-theme-vars'},
       children: [RawText(stylesheet.baseCss)],
+    );
+
+    // Inject default KB component styles
+    yield Component.element(
+      tag: 'style',
+      attributes: const {'id': 'arcane-kb-styles'},
+      children: [RawText(KBStyles.generate())],
     );
 
     // Load external CSS (Google Fonts, etc.)

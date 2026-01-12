@@ -2,7 +2,7 @@
 
 Transform markdown into documentation sites. Built on [Jaspr](https://github.com/schultek/jaspr) and [arcane_jaspr](https://github.com/ArcaneArts/arcane_jaspr).
 
-**[Live Demo](https://arcanearts.github.io/arcane_inkwell/)**
+**[Live Demo](https://arcanearts.github.io/arcane_inkwell/)** | **[GitHub](https://github.com/ArcaneArts/arcane_inkwell)**
 
 ## Quick Start
 

@@ -369,8 +369,7 @@ class KBSidebar extends StatelessComponent {
   }
 
   bool _isActive(String path) {
-    return currentPath == path ||
-        currentPath == '$path/' ||
-        (path != '/' && currentPath.startsWith('$path/'));
+    // Exact match only - don't highlight parent paths
+    return currentPath == path || currentPath == '$path/';
   }
 }

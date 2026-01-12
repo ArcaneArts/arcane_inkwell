@@ -48,6 +48,9 @@ export 'src/layout/kb_changelog.dart';
 // Scripts
 export 'src/scripts/kb_scripts.dart';
 
+// Styles
+export 'src/styles/kb_styles.dart';
+
 // Extensions
 export 'src/extensions/reading_time_extension.dart';
 export 'src/extensions/callout_extension.dart';
