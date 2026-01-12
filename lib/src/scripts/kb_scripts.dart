@@ -84,10 +84,32 @@ updateModeToggleIcon(getCurrentMode());
 // ===== THEME TOGGLE =====
 var themeToggle = document.getElementById('theme-toggle');
 if (themeToggle) {
-  themeToggle.addEventListener('click', function() {
+  themeToggle.addEventListener('click', function(e) {
     var currentMode = getCurrentMode();
     var newMode = currentMode === 'dark' ? 'light' : 'dark';
-    setMode(newMode);
+
+    // Get click position for the reveal animation
+    var rect = themeToggle.getBoundingClientRect();
+    var x = rect.left + rect.width / 2;
+    var y = rect.top + rect.height / 2;
+
+    // Create the reveal overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'theme-reveal-overlay to-' + newMode;
+    overlay.style.setProperty('--reveal-x', x + 'px');
+    overlay.style.setProperty('--reveal-y', y + 'px');
+
+    document.body.appendChild(overlay);
+
+    // Force reflow then start animation
+    overlay.offsetHeight;
+    overlay.classList.add('revealing');
+
+    // When animation completes, apply the actual theme change and remove overlay
+    overlay.addEventListener('animationend', function() {
+      setMode(newMode);
+      overlay.remove();
+    });
   });
 }
 ''';
