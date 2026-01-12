@@ -3,29 +3,23 @@ import 'package:jaspr_content/jaspr_content.dart';
 
 import '../config/site_config.dart';
 import '../navigation/nav_builder.dart';
-import '../theme/kb_stylesheet.dart';
 import '../scripts/kb_scripts.dart';
-import 'kb_header.dart';
 import 'kb_sidebar.dart';
-import 'kb_footer.dart';
-import 'kb_breadcrumbs.dart';
-import 'kb_page_nav.dart';
-import 'kb_related_pages.dart';
 
 /// The main layout wrapper for knowledge base pages.
+/// Matches the arcane_jaspr_codex pattern with single-line theming.
 class KBLayout extends PageLayoutBase {
   final SiteConfig config;
   final NavManifest manifest;
-  final KBStylesheet stylesheet;
+  final ArcaneStylesheet stylesheet;
   final KBScripts scripts;
 
   KBLayout({
     required this.config,
     required this.manifest,
-    KBStylesheet? stylesheet,
+    required this.stylesheet,
     KBScripts? scripts,
-  })  : stylesheet = stylesheet ?? const KBStylesheet(),
-        scripts = scripts ?? KBScripts(basePath: config.baseUrl);
+  }) : scripts = scripts ?? KBScripts(basePath: config.baseUrl);
 
   @override
   Pattern get name => 'kb';
@@ -51,19 +45,14 @@ class KBLayout extends PageLayoutBase {
       yield meta(name: 'description', content: description);
     }
 
-    // Viewport
-    yield const meta(
-        name: 'viewport', content: 'width=device-width, initial-scale=1');
+    // Viewport and theme color
+    yield const meta(name: 'viewport', content: 'width=device-width, initial-scale=1');
+    yield const meta(name: 'theme-color', content: '#09090b');
 
-    // Theme color
-    yield const meta(name: 'theme-color', content: '#0a0a0b');
-
-    // Favicon
-    yield link(
-      rel: 'icon',
-      type: 'image/svg+xml',
-      href: '$assetPrefix/favicon.svg',
-    );
+    // Favicons
+    yield link(rel: 'icon', type: 'image/x-icon', href: '$assetPrefix/assets/favicon.ico');
+    yield link(rel: 'icon', type: 'image/png', href: '$assetPrefix/assets/icon-32.png', attributes: const {'sizes': '32x32'});
+    yield link(rel: 'icon', type: 'image/png', href: '$assetPrefix/assets/icon-16.png', attributes: const {'sizes': '16x16'});
 
     // Inject stylesheet base CSS (contains all CSS variables and base styles)
     yield Component.element(
@@ -85,64 +74,55 @@ class KBLayout extends PageLayoutBase {
       }
     }
 
+    // Load custom styles.css after theme variables
+    yield link(rel: 'stylesheet', href: '$assetPrefix/styles.css');
+
     // Highlight.js for syntax highlighting
+    yield const link(
+      rel: 'stylesheet',
+      href: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css',
+    );
     yield const script(
       attributes: {
-        'src':
-            'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
+        'src': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
       },
     );
     yield const script(
       attributes: {
-        'src':
-            'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dart.min.js',
+        'src': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dart.min.js',
       },
     );
 
-    // Theme initialization (before body renders)
+    // Theme initialization script
     yield script(content: scripts.generateThemeInit());
   }
 
   @override
   Component buildBody(Page page, Component child) {
     final Map<String, dynamic> pageData = page.data.page;
-    final TableOfContents? toc = page.data['toc'] as TableOfContents?;
-
-    // Return stateful themed page wrapper
     return ThemedKBPage(
       config: config,
       manifest: manifest,
       stylesheet: stylesheet,
       scripts: scripts,
       currentPath: page.url,
-      pageTitle: pageData['title'] as String?,
-      pageDescription: pageData['description'] as String?,
-      pageAuthor: pageData['author'] as String?,
-      readingTime: pageData['readingTime'] as int?,
-      pageTags: (pageData['tags'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          const [],
-      isDraft: pageData['draft'] as bool? ?? false,
-      toc: toc,
+      title: pageData['title'] as String?,
+      description: pageData['description'] as String?,
+      toc: page.data['toc'] as TableOfContents?,
       content: child,
     );
   }
 }
 
-/// Stateful themed page wrapper for dynamic theme toggling.
+/// Documentation page wrapper with light/dark mode toggle.
 class ThemedKBPage extends StatefulComponent {
   final SiteConfig config;
   final NavManifest manifest;
-  final KBStylesheet stylesheet;
+  final ArcaneStylesheet stylesheet;
   final KBScripts scripts;
   final String currentPath;
-  final String? pageTitle;
-  final String? pageDescription;
-  final String? pageAuthor;
-  final int? readingTime;
-  final List<String> pageTags;
-  final bool isDraft;
+  final String? title;
+  final String? description;
   final TableOfContents? toc;
   final Component content;
 
@@ -152,12 +132,8 @@ class ThemedKBPage extends StatefulComponent {
     required this.stylesheet,
     required this.scripts,
     required this.currentPath,
-    this.pageTitle,
-    this.pageDescription,
-    this.pageAuthor,
-    this.readingTime,
-    this.pageTags = const [],
-    this.isDraft = false,
+    this.title,
+    this.description,
     this.toc,
     required this.content,
   });
@@ -175,20 +151,22 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
     _isDark = component.config.defaultTheme != KBThemeMode.light;
   }
 
-  void _toggleTheme() {
-    setState(() => _isDark = !_isDark);
-  }
-
   @override
   Component build(BuildContext context) {
+    // Dark mode uses .dark class (defined in stylesheet baseCss)
     final String themeClass = _isDark ? 'dark' : '';
+    final String? stylesheetClass = component.stylesheet.bodyClass;
+    final String rootClasses = [themeClass, stylesheetClass]
+        .where((String? c) => c != null && c.isNotEmpty)
+        .join(' ');
 
+    // Wrap with ArcaneThemeProvider to enable context.renderers access
     return ArcaneThemeProvider(
       stylesheet: component.stylesheet,
       brightness: _isDark ? Brightness.dark : Brightness.light,
       child: ArcaneDiv(
         id: 'arcane-root',
-        classes: themeClass,
+        classes: rootClasses,
         styles: const ArcaneStyleData(
           minHeight: '100vh',
           background: Background.background,
@@ -196,351 +174,183 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
           fontFamily: FontFamily.sans,
         ),
         children: [
-          // Header with theme toggle callback
-          KBHeader(
-            config: component.config,
-            isDark: _isDark,
-            onThemeToggle: _toggleTheme,
-          ),
-
-          // Main layout
-          _buildMainLayout(),
-
-          // Footer
-          if (component.config.footerText != null ||
-              component.config.copyright != null)
-            KBFooter(config: component.config),
-
-          // Back to top button
-          _buildBackToTop(),
-
-          // Scripts
-          script(content: component.scripts.generate()),
-
-          // Component interactivity scripts from arcane_jaspr
-          const ArcaneScriptsComponent(),
+          _buildPageLayout(),
+          ..._buildScripts(),
         ],
       ),
     );
   }
 
-  Component _buildMainLayout() {
+  /// Main page layout structure
+  Component _buildPageLayout() {
     return ArcaneDiv(
-      classes: 'kb-layout',
       styles: const ArcaneStyleData(
         display: Display.flex,
-        flexGrow: 1,
+        minHeight: '100vh',
       ),
       children: [
-        // Sidebar
         KBSidebar(
           config: component.config,
           manifest: component.manifest,
           currentPath: component.currentPath,
         ),
-
-        // Main content area
-        ArcaneDiv(
-          classes: 'kb-main',
-          styles: const ArcaneStyleData(
-            flexGrow: 1,
-            padding: PaddingPreset.xl,
-          ),
-          children: [
-            ArcaneDiv(
-              classes: 'kb-content-wrapper',
-              styles: const ArcaneStyleData(
-                display: Display.flex,
-                gap: Gap.xl,
-                maxWidth: MaxWidth.container,
-                margin: MarginPreset.autoX,
-              ),
-              children: [
-                // Content area
-                _buildContentArea(),
-
-                // Table of contents
-                if (component.config.tocEnabled && component.toc != null)
-                  _buildTableOfContents(),
-              ],
-            ),
-          ],
-        ),
+        _buildMainArea(),
       ],
     );
   }
 
+  /// Main content area
+  Component _buildMainArea() {
+    return ArcaneDiv(
+      styles: const ArcaneStyleData(
+        flexGrow: 1,
+        display: Display.flex,
+        flexDirection: FlexDirection.column,
+        minHeight: '100vh',
+      ),
+      children: [
+        _buildContentArea(),
+      ],
+    );
+  }
+
+  /// Content area with main content and TOC
   Component _buildContentArea() {
     return ArcaneDiv(
-      classes: 'kb-content',
+      styles: const ArcaneStyleData(
+        display: Display.flex,
+        gap: Gap.xl,
+        padding: PaddingPreset.xl,
+        maxWidth: MaxWidth.container,
+        margin: MarginPreset.autoX,
+        flexGrow: 1,
+        raw: {'padding-top': '2rem'},
+      ),
+      children: [
+        _buildMainContent(),
+        if (component.config.tocEnabled && component.toc != null)
+          _buildTableOfContents(),
+      ],
+    );
+  }
+
+  /// Main content section
+  Component _buildMainContent() {
+    return ArcaneDiv(
       styles: const ArcaneStyleData(
         flex: FlexPreset.expand,
         minWidth: '0',
       ),
       children: [
-        // Breadcrumbs
-        KBBreadcrumbs(
-          config: component.config,
-          currentPath: component.currentPath,
-        ),
-
-        // Draft banner
-        if (component.isDraft) _buildDraftBanner(),
-
-        // Page header
-        if (component.pageTitle != null || component.pageDescription != null)
-          _buildPageHeader(),
-
-        // Subpages (for section index pages)
-        KBSubpages(
-          config: component.config,
-          manifest: component.manifest,
-          currentPath: component.currentPath,
-        ),
-
-        // Markdown content
+        _buildBreadcrumbs(),
+        if (component.title != null) _buildTitle(),
+        if (component.description != null) _buildDescription(),
         div(classes: 'prose', [component.content]),
-
-        // Related pages (based on shared tags)
-        KBRelatedPages(
-          config: component.config,
-          manifest: component.manifest,
-          currentPath: component.currentPath,
-          currentTags: component.pageTags,
-        ),
-
-        // Edit on GitHub link
-        if (component.config.editUrl(component.currentPath) != null)
-          _buildEditLink(),
-
-        // Previous/Next navigation
-        KBPageNav(
-          config: component.config,
-          manifest: component.manifest,
-          currentPath: component.currentPath,
-        ),
       ],
     );
   }
 
-  Component _buildDraftBanner() {
+  /// Build breadcrumbs from current path
+  Component _buildBreadcrumbs() {
+    final String path = component.currentPath;
+    final List<String> segments = path.split('/').where((String segment) => segment.isNotEmpty).toList();
+
+    if (segments.isEmpty) {
+      return const ArcaneDiv(children: []);
+    }
+
+    final List<BreadcrumbItem> items = <BreadcrumbItem>[];
+
+    // Add "Home" as first item
+    items.add(BreadcrumbItem(
+      label: 'Home',
+      href: component.config.fullPath('/'),
+    ));
+
+    // Build remaining segments
+    String currentHref = '';
+    for (int i = 0; i < segments.length; i++) {
+      currentHref += '/${segments[i]}';
+      final bool isLast = i == segments.length - 1;
+      final String label = _formatSegment(segments[i]);
+
+      items.add(BreadcrumbItem(
+        label: label,
+        href: isLast ? null : component.config.fullPath(currentHref),
+      ));
+    }
+
     return ArcaneDiv(
-      classes: 'kb-draft-banner',
       styles: const ArcaneStyleData(
-        display: Display.flex,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        gap: Gap.sm,
-        padding: PaddingPreset.md,
-        margin: MarginPreset.bottomLg,
-        background: Background.muted,
-        border: BorderPreset.subtle,
-        borderRadius: Radius.md,
-        fontSize: FontSize.sm,
+        margin: MarginPreset.bottomMd,
       ),
       children: [
-        ArcaneIcon.pencil(size: IconSize.sm),
-        const ArcaneText('This page is a draft and not published yet.'),
+        ArcaneBreadcrumbs(
+          items: items,
+          separator: BreadcrumbSeparator.chevron,
+          size: BreadcrumbSize.sm,
+        ),
       ],
     );
   }
 
-  Component _buildPageHeader() {
+  /// Format path segment into readable label
+  String _formatSegment(String segment) {
+    return segment
+        .split('-')
+        .map((String word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+
+  Component _buildTitle() {
     return ArcaneDiv(
-      classes: 'kb-page-header',
       styles: const ArcaneStyleData(
         margin: MarginPreset.bottomLg,
+        fontSize: FontSize.xl3,
+        fontWeight: FontWeight.bold,
+        textColor: TextColor.primary,
       ),
-      children: [
-        if (component.pageTitle != null)
-          ArcaneDiv(
-            styles: const ArcaneStyleData(
-              fontSize: FontSize.xl3,
-              fontWeight: FontWeight.bold,
-              textColor: TextColor.primary,
-              margin: MarginPreset.bottomMd,
-            ),
-            children: [ArcaneText(component.pageTitle!)],
-          ),
-        if (component.pageDescription != null)
-          ArcaneDiv(
-            styles: const ArcaneStyleData(
-              fontSize: FontSize.lg,
-              textColor: TextColor.mutedForeground,
-            ),
-            children: [ArcaneText(component.pageDescription!)],
-          ),
-        // Page metadata (author, reading time)
-        if (component.pageAuthor != null || component.readingTime != null)
-          _buildPageMeta(),
-        // Tags
-        if (component.pageTags.isNotEmpty) _buildTags(),
-      ],
+      children: [ArcaneText(component.title!)],
     );
   }
 
-  Component _buildPageMeta() {
+  Component _buildDescription() {
     return ArcaneDiv(
-      classes: 'kb-page-meta',
       styles: const ArcaneStyleData(
-        display: Display.flex,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        gap: Gap.md,
-        margin: MarginPreset.topMd,
-        fontSize: FontSize.sm,
+        margin: MarginPreset.bottomXl,
         textColor: TextColor.mutedForeground,
+        fontSize: FontSize.lg,
       ),
-      children: [
-        if (component.pageAuthor != null)
-          ArcaneRow(
-            gapSize: Gap.xs,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ArcaneIcon.user(size: IconSize.xs),
-              ArcaneText(component.pageAuthor!),
-            ],
-          ),
-        if (component.pageAuthor != null && component.readingTime != null)
-          const ArcaneText('·'),
-        if (component.readingTime != null)
-          ArcaneRow(
-            gapSize: Gap.xs,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ArcaneIcon.clock(size: IconSize.xs),
-              ArcaneText('${component.readingTime} min read'),
-            ],
-          ),
-      ],
+      children: [ArcaneText(component.description!)],
     );
   }
 
-  Component _buildTags() {
-    return ArcaneDiv(
-      classes: 'kb-tags',
-      styles: const ArcaneStyleData(
-        display: Display.flex,
-        flexWrap: FlexWrap.wrap,
-        gap: Gap.xs,
-        margin: MarginPreset.topMd,
-      ),
-      children: component.pageTags
-          .map((String tag) => ArcaneDiv(
-                classes: 'kb-tag',
-                styles: const ArcaneStyleData(
-                  display: Display.inlineFlex,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  gap: Gap.xs,
-                  padding: PaddingPreset.sm,
-                  background: Background.muted,
-                  borderRadius: Radius.full,
-                  fontSize: FontSize.xs,
-                  textColor: TextColor.mutedForeground,
-                ),
-                children: [
-                  ArcaneIcon.tag(size: IconSize.xs),
-                  ArcaneText(tag),
-                ],
-              ))
-          .toList(),
-    );
-  }
-
-  Component _buildEditLink() {
-    return ArcaneDiv(
-      classes: 'kb-edit-link',
-      styles: const ArcaneStyleData(
-        margin: MarginPreset.topLg,
-        padding: PaddingPreset.topMd,
-        borderTop: BorderPreset.subtle,
-      ),
-      children: [
-        ArcaneLink.external(
-          href: component.config.editUrl(component.currentPath)!,
-          styles: const ArcaneStyleData(
-            display: Display.inlineFlex,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            gap: Gap.xs,
-            fontSize: FontSize.sm,
-            textColor: TextColor.mutedForeground,
-            textDecoration: TextDecoration.none,
-          ),
-          child: ArcaneRow(
-            gapSize: Gap.xs,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ArcaneIcon.pencil(size: IconSize.sm),
-              const ArcaneText('Edit this page on GitHub'),
-              ArcaneIcon.externalLink(size: IconSize.xs),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Table of contents sidebar using Arcane styling
+  /// Table of contents sidebar
   Component _buildTableOfContents() {
     return ArcaneDiv(
       styles: const ArcaneStyleData(
-        widthCustom: '240px',
-        flexShrink: 0,
         position: Position.sticky,
-        overflow: Overflow.auto,
-        top: '80px',
-        alignSelf: CrossAxisAlignment.start,
-        maxHeight: 'calc(100vh - 100px)',
+        raw: {
+          'width': '220px',
+          'flex-shrink': '0',
+          'top': '80px',
+          'align-self': 'flex-start',
+          'max-height': 'calc(100vh - 100px)',
+          'overflow-y': 'auto',
+        },
       ),
       children: [
-        ArcaneDiv(
-          styles: const ArcaneStyleData(
-            padding: PaddingPreset.md,
-            borderRadius: Radius.lg,
-            background: Background.surface,
-            border: BorderPreset.subtle,
-          ),
-          children: [
-            ArcaneDiv(
-              styles: const ArcaneStyleData(
-                fontSize: FontSize.xs,
-                fontWeight: FontWeight.w700,
-                margin: MarginPreset.bottomMd,
-                textTransform: TextTransform.uppercase,
-                letterSpacing: LetterSpacing.wide,
-                textColor: TextColor.onSurfaceVariant,
-                padding: PaddingPreset.bottomMd,
-                borderBottom: BorderPreset.subtle,
-              ),
-              children: [const ArcaneText('On this page')],
-            ),
-            div(classes: 'toc-content', [component.toc!.build()]),
-          ],
+        ArcaneToc.custom(
+          content: component.toc!.build(),
         ),
       ],
     );
   }
 
-  Component _buildBackToTop() {
-    return ArcaneDiv(
-      classes: 'kb-back-to-top',
-      styles: const ArcaneStyleData(
-        position: Position.fixed,
-        bottom: '24px',
-        right: '24px',
-        widthCustom: '40px',
-        heightCustom: '40px',
-        display: Display.flex,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        background: Background.surface,
-        border: BorderPreset.subtle,
-        borderRadius: Radius.full,
-        cursor: Cursor.pointer,
-        opacity: Opacity.transparent,
-        pointerEvents: PointerEvents.none,
-        zIndexCustom: '50',
-        transition: Transition.allFast,
-      ),
-      children: [ArcaneIcon.arrowUp(size: IconSize.sm)],
-    );
+  /// JavaScript for static site functionality
+  Iterable<Component> _buildScripts() sync* {
+    yield script(content: component.scripts.generate());
+    // Component interactivity scripts from arcane_jaspr
+    yield const ArcaneScriptsComponent();
   }
 }

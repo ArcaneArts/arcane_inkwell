@@ -29,8 +29,8 @@ void main() async {
         sidebarFooter: 'v1.0.0',
         sidebarFooterUrl: 'https://github.com/ArcaneArts/arcane_inkwell/releases',
       ),
-      // Use ShadcnStylesheet as the base (this is also the default)
-      stylesheet: const KBStylesheet(base: ShadcnStylesheet(theme: ShadcnTheme.mint)),
+      // Single line theming - swap themes by changing this line:
+      stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.charcoal),
     ),
   );
 }

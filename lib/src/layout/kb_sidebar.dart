@@ -5,7 +5,8 @@ import '../navigation/nav_item.dart';
 import '../navigation/nav_section.dart';
 import '../navigation/nav_builder.dart';
 
-/// The sidebar navigation component using Arcane components.
+/// The sidebar navigation component for knowledge base pages.
+/// Matches the arcane_jaspr_codex pattern.
 class KBSidebar extends StatelessComponent {
   final SiteConfig config;
   final NavManifest manifest;
@@ -21,203 +22,185 @@ class KBSidebar extends StatelessComponent {
   Component build(BuildContext context) {
     return ArcaneScrollRail(
       width: '280px',
-      topOffset: '64px',
+      topOffset: '0px',
       showBorder: true,
       padding: '0',
       scrollPersistenceId: 'kb-sidebar',
       children: [
-        // Header with site name
-        ArcaneDiv(
-          styles: const ArcaneStyleData(
-            padding: PaddingPreset.md,
-            borderBottom: BorderPreset.subtle,
-          ),
-          children: [
-            ArcaneLink(
-              href: config.fullPath('/'),
-              styles: const ArcaneStyleData(
-                textDecoration: TextDecoration.none,
-              ),
-              child: ArcaneDiv(
-                styles: const ArcaneStyleData(
-                  fontWeight: FontWeight.bold,
-                  fontSize: FontSize.lg,
-                  textColor: TextColor.primary,
-                ),
-                children: [ArcaneText(config.name)],
-              ),
-            ),
-            if (config.description != null)
-              ArcaneDiv(
-                styles: const ArcaneStyleData(
-                  fontSize: FontSize.sm,
-                  textColor: TextColor.mutedForeground,
-                  margin: MarginPreset.topXs,
-                ),
-                children: [ArcaneText(config.description!)],
-              ),
-          ],
-        ),
+        // Header section with branding and controls
+        _buildHeader(),
 
-        // Navigation
-        ArcaneNav(
-          styles: const ArcaneStyleData(
-            padding: PaddingPreset.sm,
-          ),
-          children: [
+        // Main navigation with tree view
+        nav(
+          classes: 'sidebar-nav',
+          styles: const Styles(raw: {
+            'padding': '0.75rem',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '0.5rem',
+          }),
+          [
             // Root-level items first (always visible, no section)
             if (manifest.visibleItems.isNotEmpty)
               _buildFixedSection(
                 'Pages',
                 ArcaneIcon.fileText(size: IconSize.sm),
-                manifest.visibleItems.map((item) => _buildNavItem(item)).toList(),
+                manifest.visibleItems.map((NavItem item) => _buildNavItem(item)).toList(),
               ),
 
             // Then sections
-            ...manifest.sortedSections.map((section) => _buildSection(section)),
+            for (final NavSection section in manifest.sortedSections)
+              _buildCollapsibleSection(section),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Build the sidebar header with branding and controls
+  Component _buildHeader() {
+    return div(
+      classes: 'sidebar-header',
+      [
+        // Brand section
+        div(
+          classes: 'sidebar-brand',
+          [
+            a(
+              href: config.fullPath('/'),
+              styles: const Styles(raw: {'text-decoration': 'none'}),
+              [
+                div(classes: 'sidebar-brand-title', [Component.text(config.name)]),
+                if (config.description != null)
+                  div(classes: 'sidebar-brand-subtitle', [Component.text(config.description!)]),
+              ],
+            ),
           ],
         ),
 
-        // Sidebar footer (always at bottom)
-        if (config.sidebarFooter != null)
-          ArcaneDiv(
-            classes: 'kb-sidebar-footer',
-            styles: const ArcaneStyleData(
-              margin: MarginPreset.topLg,
-              padding: PaddingPreset.md,
-              borderTop: BorderPreset.subtle,
-              textColor: TextColor.mutedForeground,
-              fontSize: FontSize.sm,
-            ),
-            children: [
-              if (config.sidebarFooterUrl != null)
-                config.sidebarFooterUrl!.startsWith('http')
-                    ? ArcaneLink.external(
-                        href: config.sidebarFooterUrl!,
-                        child: ArcaneText(config.sidebarFooter!),
-                      )
-                    : ArcaneLink(
-                        href: config.sidebarFooterUrl!,
-                        child: ArcaneText(config.sidebarFooter!),
-                      )
-              else
-                ArcaneText(config.sidebarFooter!),
-            ],
-          ),
+        // Search and theme toggle row
+        div(
+          classes: 'sidebar-controls',
+          [
+            // Search input
+            if (config.searchEnabled)
+              div(
+                classes: 'sidebar-search',
+                [
+                  input(
+                    id: 'kb-search',
+                    attributes: const {
+                      'type': 'text',
+                      'placeholder': 'Search...',
+                      'autocomplete': 'off',
+                    },
+                  ),
+                  div(classes: 'search-icon', [ArcaneIcon.search(size: IconSize.sm)]),
+                  // Search results dropdown
+                  div(id: 'search-results', classes: 'search-results', []),
+                ],
+              ),
+            // Theme toggle button
+            if (config.themeToggleEnabled)
+              button(
+                id: 'theme-toggle',
+                classes: 'sidebar-theme-toggle',
+                attributes: const {'type': 'button', 'title': 'Toggle theme'},
+                [
+                  span(classes: 'theme-icon-light', [ArcaneIcon.sun(size: IconSize.sm)]),
+                  span(classes: 'theme-icon-dark', [ArcaneIcon.moon(size: IconSize.sm)]),
+                ],
+              ),
+          ],
+        ),
       ],
     );
   }
 
   /// Build a fixed section that's always expanded (no toggle)
-  Component _buildFixedSection(
-      String title, Component icon, List<Component> items) {
-    return ArcaneDiv(
-      classes: 'sidebar-tree-nav',
-      styles: const ArcaneStyleData(
-        margin: MarginPreset.bottomMd,
-      ),
-      children: [
+  Component _buildFixedSection(String title, Component icon, List<Component> items) {
+    return div(
+      classes: 'sidebar-section',
+      [
         // Section header
-        ArcaneDiv(
-          styles: const ArcaneStyleData(
-            display: Display.flex,
-            gap: Gap.sm,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            fontSize: FontSize.xs,
-            fontWeight: FontWeight.w500,
-            padding: PaddingPreset.horizontalSm,
-            margin: MarginPreset.bottomXs,
-            textColor: TextColor.mutedForeground,
-          ),
-          children: [
+        div(
+          classes: 'sidebar-section-header',
+          [
             icon,
-            ArcaneText(title),
+            span([Component.text(title)]),
           ],
         ),
-        // Items with tree lines
-        div(classes: 'sidebar-tree-items', [
-          for (final item in items) div(classes: 'sidebar-tree-item sidebar-tree-leaf', [item]),
-        ]),
+        // Tree items container
+        div(
+          classes: 'sidebar-tree',
+          [
+            for (final Component item in items) item,
+          ],
+        ),
       ],
     );
   }
 
-  /// Build a collapsible section using ArcaneDisclosure
-  Component _buildSection(NavSection section) {
-    final bool shouldExpand =
-        section.shouldExpandFor(currentPath) || !section.collapsed;
+  /// Build a collapsible section using native details/summary
+  Component _buildCollapsibleSection(NavSection section) {
+    final bool shouldExpand = section.shouldExpandFor(currentPath) || !section.collapsed;
 
-    return ArcaneDisclosure.minimal(
-      open: shouldExpand,
-      showTreeLines: false, // We use custom tree lines CSS
-      summary: ArcaneRow(
-        gapSize: Gap.sm,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (section.icon != null) _buildIcon(section.icon!),
-          ArcaneDiv(
-            styles: const ArcaneStyleData(
-              fontSize: FontSize.xs,
-              fontWeight: FontWeight.w500,
-              textColor: TextColor.mutedForeground,
+    return div(
+      classes: 'sidebar-section',
+      [
+        Component.element(
+          tag: 'details',
+          classes: 'sidebar-details',
+          attributes: shouldExpand ? {'open': ''} : {},
+          children: [
+            Component.element(
+              tag: 'summary',
+              classes: 'sidebar-summary',
+              children: [
+                if (section.icon != null) _buildIcon(section.icon!),
+                span([Component.text(section.title)]),
+                span(classes: 'sidebar-chevron', []),
+              ],
             ),
-            children: [ArcaneText(section.title)],
-          ),
-        ],
-      ),
-      // Items with tree structure
-      child: div(
-        classes: 'sidebar-tree-items',
-        attributes: {'data-path': section.path},
-        [
-          // Items in this section
-          for (final item in section.visibleItems)
-            div(classes: 'sidebar-tree-item sidebar-tree-leaf', [_buildNavItem(item)]),
-
-          // Nested sections (folders)
-          for (final nested in section.sortedSections)
-            div(classes: 'sidebar-tree-item sidebar-tree-folder', [_buildSection(nested)]),
-        ],
-      ),
+            div(
+              classes: 'sidebar-tree',
+              [
+                // Items in this section
+                for (final NavItem item in section.visibleItems)
+                  _buildNavItem(item),
+                // Nested sections
+                for (final NavSection nested in section.sortedSections)
+                  _buildCollapsibleSection(nested),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   /// Build a navigation item that links to a page
   Component _buildNavItem(NavItem item) {
+    final String fullHref = config.fullPath(item.path);
     final bool isActive = _isActive(item.path);
-    final String fullPath = config.fullPath(item.path);
 
-    return ArcaneLink(
-      href: fullPath,
-      styles: ArcaneStyleData(
-        display: Display.flex,
-        gap: Gap.sm,
-        fontSize: FontSize.sm,
-        borderRadius: Radius.md,
-        transition: Transition.allFast,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        textDecoration: TextDecoration.none,
-        padding: PaddingPreset.buttonSm,
-        // Active state: accent color text with muted background
-        textColor: isActive ? TextColor.accent : TextColor.mutedForeground,
-        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-        background: isActive ? Background.muted : Background.transparent,
-        borderLeft: isActive ? BorderPreset.accentThick : null,
-      ),
-      child: ArcaneRow(
-        gapSize: Gap.sm,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (item.icon != null) _buildIcon(item.icon!),
-          ArcaneSpan(child: ArcaneText(item.title)),
-        ],
-      ),
+    return div(
+      classes: 'sidebar-tree-item',
+      [
+        a(
+          href: fullHref,
+          classes: 'sidebar-link${isActive ? ' active' : ''}',
+          [
+            if (item.icon != null) _buildIcon(item.icon!),
+            Component.text(item.title),
+          ],
+        ),
+      ],
     );
   }
 
   /// Map icon name strings to ArcaneIcon components.
   Component _buildIcon(String iconName) {
-    // Map common icon names to ArcaneIcon methods
     return switch (iconName) {
       // Documents & Files
       'file-text' => ArcaneIcon.fileText(size: IconSize.sm),
@@ -243,7 +226,6 @@ class KBSidebar extends StatelessComponent {
       'cpu' => ArcaneIcon.cpu(size: IconSize.sm),
       'cloud' => ArcaneIcon.cloud(size: IconSize.sm),
       'globe' => ArcaneIcon.globe(size: IconSize.sm),
-      'globe-2' => ArcaneIcon.globe(size: IconSize.sm),
       'network' => ArcaneIcon.network(size: IconSize.sm),
       'wifi' => ArcaneIcon.wifi(size: IconSize.sm),
       'monitor' => ArcaneIcon.monitor(size: IconSize.sm),
@@ -258,7 +240,6 @@ class KBSidebar extends StatelessComponent {
       'unlock' => ArcaneIcon.unlock(size: IconSize.sm),
       'key' => ArcaneIcon.key(size: IconSize.sm),
       'key-round' => ArcaneIcon.keyRound(size: IconSize.sm),
-      'fingerprint' => ArcaneIcon.scan(size: IconSize.sm),
       'scan' => ArcaneIcon.scan(size: IconSize.sm),
 
       // Settings & Tools
@@ -270,7 +251,6 @@ class KBSidebar extends StatelessComponent {
       'hammer' => ArcaneIcon.hammer(size: IconSize.sm),
       'terminal' => ArcaneIcon.terminal(size: IconSize.sm),
       'code' => ArcaneIcon.code(size: IconSize.sm),
-      'code-2' => ArcaneIcon.code(size: IconSize.sm),
       'braces' => ArcaneIcon.braces(size: IconSize.sm),
       'brackets' => ArcaneIcon.brackets(size: IconSize.sm),
 
@@ -293,8 +273,6 @@ class KBSidebar extends StatelessComponent {
       // Status & Monitoring
       'activity' => ArcaneIcon.activity(size: IconSize.sm),
       'bar-chart' => ArcaneIcon.chartBar(size: IconSize.sm),
-      'bar-chart-2' => ArcaneIcon.chartBar(size: IconSize.sm),
-      'bar-chart-3' => ArcaneIcon.chartBar(size: IconSize.sm),
       'line-chart' => ArcaneIcon.chartLine(size: IconSize.sm),
       'pie-chart' => ArcaneIcon.chartPie(size: IconSize.sm),
       'gauge' => ArcaneIcon.gauge(size: IconSize.sm),
@@ -341,7 +319,7 @@ class KBSidebar extends StatelessComponent {
       'x' => ArcaneIcon.x(size: IconSize.sm),
       'x-circle' => ArcaneIcon.circleX(size: IconSize.sm),
 
-      // Arrows & Navigation
+      // Arrows
       'arrow-right' => ArcaneIcon.arrowRight(size: IconSize.sm),
       'arrow-left' => ArcaneIcon.arrowLeft(size: IconSize.sm),
       'arrow-up' => ArcaneIcon.arrowUp(size: IconSize.sm),
@@ -361,7 +339,6 @@ class KBSidebar extends StatelessComponent {
       'trash' => ArcaneIcon.trash(size: IconSize.sm),
       'trash-2' => ArcaneIcon.trash2(size: IconSize.sm),
       'edit' => ArcaneIcon.edit(size: IconSize.sm),
-      'edit-2' => ArcaneIcon.pencil(size: IconSize.sm),
       'pencil' => ArcaneIcon.pencil(size: IconSize.sm),
       'save' => ArcaneIcon.save(size: IconSize.sm),
       'plus' => ArcaneIcon.plus(size: IconSize.sm),
@@ -374,7 +351,6 @@ class KBSidebar extends StatelessComponent {
       // Support & Help
       'life-buoy' => ArcaneIcon.lifeBuoy(size: IconSize.sm),
       'help' => ArcaneIcon.help(size: IconSize.sm),
-      'circle-help' => ArcaneIcon.help(size: IconSize.sm),
 
       // Power & Control
       'power' => ArcaneIcon.power(size: IconSize.sm),
@@ -393,7 +369,6 @@ class KBSidebar extends StatelessComponent {
   }
 
   bool _isActive(String path) {
-    // Exact match or with trailing slash
     return currentPath == path ||
         currentPath == '$path/' ||
         (path != '/' && currentPath.startsWith('$path/'));

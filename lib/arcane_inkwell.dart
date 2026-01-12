@@ -5,7 +5,7 @@
 ///
 /// ## Quick Start
 ///
-/// Create a full knowledge base site:
+/// Create a full knowledge base site with 1-line theming:
 /// ```dart
 /// import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
 ///
@@ -17,6 +17,8 @@
 ///         name: 'My Docs',
 ///         contentDirectory: 'content',
 ///       ),
+///       // Single line theming - swap themes by changing this line:
+///       stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.charcoal),
 ///     ),
 ///   );
 /// }
@@ -25,8 +27,8 @@ library arcane_inkwell;
 
 // Re-export jaspr and arcane_jaspr for convenience (hide conflicts)
 export 'package:jaspr/jaspr.dart';
-export 'package:jaspr_content/jaspr_content.dart' hide TableOfContents;
-export 'package:arcane_jaspr/arcane_jaspr.dart' hide TableOfContents;
+export 'package:jaspr_content/jaspr_content.dart' hide TableOfContents, TocEntry;
+export 'package:arcane_jaspr/arcane_jaspr.dart' hide TableOfContents, ReadingTimeExtension;
 
 // Configuration
 export 'src/config/site_config.dart';
@@ -38,17 +40,10 @@ export 'src/navigation/nav_builder.dart';
 
 // Layout components
 export 'src/layout/kb_layout.dart';
-export 'src/layout/kb_header.dart';
 export 'src/layout/kb_sidebar.dart';
-export 'src/layout/kb_footer.dart';
-export 'src/layout/kb_breadcrumbs.dart';
-export 'src/layout/kb_toc.dart';
 export 'src/layout/kb_page_nav.dart';
 export 'src/layout/kb_related_pages.dart';
 export 'src/layout/kb_changelog.dart';
-
-// Theme
-export 'src/theme/kb_stylesheet.dart';
 
 // Scripts
 export 'src/scripts/kb_scripts.dart';
