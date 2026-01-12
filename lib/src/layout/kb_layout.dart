@@ -7,6 +7,12 @@ import '../scripts/kb_scripts.dart';
 import '../styles/kb_styles.dart';
 import 'kb_sidebar.dart';
 
+/// Callback type for building demo components.
+///
+/// The callback receives the component type from frontmatter and returns
+/// a Component to render as the live demo, or null if no demo is available.
+typedef DemoBuilder = Component? Function(String componentType);
+
 /// The main layout wrapper for knowledge base pages.
 /// Matches the arcane_jaspr_codex pattern with single-line theming.
 class KBLayout extends PageLayoutBase {
@@ -14,12 +20,14 @@ class KBLayout extends PageLayoutBase {
   final NavManifest manifest;
   final ArcaneStylesheet stylesheet;
   final KBScripts scripts;
+  final DemoBuilder? demoBuilder;
 
   KBLayout({
     required this.config,
     required this.manifest,
     required this.stylesheet,
     KBScripts? scripts,
+    this.demoBuilder,
   }) : scripts = scripts ?? KBScripts(basePath: config.baseUrl);
 
   @override
@@ -136,6 +144,9 @@ class KBLayout extends PageLayoutBase {
     // Extract date
     final String? date = pageData['date'] as String?;
 
+    // Extract component type for demo injection
+    final String? componentType = pageData['component'] as String?;
+
     return ThemedKBPage(
       config: config,
       manifest: manifest,
@@ -149,6 +160,8 @@ class KBLayout extends PageLayoutBase {
       readingTime: readingTime,
       author: author,
       date: date,
+      componentType: componentType,
+      demoBuilder: demoBuilder,
       content: child,
     );
   }
@@ -168,6 +181,8 @@ class ThemedKBPage extends StatefulComponent {
   final int? readingTime;
   final String? author;
   final String? date;
+  final String? componentType;
+  final DemoBuilder? demoBuilder;
   final Component content;
 
   const ThemedKBPage({
@@ -183,6 +198,8 @@ class ThemedKBPage extends StatefulComponent {
     this.readingTime,
     this.author,
     this.date,
+    this.componentType,
+    this.demoBuilder,
     required this.content,
   });
 
@@ -289,6 +306,12 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
         component.author != null ||
         component.date != null;
 
+    // Build live demo if component type is specified
+    Component? demoComponent;
+    if (component.componentType != null && component.demoBuilder != null) {
+      demoComponent = component.demoBuilder!(component.componentType!);
+    }
+
     return ArcaneDiv(
       styles: const ArcaneStyleData(
         flex: FlexPreset.expand,
@@ -299,6 +322,7 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
         if (component.title != null) _buildTitle(),
         if (component.description != null) _buildDescription(),
         if (hasMetadata) _buildMetadata(),
+        if (demoComponent != null) demoComponent,
         div(classes: 'prose', [component.content]),
         if (component.tags.isNotEmpty) _buildTagsFooter(),
       ],

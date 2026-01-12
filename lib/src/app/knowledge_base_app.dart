@@ -8,6 +8,8 @@ import '../scripts/kb_scripts.dart';
 import '../extensions/reading_time_extension.dart';
 import '../extensions/callout_extension.dart';
 
+export '../layout/kb_layout.dart' show DemoBuilder;
+
 /// Configuration for creating a knowledge base application.
 ///
 /// Use this class with Jaspr.initializeApp() to create a documentation site
@@ -36,10 +38,15 @@ class KnowledgeBaseApp {
   ///
   /// This method builds the navigation manifest from the content directory
   /// and returns a ContentApp ready to be passed to Jaspr.initializeApp().
+  ///
+  /// The optional [demoBuilder] callback is called for each page that has a
+  /// `component` field in its frontmatter. Return a Component to render as
+  /// a live demo above the page content, or null to skip.
   static Future<ContentApp> create({
     required SiteConfig config,
     required ArcaneStylesheet stylesheet,
     List<PageExtension>? extensions,
+    DemoBuilder? demoBuilder,
   }) async {
     // Build navigation manifest from content directory
     final NavBuilder navBuilder = NavBuilder(
@@ -57,6 +64,7 @@ class KnowledgeBaseApp {
       manifest: manifest,
       stylesheet: stylesheet,
       scripts: scripts,
+      demoBuilder: demoBuilder,
     );
 
     // Default extensions for markdown processing
@@ -83,6 +91,7 @@ class KnowledgeBaseApp {
     required NavManifest manifest,
     required ArcaneStylesheet stylesheet,
     List<PageExtension>? extensions,
+    DemoBuilder? demoBuilder,
   }) {
     // Create scripts
     final KBScripts scripts = KBScripts(basePath: config.baseUrl);
@@ -93,6 +102,7 @@ class KnowledgeBaseApp {
       manifest: manifest,
       stylesheet: stylesheet,
       scripts: scripts,
+      demoBuilder: demoBuilder,
     );
 
     // Default extensions for markdown processing
