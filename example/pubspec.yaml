@@ -20,7 +20,7 @@ dev_dependencies:
   lints: ^6.0.0
 
 jaspr:
-  mode: server
+  mode: static
 
 scripts:
   serve: jaspr serve
