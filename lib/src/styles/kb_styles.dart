@@ -1,8 +1,8 @@
 /// Default CSS styles for knowledge base components.
 ///
-/// These styles are injected automatically by [KBLayout] and provide
-/// sensible defaults for sidebar navigation, tree connectors, and
-/// theme toggle animations.
+/// These styles provide STRUCTURAL defaults only (layout, positioning).
+/// Visual styling (colors, fonts, effects) comes from the stylesheet's
+/// componentCss (arcaneSidebarTreeStyles for ShadCN, arcaneSidebarCodexStyles for Codex).
 class KBStyles {
   const KBStyles._();
 
@@ -17,10 +17,11 @@ $_sidebarLinks
 $_themeRevealAnimation
 ''';
 
-  /// Sidebar section and summary styles
+  /// Sidebar section and summary STRUCTURAL styles only
   static const String _sidebarSections = '''
 /* ============================================
-   SIDEBAR SECTIONS & SUMMARIES
+   SIDEBAR SECTIONS & SUMMARIES - Structure Only
+   Visual styling provided by stylesheet componentCss
    ============================================ */
 .sidebar-section {
   margin-bottom: 0.5rem;
@@ -31,11 +32,6 @@ $_themeRevealAnimation
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted-foreground);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .sidebar-details {
@@ -45,22 +41,10 @@ $_themeRevealAnimation
 .sidebar-summary {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted-foreground);
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
   cursor: pointer;
   list-style: none !important;
-  border-radius: var(--radius-sm, 4px);
-  transition: background 0.15s;
-  background: color-mix(in srgb, var(--muted) 30%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-}
-
-.sidebar-summary:hover {
-  background: var(--muted);
-  border-color: var(--border);
 }
 ''';
 
@@ -96,22 +80,23 @@ details > summary::-webkit-details-marker {
 }
 ''';
 
-  /// Chevron indicator styling
+  /// Chevron indicator STRUCTURAL styling
   static const String _sidebarChevron = '''
 /* ============================================
-   CHEVRON INDICATOR
+   CHEVRON INDICATOR - Structure Only
    ============================================ */
 .sidebar-chevron {
   margin-left: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   transform: rotate(-90deg);
 }
 
-.sidebar-chevron::after {
-  display: none;
+/* Hide CSS-based chevron from arcaneSidebarTreeStyles - we use an actual icon */
+.sidebar-chevron::before {
+  display: none !important;
 }
 
 .sidebar-details[open] > .sidebar-summary .sidebar-chevron {
@@ -119,10 +104,10 @@ details > summary::-webkit-details-marker {
 }
 ''';
 
-  /// Sidebar tree structure
+  /// Sidebar tree STRUCTURAL layout
   static const String _sidebarTree = '''
 /* ============================================
-   SIDEBAR TREE STRUCTURE
+   SIDEBAR TREE STRUCTURE - Layout Only
    ============================================ */
 .sidebar-tree {
   padding-left: 1rem;
@@ -146,119 +131,83 @@ details > summary::-webkit-details-marker {
   margin-top: 0;
 }
 
+/* Extend tree-item vertical lines to bridge the 3px gap before sections */
+.sidebar-tree > .sidebar-tree-item:not(:last-child)::after {
+  bottom: -3px;
+}
+
 .sidebar-tree .sidebar-details {
   margin-left: 0;
 }
 
 .sidebar-tree .sidebar-summary {
-  font-size: 0.8125rem;
   padding: 0.375rem 0.5rem;
-  color: var(--muted-foreground);
-  opacity: 0.9;
-}
-
-.sidebar-tree .sidebar-tree .sidebar-summary {
-  opacity: 0.85;
-  font-size: 0.8125rem;
-}
-
-.sidebar-tree .sidebar-tree .sidebar-tree .sidebar-summary {
-  opacity: 0.8;
 }
 ''';
 
-  /// Tree connector lines (L-shapes and vertical lines)
+  /// Tree connector lines STRUCTURAL positioning
+  /// Note: .sidebar-tree-item connectors are handled by the stylesheet's
+  /// arcaneSidebarTreeStyles. This only handles .sidebar-section (folders).
   static const String _sidebarTreeConnectors = '''
 /* ============================================
-   TREE CONNECTOR LINES
+   TREE CONNECTOR LINES (folders only) - Structure
+   Colors provided by stylesheet componentCss
    ============================================ */
-.sidebar-tree > * {
+.sidebar-tree > .sidebar-section {
   position: relative;
 }
 
-/* Vertical line from this item to next */
-.sidebar-tree > *::after {
+/* Vertical line from this section to next */
+.sidebar-tree > .sidebar-section::after {
   content: '';
   position: absolute;
   left: -0.75rem;
   top: 0;
   bottom: 0;
   width: 1px;
-  background: var(--border);
   pointer-events: none;
 }
 
-/* Last child: vertical line only goes to center (L-shape) */
-.sidebar-tree > *:last-child::after {
+/* Last section: vertical line only goes to summary level (L-shape) */
+.sidebar-tree > .sidebar-section:last-child::after {
   bottom: auto;
-  height: 50%;
+  height: 0.875rem;
 }
 
-/* Horizontal connector line */
-.sidebar-tree > *::before {
+/* Horizontal connector line at summary level */
+.sidebar-tree > .sidebar-section::before {
   content: '';
   position: absolute;
   left: -0.75rem;
-  top: 50%;
+  top: 0.875rem;
   width: 0.5rem;
   height: 1px;
-  background: var(--border);
   pointer-events: none;
 }
 
-/* Single item: no vertical line needed */
-.sidebar-tree > *:first-child:last-child::after {
+/* Single section: no vertical line needed */
+.sidebar-tree > .sidebar-section:first-child:last-child::after {
   display: none;
-}
-
-/* Sections need horizontal line at summary level */
-.sidebar-tree > .sidebar-section::before {
-  top: 0.875rem;
-}
-
-/* Adjust vertical line for last section */
-.sidebar-tree > .sidebar-section:last-child::after {
-  height: 0.875rem;
 }
 
 /* Extend lines to bridge margin gaps */
 .sidebar-tree > .sidebar-section:not(:last-child)::after {
-  top: 0;
-  bottom: -3px;
-  height: auto;
-}
-
-.sidebar-tree > *:not(:last-child)::after {
   bottom: -3px;
 }
 ''';
 
-  /// Sidebar link styling
+  /// Sidebar link STRUCTURAL styling
   static const String _sidebarLinks = '''
 /* ============================================
-   SIDEBAR LINKS
+   SIDEBAR LINKS - Structure Only
+   Visual styling provided by stylesheet componentCss
    ============================================ */
 .sidebar-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.375rem 0.5rem;
-  font-size: 0.8125rem;
-  color: var(--muted-foreground);
   text-decoration: none;
-  border-radius: var(--radius-sm, 4px);
-  transition: background 0.15s, color 0.15s;
-}
-
-.sidebar-link:hover {
-  background: var(--muted);
-  color: var(--foreground);
-}
-
-.sidebar-link.active {
-  background: var(--accent);
-  color: var(--accent-foreground);
-  font-weight: 500;
 }
 ''';
 

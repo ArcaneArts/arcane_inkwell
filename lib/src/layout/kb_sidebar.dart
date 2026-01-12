@@ -159,7 +159,9 @@ class KBSidebar extends StatelessComponent {
               children: [
                 if (section.icon != null) _buildIcon(section.icon!),
                 span([Component.text(section.title)]),
-                span(classes: 'sidebar-chevron', []),
+                span(classes: 'sidebar-chevron', [
+                  ArcaneIcon.chevronDown(size: IconSize.sm),
+                ]),
               ],
             ),
             div(

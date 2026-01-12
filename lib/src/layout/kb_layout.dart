@@ -62,11 +62,20 @@ class KBLayout extends PageLayoutBase {
       children: [RawText(stylesheet.baseCss)],
     );
 
-    // Inject default KB component styles
+    // Inject default KB component styles (base structural styles)
+    // Injected BEFORE componentCss so stylesheet overrides can take precedence
     yield Component.element(
       tag: 'style',
       attributes: const {'id': 'arcane-kb-styles'},
       children: [RawText(KBStyles.generate())],
+    );
+
+    // Inject stylesheet component CSS (contains sidebar styles, tree lines, etc.)
+    // Comes after KB styles so stylesheet-specific overrides (like Codex) take precedence
+    yield Component.element(
+      tag: 'style',
+      attributes: const {'id': 'arcane-component-styles'},
+      children: [RawText(stylesheet.componentCss)],
     );
 
     // Load external CSS (Google Fonts, etc.)
