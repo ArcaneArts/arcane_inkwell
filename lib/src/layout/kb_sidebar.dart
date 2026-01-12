@@ -105,7 +105,7 @@ class KBSidebar extends StatelessComponent {
               button(
                 id: 'theme-toggle',
                 classes: 'sidebar-theme-toggle',
-                attributes: const {'type': 'button', 'title': 'Toggle theme'},
+                attributes: const {'type': 'button', 'aria-label': 'Toggle theme'},
                 [
                   span(classes: 'theme-icon-light', [ArcaneIcon.sun(size: IconSize.sm)]),
                   span(classes: 'theme-icon-dark', [ArcaneIcon.moon(size: IconSize.sm)]),

@@ -1,29 +1,122 @@
 # Arcane Inkwell
 
-Transform markdown directories into documentation websites. Built on Jaspr and arcane_jaspr.
+Transform markdown into documentation sites. Built on [Jaspr](https://github.com/schultek/jaspr) and [arcane_jaspr](https://github.com/ArcaneArts/arcane_jaspr).
+
+## Quick Start
+
+```dart
+import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+
+void main() async {
+  Jaspr.initializeApp(options: defaultServerOptions);
+  runApp(
+    await KnowledgeBaseApp.create(
+      config: const SiteConfig(
+        name: 'My Docs',
+        contentDirectory: 'content',
+      ),
+      // Single line theming - swap themes instantly:
+      stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.charcoal),
+    ),
+  );
+}
+```
 
 ## Features
 
-- Auto-generated navigation from folder structure
-- JSON5 configuration with comment support
-- Dark/light theme with ShadCN styling
-- Table of contents generation
-- Code syntax highlighting with copy button
-- Responsive images with sizing options
-- External link indicators
-- Folder ignore capability
-- Breadcrumb navigation
-- Full-text search with content indexing
-- Previous/next page navigation
-- Subpages grid for section index pages
-- Edit on GitHub links
-- Back-to-top button
-- Reading time and author display
-- Callout/admonition blocks (GitHub-style)
-- Tags with related pages
-- Draft mode for WIP content
-- Sitemap generation
-- Changelog display component
+| Category | Capabilities |
+|----------|--------------|
+| **Navigation** | Auto-generated sidebar, breadcrumbs, prev/next links, TOC |
+| **Content** | Markdown, code highlighting, copy button, callouts, tables |
+| **Metadata** | Tags, reading time, author, date, draft mode |
+| **Search** | Full-text search with content indexing |
+| **Theming** | 1-line theme swap, dark/light toggle, ShadCN styling |
+| **Structure** | Nested folders, section configs, icons, ordering |
+
+## Content Structure
+
+```
+content/
+├── index.md                 # Homepage
+├── getting-started/
+│   ├── _section.json5       # { "title": "Getting Started", "icon": "rocket" }
+│   ├── index.md
+│   └── installation.md
+└── api/
+    └── endpoints/
+        └── users.md
+```
+
+## Page Frontmatter
+
+```yaml
+---
+title: Installation
+description: How to install
+icon: download
+order: 1
+tags: [setup, install]
+author: John Doe
+date: 2025-01-01
+draft: false
+hidden: false
+---
+```
+
+## Section Config (`_section.json5`)
+
+```json5
+{
+  "title": "Getting Started",
+  "icon": "rocket",
+  "order": 1,
+  "collapsed": false,
+  "ignore": false
+}
+```
+
+## Callouts
+
+```markdown
+> [!NOTE]
+> Informational callout
+
+> [!TIP]
+> Helpful tip
+
+> [!WARNING]
+> Warning message
+
+> [!CAUTION]
+> Danger alert
+```
+
+## Site Configuration
+
+```dart
+SiteConfig(
+  name: 'Site Name',
+  description: 'Site description',
+  contentDirectory: 'content',
+  baseUrl: '/docs',                    // Subdirectory hosting
+  githubUrl: 'https://github.com/...',
+  showEditLink: true,
+  defaultTheme: KBThemeMode.dark,
+  searchEnabled: true,
+  tocEnabled: true,
+  themeToggleEnabled: true,
+  headerLinks: [NavLink(label: 'GitHub', href: '...', external: true)],
+  footerText: 'Built with Arcane Inkwell',
+)
+```
+
+## Build
+
+```bash
+jaspr serve              # Development
+jaspr build              # Production
+jaspr build --define=BASE_URL=/docs  # Subdirectory
+```
 
 ## Installation
 
@@ -34,263 +127,6 @@ dependencies:
       url: https://github.com/ArcaneArts/arcane_inkwell
 ```
 
-## Usage
-
-### Standalone Knowledge Base
-
-Create a documentation site from markdown files:
-
-```dart
-// lib/main.server.dart
-import 'package:jaspr/server.dart';
-import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
-import 'main.server.options.dart';
-
-void main() async {
-  Jaspr.initializeApp(options: defaultServerOptions);
-
-  runApp(
-    await KnowledgeBaseApp.create(
-      config: const SiteConfig(
-        name: 'My Docs',
-        description: 'Documentation for my project',
-        contentDirectory: 'content',
-        githubUrl: 'https://github.com/user/repo',
-        headerLinks: [
-          NavLink(label: 'Docs', href: '/'),
-          NavLink(label: 'GitHub', href: 'https://github.com/user/repo', external: true),
-        ],
-      ),
-    ),
-  );
-}
-```
-
-## Content Structure
-
-```
-content/
-├── index.md                 # Homepage (/)
-├── _section.json5           # Root config (optional)
-├── getting-started/
-│   ├── _section.json5       # Section config
-│   ├── index.md             # /getting-started
-│   ├── installation.md      # /getting-started/installation
-│   └── quickstart.md        # /getting-started/quickstart
-├── api/
-│   ├── _section.json5
-│   ├── overview.md
-│   └── endpoints/
-│       ├── _section.json5
-│       └── users.md
-└── _internal/               # Ignored folder
-    ├── _section.json5       # { "ignore": true }
-    └── drafts.md
-```
-
-## Section Configuration
-
-Create `_section.json5` (preferred) or `_section.yaml` in any folder:
-
-```json5
-{
-  // Section title in sidebar
-  "title": "Getting Started",
-
-  // Lucide icon name
-  "icon": "rocket",
-
-  // Sort order (lower = first)
-  "order": 1,
-
-  // Collapsed by default
-  "collapsed": false,
-
-  // Set to true to exclude from navigation
-  "ignore": false
-}
-```
-
-JSON5 supports comments (`//` and `/* */`), trailing commas, and unquoted keys.
-
-## Page Frontmatter
-
-Each markdown file can have YAML frontmatter:
-
-```markdown
----
-title: Installation Guide
-description: How to install the package
-icon: download
-order: 1
-hidden: false
-tags:
-  - setup
-  - installation
----
-
-# Installation Guide
-
-Content here...
-```
-
-### Frontmatter Fields
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | string | filename | Page title |
-| `description` | string | - | Page description |
-| `icon` | string | - | Lucide icon name |
-| `order` | int | 999 | Sort order |
-| `hidden` | bool | false | Hide from navigation |
-| `tags` | list | [] | Tags for search/filtering |
-
-## Configuration Options
-
-```dart
-SiteConfig(
-  // Required
-  name: 'Site Name',
-  contentDirectory: 'content',
-
-  // Optional
-  description: 'Site description',
-  baseUrl: '/docs',              // For subdirectory hosting
-  githubUrl: 'https://github.com/...',
-  defaultTheme: KBThemeMode.dark,
-  showThemeToggle: true,
-  showToc: true,
-  showBreadcrumbs: true,
-  headerLinks: [...],
-  footerText: 'Built with Arcane Inkwell',
-  copyright: '2025 Company Name',
-  sidebarFooter: 'v1.0.0',       // Always visible at sidebar bottom
-  sidebarFooterUrl: 'https://...', // Optional link
-)
-```
-
-## Icons
-
-Sidebar icons use Lucide icon names. Common icons:
-
-- Documents: `file-text`, `book`, `scroll`, `notebook`
-- Navigation: `rocket`, `home`, `compass`, `map`
-- Infrastructure: `server`, `database`, `cloud`, `cpu`
-- Security: `shield`, `lock`, `key`, `fingerprint`
-- Settings: `settings`, `wrench`, `terminal`, `code`
-- Users: `user`, `users`, `user-plus`
-- Status: `activity`, `gauge`, `clock`
-
-Full list at [lucide.dev/icons](https://lucide.dev/icons)
-
-## Images
-
-Images are responsive by default. Use alt text modifiers for sizing and alignment:
-
-```markdown
-<!-- Basic responsive image -->
-![Screenshot](./images/screenshot.png)
-
-<!-- Size modifiers -->
-![small - Logo](./images/logo.png)
-![medium - Diagram](./images/diagram.png)
-![full-width - Banner](./images/banner.png)
-
-<!-- Alignment modifiers -->
-![left - Profile](./images/profile.png)
-![right - Icon](./images/icon.png)
-![center - Chart](./images/chart.png)
-
-<!-- Style modifiers -->
-![shadow - Card](./images/card.png)
-![border - Frame](./images/frame.png)
-![square - Avatar](./images/avatar.png)
-
-<!-- Combine modifiers -->
-![small shadow center - Preview](./images/preview.png)
-```
-
-### Image Modifiers
-
-| Modifier | Effect |
-|----------|--------|
-| `small` | Max width 300px |
-| `medium` | Max width 500px |
-| `full-width` | Stretch to container width |
-| `left` | Float left with text wrap |
-| `right` | Float right with text wrap |
-| `center` | Center align (default) |
-| `shadow` | Add drop shadow |
-| `border` | Add subtle border |
-| `square` | Remove border radius |
-
-## Links
-
-Standard markdown links work as expected:
-
-```markdown
-<!-- Internal links -->
-[Getting Started](/getting-started)
-[Installation Guide](/getting-started/installation)
-
-<!-- External links (auto-detected, show icon) -->
-[GitHub](https://github.com/user/repo)
-[Documentation](https://docs.example.com)
-
-<!-- Reference-style links -->
-[Read the docs][docs]
-
-[docs]: https://docs.example.com
-```
-
-External links automatically display an icon indicator.
-
-## Page Navigation
-
-Every page automatically shows:
-
-- **Previous/Next links**: Navigate sequentially through documentation pages based on sidebar order
-- **Subpages grid**: Section index pages display child pages and subsections as clickable cards
-
-The navigation follows the same order as the sidebar, respecting `order` values in frontmatter and section configs.
-
-## Build Commands
-
-```bash
-# Development server
-cd example && jaspr serve
-
-# Production build
-cd example && jaspr build
-
-# Build for subdirectory (e.g., GitHub Pages)
-cd example && jaspr build --define=BASE_URL=/my-docs
-```
-
-## Theming
-
-The knowledge base uses arcane_jaspr's ShadCN stylesheet with automatic dark/light mode.
-
-Custom styling can be added by extending `KBStylesheet`:
-
-```dart
-class CustomStylesheet extends KBStylesheet {
-  const CustomStylesheet();
-
-  @override
-  String get baseCss {
-    return '''
-${super.baseCss}
-
-/* Custom styles */
-.kb-sidebar {
-  background: var(--arcane-surface);
-}
-''';
-  }
-}
-```
-
 ## License
 
-MIT
+GPL-3.0

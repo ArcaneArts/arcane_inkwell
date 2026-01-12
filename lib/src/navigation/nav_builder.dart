@@ -48,9 +48,6 @@ class NavBuilder {
     // Sort entities for consistent ordering
     entities.sort((a, b) => a.path.compareTo(b.path));
 
-    // Check for section config (prefer JSON5 over YAML)
-    final Map<String, dynamic>? sectionConfig = await _loadSectionConfig(dir.path);
-
     // Process files first
     for (final entity in entities) {
       if (entity is File) {

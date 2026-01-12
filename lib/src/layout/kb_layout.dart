@@ -100,6 +100,25 @@ class KBLayout extends PageLayoutBase {
   @override
   Component buildBody(Page page, Component child) {
     final Map<String, dynamic> pageData = page.data.page;
+
+    // Extract tags from frontmatter
+    List<String> tags = <String>[];
+    final dynamic rawTags = pageData['tags'];
+    if (rawTags is List) {
+      tags = rawTags.map((dynamic t) => t.toString()).toList();
+    } else if (rawTags is String) {
+      tags = rawTags.split(',').map((String t) => t.trim()).toList();
+    }
+
+    // Extract reading time
+    final int? readingTime = pageData['readingTime'] as int?;
+
+    // Extract author
+    final String? author = pageData['author'] as String?;
+
+    // Extract date
+    final String? date = pageData['date'] as String?;
+
     return ThemedKBPage(
       config: config,
       manifest: manifest,
@@ -109,6 +128,10 @@ class KBLayout extends PageLayoutBase {
       title: pageData['title'] as String?,
       description: pageData['description'] as String?,
       toc: page.data['toc'] as TableOfContents?,
+      tags: tags,
+      readingTime: readingTime,
+      author: author,
+      date: date,
       content: child,
     );
   }
@@ -124,6 +147,10 @@ class ThemedKBPage extends StatefulComponent {
   final String? title;
   final String? description;
   final TableOfContents? toc;
+  final List<String> tags;
+  final int? readingTime;
+  final String? author;
+  final String? date;
   final Component content;
 
   const ThemedKBPage({
@@ -135,6 +162,10 @@ class ThemedKBPage extends StatefulComponent {
     this.title,
     this.description,
     this.toc,
+    this.tags = const <String>[],
+    this.readingTime,
+    this.author,
+    this.date,
     required this.content,
   });
 
@@ -236,6 +267,11 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
 
   /// Main content section
   Component _buildMainContent() {
+    final bool hasMetadata = component.tags.isNotEmpty ||
+        component.readingTime != null ||
+        component.author != null ||
+        component.date != null;
+
     return ArcaneDiv(
       styles: const ArcaneStyleData(
         flex: FlexPreset.expand,
@@ -245,7 +281,149 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
         _buildBreadcrumbs(),
         if (component.title != null) _buildTitle(),
         if (component.description != null) _buildDescription(),
+        if (hasMetadata) _buildMetadata(),
         div(classes: 'prose', [component.content]),
+        if (component.tags.isNotEmpty) _buildTagsFooter(),
+      ],
+    );
+  }
+
+  /// Build metadata row with reading time, author, date
+  Component _buildMetadata() {
+    return ArcaneDiv(
+      classes: 'kb-page-metadata',
+      styles: const ArcaneStyleData(
+        display: Display.flex,
+        flexWrap: FlexWrap.wrap,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        gap: Gap.lg,
+        margin: MarginPreset.bottomLg,
+        padding: PaddingPreset.bottomMd,
+        borderBottom: BorderPreset.subtle,
+      ),
+      children: [
+        // Reading time
+        if (component.readingTime != null)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              display: Display.flex,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              gap: Gap.xs,
+              fontSize: FontSize.sm,
+              textColor: TextColor.mutedForeground,
+            ),
+            children: [
+              ArcaneIcon.clock(size: IconSize.sm),
+              ArcaneText('${component.readingTime} min read'),
+            ],
+          ),
+
+        // Author
+        if (component.author != null)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              display: Display.flex,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              gap: Gap.xs,
+              fontSize: FontSize.sm,
+              textColor: TextColor.mutedForeground,
+            ),
+            children: [
+              ArcaneIcon.user(size: IconSize.sm),
+              ArcaneText(component.author!),
+            ],
+          ),
+
+        // Date
+        if (component.date != null)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              display: Display.flex,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              gap: Gap.xs,
+              fontSize: FontSize.sm,
+              textColor: TextColor.mutedForeground,
+            ),
+            children: [
+              ArcaneIcon.calendar(size: IconSize.sm),
+              ArcaneText(component.date!),
+            ],
+          ),
+
+        // Tags inline (small badges)
+        if (component.tags.isNotEmpty)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              display: Display.flex,
+              flexWrap: FlexWrap.wrap,
+              gap: Gap.xs,
+            ),
+            children: component.tags.map((String tag) => ArcaneDiv(
+                  classes: 'kb-tag',
+                  styles: const ArcaneStyleData(
+                    display: Display.inlineFlex,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    gap: Gap.xs,
+                    fontSize: FontSize.xs,
+                    padding: PaddingPreset.xs,
+                    background: Background.muted,
+                    borderRadius: Radius.sm,
+                    textColor: TextColor.mutedForeground,
+                  ),
+                  children: [
+                    ArcaneIcon.tag(size: IconSize.xs),
+                    ArcaneText(tag),
+                  ],
+                )).toList(),
+          ),
+      ],
+    );
+  }
+
+  /// Build tags footer section
+  Component _buildTagsFooter() {
+    return ArcaneDiv(
+      classes: 'kb-tags-footer',
+      styles: const ArcaneStyleData(
+        margin: MarginPreset.topXl,
+        padding: PaddingPreset.topLg,
+        borderTop: BorderPreset.subtle,
+      ),
+      children: [
+        ArcaneDiv(
+          styles: const ArcaneStyleData(
+            fontSize: FontSize.sm,
+            fontWeight: FontWeight.w600,
+            textColor: TextColor.mutedForeground,
+            margin: MarginPreset.bottomSm,
+          ),
+          children: const [ArcaneText('Tags')],
+        ),
+        ArcaneDiv(
+          styles: const ArcaneStyleData(
+            display: Display.flex,
+            flexWrap: FlexWrap.wrap,
+            gap: Gap.sm,
+          ),
+          children: component.tags.map((String tag) => ArcaneDiv(
+                classes: 'kb-tag-large',
+                styles: const ArcaneStyleData(
+                  display: Display.inlineFlex,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  gap: Gap.xs,
+                  fontSize: FontSize.sm,
+                  padding: PaddingPreset.sm,
+                  background: Background.surface,
+                  border: BorderPreset.subtle,
+                  borderRadius: Radius.md,
+                  textColor: TextColor.primary,
+                ),
+                children: [
+                  ArcaneIcon.tag(size: IconSize.sm),
+                  ArcaneText(tag),
+                ],
+              )).toList(),
+        ),
       ],
     );
   }

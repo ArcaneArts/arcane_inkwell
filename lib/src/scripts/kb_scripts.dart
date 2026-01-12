@@ -304,9 +304,8 @@ if (tocContainer) {
       }
     });
 
-    if (window.scrollY < 100 && headings.length > 0) {
-      updateActiveLink(headings[0].id);
-    }
+    // Always select first item on page load
+    updateActiveLink(headings[0].id);
   }
 }
 ''';
