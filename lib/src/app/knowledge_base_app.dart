@@ -7,6 +7,7 @@ import '../layout/kb_layout.dart';
 import '../scripts/kb_scripts.dart';
 import '../extensions/reading_time_extension.dart';
 import '../extensions/callout_extension.dart';
+import '../extensions/media_extension.dart';
 
 export '../layout/kb_layout.dart' show DemoBuilder;
 
@@ -69,6 +70,7 @@ class KnowledgeBaseApp {
 
     // Default extensions for markdown processing
     final List<PageExtension> defaultExtensions = <PageExtension>[
+      const MediaExtension(),
       const CalloutExtension(),
       HeadingAnchorsExtension(),
       const TableOfContentsExtension(),
@@ -107,6 +109,7 @@ class KnowledgeBaseApp {
 
     // Default extensions for markdown processing
     final List<PageExtension> defaultExtensions = <PageExtension>[
+      const MediaExtension(),
       const CalloutExtension(),
       HeadingAnchorsExtension(),
       const TableOfContentsExtension(),

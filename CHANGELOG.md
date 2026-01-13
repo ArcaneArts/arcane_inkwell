@@ -85,6 +85,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Runs on markdown file changes in `example/content/`
   - Prevents infinite loops with commit message detection
 
+- **Media Embeds**
+  - New `MediaExtension` for rich media content in markdown
+  - YouTube video embeds: `@[youtube](VIDEO_ID)` with autoplay, loop, muted, start/end options
+  - Local video support: `@[video](path.mp4)` with poster, caption, autoplay, loop, muted
+  - Enhanced images: `@[image caption="..."](path.png)` with captions, alt text, dimensions
+  - GIF support: `@[gif](animation.gif)`
+  - Animated PNG support: `@[apng](animation.png)`
+  - Twitter/X embeds: `@[twitter](TWEET_ID)` with theme options
+  - Generic iframe embeds: `@[iframe](url)`
+  - Responsive 16:9 aspect ratio containers for video embeds
+  - CSS styles for all media types with dark mode support
+
 ### Removed
 
 - Theme toggle ripple/reveal animation (now instant toggle)

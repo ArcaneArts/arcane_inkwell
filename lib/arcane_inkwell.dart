@@ -55,6 +55,7 @@ export 'src/styles/kb_styles.dart';
 // Extensions
 export 'src/extensions/reading_time_extension.dart';
 export 'src/extensions/callout_extension.dart';
+export 'src/extensions/media_extension.dart';
 
 // Utils
 export 'src/utils/sitemap_generator.dart';
