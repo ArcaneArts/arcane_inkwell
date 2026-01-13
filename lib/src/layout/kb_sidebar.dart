@@ -21,7 +21,7 @@ class KBSidebar extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return ArcaneScrollRail(
-      width: '280px',
+      width: config.sidebarWidth,
       topOffset: '0px',
       showBorder: true,
       padding: '0',

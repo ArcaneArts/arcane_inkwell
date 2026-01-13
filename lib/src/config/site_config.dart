@@ -69,6 +69,9 @@ class SiteConfig {
   /// Custom thank you text shown after rating.
   final String ratingThankYouText;
 
+  /// Width of the sidebar (CSS value, e.g., '280px', '300px', '20rem').
+  final String sidebarWidth;
+
   const SiteConfig({
     required this.name,
     this.description,
@@ -93,6 +96,7 @@ class SiteConfig {
     this.ratingEnabled = false,
     this.ratingPromptText = 'Was this page helpful?',
     this.ratingThankYouText = 'Thanks for your feedback!',
+    this.sidebarWidth = '280px',
   });
 
   /// Get the full URL for a path, including the base URL.
