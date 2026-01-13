@@ -1,10 +1,21 @@
 ---
 title: Features
-description: Explore what Arcane Inkwell can do
+description: Visual demonstrations of all Arcane Inkwell features
 order: 0
-hidden: true
 ---
 
-This page demonstrates the **Subpages Grid**. Below you'll see cards for each child page in this section.
+This section demonstrates all the visual features of Arcane Inkwell. Click through the pages below to see each feature in action.
 
-Navigate through them to see the **Previous/Next** pagination at the bottom of each page.
+## Navigation Features
+
+Notice the **Previous/Next** navigation at the bottom of each page for sequential browsing.
+
+## What's Demonstrated
+
+- **Typography** - Headings, lists, and text formatting
+- **Code blocks** - Syntax highlighting with copy button
+- **Tables** - Data presentation
+- **Links** - Internal and external link styling
+- **Callouts** - GitHub-style alert blocks
+- **Tags** - Content organization and related pages
+- **Navigation** - Sidebar, breadcrumbs, and pagination

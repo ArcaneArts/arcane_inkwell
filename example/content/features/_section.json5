@@ -1,6 +1,7 @@
 {
-  // This section demonstrates the subpages grid
+  // Visual demonstrations of all features
   "title": "Features",
   "icon": "sparkles",
-  "order": 1
+  "order": 2,
+  "collapsed": false
 }

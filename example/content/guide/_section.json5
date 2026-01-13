@@ -1,5 +1,7 @@
 {
+  // Step-by-step guides for getting started
   "title": "Guide",
   "icon": "book",
-  "order": 2
+  "order": 1,
+  "collapsed": false
 }
