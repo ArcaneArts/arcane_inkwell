@@ -7,6 +7,8 @@ tags:
   - configuration
   - reference
   - markdown
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 Frontmatter is YAML metadata at the top of your markdown files. It controls how pages appear in navigation and how they're rendered.
@@ -87,6 +89,10 @@ These fields are automatically added by extensions and available in templates:
 | `readingTime` | `ReadingTimeExtension` | Estimated reading time in minutes |
 | `wordCount` | `ReadingTimeExtension` | Total word count |
 | `toc` | `TableOfContentsExtension` | Table of contents from headings |
+| `lastModified` | File system | File's last modified timestamp (automatic) |
+
+> [!NOTE]
+> The `lastModified` date is automatically tracked from the file system. This shows when the markdown file was last edited, separate from any `date` field you set manually.
 
 ## Title Fallback
 

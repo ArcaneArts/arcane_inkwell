@@ -3,6 +3,8 @@ title: Running
 description: Start the development server
 icon: play
 order: 3
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 ## Development

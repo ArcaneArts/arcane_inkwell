@@ -7,6 +7,8 @@ tags:
   - configuration
   - reference
   - navigation
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 Section configuration files control how folders appear in the sidebar navigation. Place a `_section.json5` or `_section.yaml` file in any content folder to customize its appearance.

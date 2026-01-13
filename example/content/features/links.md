@@ -3,6 +3,8 @@ title: Links
 description: Internal and external link handling
 icon: link
 order: 5
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 ## Internal Links

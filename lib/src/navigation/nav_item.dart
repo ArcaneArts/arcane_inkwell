@@ -27,6 +27,15 @@ class NavItem {
   /// Content excerpt for full-text search (first ~200 chars).
   final String? excerpt;
 
+  /// Optional author name from frontmatter.
+  final String? author;
+
+  /// Optional date from frontmatter (e.g., publication date).
+  final String? date;
+
+  /// File last modified timestamp (ISO 8601 string).
+  final String? lastModified;
+
   const NavItem({
     required this.title,
     required this.path,
@@ -37,6 +46,9 @@ class NavItem {
     this.description,
     this.tags = const [],
     this.excerpt,
+    this.author,
+    this.date,
+    this.lastModified,
   });
 
   /// Create from frontmatter data.
@@ -45,6 +57,7 @@ class NavItem {
     required Map<String, dynamic> frontmatter,
     required String fallbackTitle,
     String? excerpt,
+    String? lastModified,
   }) {
     return NavItem(
       title: frontmatter['title'] as String? ?? fallbackTitle,
@@ -59,6 +72,9 @@ class NavItem {
               .toList() ??
           const [],
       excerpt: excerpt,
+      author: frontmatter['author'] as String?,
+      date: frontmatter['date']?.toString(),
+      lastModified: lastModified,
     );
   }
 

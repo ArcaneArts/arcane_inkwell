@@ -8,6 +8,7 @@ tags:
   - syntax-highlighting
   - markdown
 author: Arcane Arts
+date: 2025-01-11
 ---
 
 Code blocks are automatically syntax highlighted using Highlight.js. Hover over any code block to see the **copy button** in the top-right corner.

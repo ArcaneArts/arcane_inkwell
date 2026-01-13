@@ -6,6 +6,8 @@ order: 2
 tags:
   - configuration
   - getting-started
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 Arcane Inkwell is configured through three main mechanisms: site configuration, section configuration, and page frontmatter.

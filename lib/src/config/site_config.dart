@@ -60,6 +60,15 @@ class SiteConfig {
   /// Whether to show "Edit this page" links.
   final bool showEditLink;
 
+  /// Whether to show the page rating widget (thumbs up/down).
+  final bool ratingEnabled;
+
+  /// Custom prompt text for the rating widget.
+  final String ratingPromptText;
+
+  /// Custom thank you text shown after rating.
+  final String ratingThankYouText;
+
   const SiteConfig({
     required this.name,
     this.description,
@@ -81,6 +90,9 @@ class SiteConfig {
     this.sidebarFooterUrl,
     this.editBranch = 'main',
     this.showEditLink = true,
+    this.ratingEnabled = false,
+    this.ratingPromptText = 'Was this page helpful?',
+    this.ratingThankYouText = 'Thanks for your feedback!',
   });
 
   /// Get the full URL for a path, including the base URL.

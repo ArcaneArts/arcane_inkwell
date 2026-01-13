@@ -8,6 +8,7 @@ tags:
   - formatting
   - markdown
 author: Arcane Arts
+date: 2024-12-15
 ---
 
 Arcane Inkwell renders standard markdown with beautiful typography. Headings automatically appear in the Table of Contents on the right.

@@ -56,6 +56,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Back-to-top button
   - Edit on GitHub links
 
+## [1.0.1] - 2025-01-13
+
+### Added
+
+- **Page Metadata**
+  - Automatic file last modified date tracking (`lastModified` field)
+  - "Updated Jan 15, 2025" display in page metadata section
+  - Author and date fields now properly passed through NavItem for all pages
+
+- **Page Rating System**
+  - New `KBRating` component with thumbs up/down buttons
+  - `RatingConfig` class for customization
+  - Client-side JavaScript with localStorage tracking to prevent duplicate votes
+  - Custom `kb-rating` event dispatched for Firebase/backend integration
+  - New SiteConfig options: `ratingEnabled`, `ratingPromptText`, `ratingThankYouText`
+
+- **Documentation**
+  - New Rating System reference page with Firebase integration guide
+  - Updated Frontmatter reference with `lastModified` auto-generated field
+  - Updated SiteConfig reference with page rating options
+
+- **Development**
+  - IntelliJ run configurations for Serve (port 8085), Build, and Kill
+
+- **CI/CD**
+  - GitHub Action to automatically update frontmatter `date` and `author` fields on push to master
+  - Runs on markdown file changes in `example/content/`
+  - Prevents infinite loops with commit message detection
+
+### Removed
+
+- Theme toggle ripple/reveal animation (now instant toggle)
+
 ## [x.x.x]
 
 Reserved for future changes.

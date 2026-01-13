@@ -14,7 +14,6 @@ $_sidebarChevron
 $_sidebarTree
 $_sidebarTreeConnectors
 $_sidebarLinks
-$_themeRevealAnimation
 ''';
 
   /// Sidebar section and summary STRUCTURAL styles only
@@ -208,41 +207,6 @@ details > summary::-webkit-details-marker {
   gap: 0.5rem;
   padding: 0.375rem 0.5rem;
   text-decoration: none;
-}
-''';
-
-  /// Theme reveal animation for theme toggle
-  static const String _themeRevealAnimation = '''
-/* ============================================
-   THEME REVEAL ANIMATION
-   ============================================ */
-.theme-reveal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  pointer-events: none;
-  clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%));
-}
-
-.theme-reveal-overlay.to-light {
-  background-color: #fafafa;
-}
-
-.theme-reveal-overlay.to-dark {
-  background-color: #0a0a0a;
-}
-
-.theme-reveal-overlay.revealing {
-  animation: theme-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes theme-reveal {
-  0% {
-    clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%));
-  }
-  100% {
-    clip-path: circle(150% at var(--reveal-x, 50%) var(--reveal-y, 50%));
-  }
 }
 ''';
 }

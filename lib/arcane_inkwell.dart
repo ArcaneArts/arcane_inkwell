@@ -44,6 +44,7 @@ export 'src/layout/kb_sidebar.dart';
 export 'src/layout/kb_page_nav.dart';
 export 'src/layout/kb_related_pages.dart';
 export 'src/layout/kb_changelog.dart';
+export 'src/layout/kb_rating.dart';
 
 // Scripts
 export 'src/scripts/kb_scripts.dart';

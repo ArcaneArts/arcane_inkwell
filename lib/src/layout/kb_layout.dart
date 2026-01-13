@@ -3,8 +3,11 @@ import 'package:jaspr_content/jaspr_content.dart';
 
 import '../config/site_config.dart';
 import '../navigation/nav_builder.dart';
+import '../navigation/nav_item.dart';
+import '../navigation/nav_section.dart';
 import '../scripts/kb_scripts.dart';
 import '../styles/kb_styles.dart';
+import 'kb_rating.dart';
 import 'kb_sidebar.dart';
 
 /// Callback type for building demo components.
@@ -147,6 +150,10 @@ class KBLayout extends PageLayoutBase {
     // Extract component type for demo injection
     final String? componentType = pageData['component'] as String?;
 
+    // Find the NavItem for this page to get lastModified
+    final NavItem? navItem = _findNavItem(page.url);
+    final String? lastModified = navItem?.lastModified;
+
     return ThemedKBPage(
       config: config,
       manifest: manifest,
@@ -160,10 +167,39 @@ class KBLayout extends PageLayoutBase {
       readingTime: readingTime,
       author: author,
       date: date,
+      lastModified: lastModified,
       componentType: componentType,
       demoBuilder: demoBuilder,
       content: child,
     );
+  }
+
+  /// Find a NavItem by its path in the manifest.
+  NavItem? _findNavItem(String path) {
+    // Check root items
+    for (final NavItem item in manifest.items) {
+      if (_pathsMatch(item.path, path)) return item;
+    }
+    // Check sections recursively
+    return _findNavItemInSections(manifest.sections, path);
+  }
+
+  NavItem? _findNavItemInSections(List<NavSection> sections, String path) {
+    for (final NavSection section in sections) {
+      for (final NavItem item in section.items) {
+        if (_pathsMatch(item.path, path)) return item;
+      }
+      final NavItem? found = _findNavItemInSections(section.sections, path);
+      if (found != null) return found;
+    }
+    return null;
+  }
+
+  bool _pathsMatch(String a, String b) {
+    // Normalize paths for comparison
+    final String normalA = a.endsWith('/') ? a.substring(0, a.length - 1) : a;
+    final String normalB = b.endsWith('/') ? b.substring(0, b.length - 1) : b;
+    return normalA == normalB;
   }
 }
 
@@ -181,6 +217,7 @@ class ThemedKBPage extends StatefulComponent {
   final int? readingTime;
   final String? author;
   final String? date;
+  final String? lastModified;
   final String? componentType;
   final DemoBuilder? demoBuilder;
   final Component content;
@@ -198,6 +235,7 @@ class ThemedKBPage extends StatefulComponent {
     this.readingTime,
     this.author,
     this.date,
+    this.lastModified,
     this.componentType,
     this.demoBuilder,
     required this.content,
@@ -304,7 +342,8 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
     final bool hasMetadata = component.tags.isNotEmpty ||
         component.readingTime != null ||
         component.author != null ||
-        component.date != null;
+        component.date != null ||
+        component.lastModified != null;
 
     // Build live demo if component type is specified
     Component? demoComponent;
@@ -325,7 +364,20 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
         if (demoComponent != null) demoComponent,
         div(classes: 'prose', [component.content]),
         if (component.tags.isNotEmpty) _buildTagsFooter(),
+        if (component.config.ratingEnabled) _buildRating(),
       ],
+    );
+  }
+
+  /// Build page rating widget
+  Component _buildRating() {
+    return KBRating(
+      pagePath: component.currentPath,
+      config: RatingConfig(
+        enabled: true,
+        promptText: component.config.ratingPromptText,
+        thankYouText: component.config.ratingThankYouText,
+      ),
     );
   }
 
@@ -388,6 +440,22 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
             children: [
               ArcaneIcon.calendar(size: IconSize.sm),
               ArcaneText(component.date!),
+            ],
+          ),
+
+        // Last modified
+        if (component.lastModified != null)
+          ArcaneDiv(
+            styles: const ArcaneStyleData(
+              display: Display.flex,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              gap: Gap.xs,
+              fontSize: FontSize.sm,
+              textColor: TextColor.mutedForeground,
+            ),
+            children: [
+              ArcaneIcon.edit(size: IconSize.sm),
+              ArcaneText('Updated ${_formatLastModified(component.lastModified!)}'),
             ],
           ),
 
@@ -519,6 +587,20 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
         .split('-')
         .map((String word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1))
         .join(' ');
+  }
+
+  /// Format ISO 8601 date to readable format (e.g., "Jan 15, 2025")
+  String _formatLastModified(String isoDate) {
+    try {
+      final DateTime dt = DateTime.parse(isoDate);
+      final List<String> months = <String>[
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+    } catch (_) {
+      return isoDate;
+    }
   }
 
   Component _buildTitle() {

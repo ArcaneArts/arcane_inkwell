@@ -6,6 +6,8 @@ order: 1
 tags:
   - configuration
   - reference
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 `SiteConfig` is the main configuration object for your documentation site. Pass it to `KnowledgeBaseApp.create()` to configure your site.
@@ -48,6 +50,11 @@ SiteConfig(
   themeToggleEnabled: true,
   defaultTheme: KBThemeMode.dark,
   primaryColor: '#6366f1',
+
+  // Page rating
+  ratingEnabled: true,
+  ratingPromptText: 'Was this page helpful?',
+  ratingThankYouText: 'Thanks for your feedback!',
 
   // Navigation
   headerLinks: [
@@ -164,6 +171,17 @@ SocialLink.youtube('https://youtube.com/...')
 | `copyright` | `String?` | `null` | Copyright text for footer |
 | `sidebarFooter` | `String?` | `null` | Text at bottom of sidebar (e.g., version) |
 | `sidebarFooterUrl` | `String?` | `null` | URL for sidebar footer (e.g., releases page) |
+
+### Page Rating
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `ratingEnabled` | `bool` | `false` | Enable thumbs up/down rating widget on pages |
+| `ratingPromptText` | `String` | `'Was this page helpful?'` | Text shown above rating buttons |
+| `ratingThankYouText` | `String` | `'Thanks for your feedback!'` | Text shown after user submits rating |
+
+> [!TIP]
+> The rating widget integrates with Firebase. See the [Rating System](/reference/rating) documentation for Firebase integration details.
 
 ## Subdirectory Hosting
 

@@ -7,6 +7,8 @@ tags:
   - configuration
   - theming
   - styling
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 Arcane Inkwell uses the arcane_jaspr stylesheet system for theming. Swap themes with a single line of code.

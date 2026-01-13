@@ -71,11 +71,16 @@ class NavBuilder {
         final frontmatter = _parseFrontmatter(content);
         final excerpt = _extractExcerpt(content);
 
+        // Get file last modified time
+        final FileStat stat = await entity.stat();
+        final String lastModified = stat.modified.toIso8601String();
+
         final item = NavItem.fromFrontmatter(
           path: pagePath,
           frontmatter: frontmatter,
           fallbackTitle: NavItem.filenameToTitle(filename),
           excerpt: excerpt,
+          lastModified: lastModified,
         );
 
         items.add(item);
@@ -293,6 +298,9 @@ class NavManifest {
       'description': item.description,
       'tags': item.tags,
       'excerpt': item.excerpt,
+      'author': item.author,
+      'date': item.date,
+      'lastModified': item.lastModified,
     };
   }
 
@@ -334,6 +342,9 @@ class NavManifest {
               .toList() ??
           const [],
       excerpt: json['excerpt'] as String?,
+      author: json['author'] as String?,
+      date: json['date'] as String?,
+      lastModified: json['lastModified'] as String?,
     );
   }
 

@@ -7,6 +7,7 @@ tags:
   - navigation
   - organization
 author: Arcane Arts
+date: 2025-01-11
 ---
 
 ## Sidebar Navigation

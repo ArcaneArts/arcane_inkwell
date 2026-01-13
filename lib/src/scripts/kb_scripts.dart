@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
   ${_tocScrollTracking()}
   ${_sidebarCollapse()}
   ${_backToTop()}
+  ${_ratingFunctionality()}
 });
 ''';
   }
@@ -95,29 +96,7 @@ if (themeToggle) {
   themeToggle.addEventListener('click', function(e) {
     var currentMode = getCurrentMode();
     var newMode = currentMode === 'dark' ? 'light' : 'dark';
-
-    // Get click position for the reveal animation
-    var rect = themeToggle.getBoundingClientRect();
-    var x = rect.left + rect.width / 2;
-    var y = rect.top + rect.height / 2;
-
-    // Create the reveal overlay
-    var overlay = document.createElement('div');
-    overlay.className = 'theme-reveal-overlay to-' + newMode;
-    overlay.style.setProperty('--reveal-x', x + 'px');
-    overlay.style.setProperty('--reveal-y', y + 'px');
-
-    document.body.appendChild(overlay);
-
-    // Force reflow then start animation
-    overlay.offsetHeight;
-    overlay.classList.add('revealing');
-
-    // When animation completes, apply the actual theme change and remove overlay
-    overlay.addEventListener('animationend', function() {
-      setMode(newMode);
-      overlay.remove();
-    });
+    setMode(newMode);
   });
 }
 ''';
@@ -385,6 +364,76 @@ if (backToTop) {
   });
   backToTop.addEventListener('click', function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+''';
+
+  static String _ratingFunctionality() => '''
+// ===== PAGE RATING =====
+var ratingContainer = document.querySelector('.kb-rating');
+if (ratingContainer) {
+  var ratingButtons = ratingContainer.querySelectorAll('.kb-rating-btn');
+  var promptSection = ratingContainer.querySelector('.kb-rating-prompt');
+  var thanksSection = ratingContainer.querySelector('.kb-rating-thanks');
+  var pagePath = ratingContainer.dataset.path;
+
+  // Check if user already rated this page
+  var ratedKey = 'kb-rated-' + pagePath;
+  if (localStorage.getItem(ratedKey)) {
+    if (promptSection) promptSection.style.display = 'none';
+    if (thanksSection) thanksSection.style.display = 'block';
+  }
+
+  ratingButtons.forEach(function(btn) {
+    // Hover effects
+    btn.addEventListener('mouseenter', function() {
+      this.style.borderColor = 'hsl(var(--primary))';
+      this.style.color = 'hsl(var(--foreground))';
+    });
+    btn.addEventListener('mouseleave', function() {
+      this.style.borderColor = 'hsl(var(--border))';
+      this.style.color = 'hsl(var(--muted-foreground))';
+    });
+
+    // Click handler
+    btn.addEventListener('click', function() {
+      var isHelpful = this.dataset.helpful === 'true';
+      var path = this.dataset.path;
+
+      // Mark as rated in localStorage to prevent duplicate votes
+      localStorage.setItem(ratedKey, isHelpful ? 'helpful' : 'not-helpful');
+
+      // Show thank you message
+      if (promptSection) promptSection.style.display = 'none';
+      if (thanksSection) thanksSection.style.display = 'block';
+
+      // Dispatch custom event for Firebase integration
+      // Your Firebase code can listen for this event:
+      //
+      // document.addEventListener('kb-rating', function(e) {
+      //   var pagePath = e.detail.path;
+      //   var isHelpful = e.detail.helpful;
+      //   var docId = pagePath.replace(/\\//g, '_');
+      //   var field = isHelpful ? 'helpful' : 'notHelpful';
+      //
+      //   firebase.firestore()
+      //     .collection('pageRatings')
+      //     .doc(docId)
+      //     .set({
+      //       [field]: firebase.firestore.FieldValue.increment(1),
+      //       lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      //     }, { merge: true });
+      // });
+
+      document.dispatchEvent(new CustomEvent('kb-rating', {
+        detail: {
+          path: path,
+          helpful: isHelpful
+        }
+      }));
+
+      console.log('Rating submitted:', { path: path, helpful: isHelpful });
+    });
   });
 }
 ''';

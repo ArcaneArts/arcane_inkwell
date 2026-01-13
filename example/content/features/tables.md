@@ -3,6 +3,8 @@ title: Tables
 description: Markdown table rendering
 icon: table
 order: 4
+author: Arcane Arts
+date: 2025-01-11
 ---
 
 ## Basic Table

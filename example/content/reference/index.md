@@ -20,3 +20,4 @@ This section provides complete documentation for all configuration options, fron
 - **[Search](/reference/search)** - Built-in search functionality
 - **[Components](/reference/components)** - Reusable layout components
 - **[Extensions](/reference/extensions)** - Markdown extensions and customization
+- **[Rating System](/reference/rating)** - Thumbs up/down ratings with Firebase integration
