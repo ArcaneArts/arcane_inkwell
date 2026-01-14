@@ -59,6 +59,7 @@ export 'src/extensions/media_extension.dart';
 
 // Utils
 export 'src/utils/sitemap_generator.dart';
+export 'src/utils/search_index_generator.dart';
 export 'src/utils/changelog_parser.dart';
 
 // Main app

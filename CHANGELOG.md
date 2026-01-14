@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [x.x.x]
+
+### Added
+
+- **Markdown Alert Styles**
+  - Added CSS styles for `markdown-alert` classes (jaspr_content's built-in GitHub-style callouts)
+  - Supports all 5 alert types: note (blue), tip (green), important (purple), warning (amber), caution (red)
+  - Dark mode support with appropriate color adjustments
+  - These styles complement the existing `kb-callout` styles for CalloutExtension
+
+- **Search Index Export**
+  - `SearchIndexGenerator` - Generates a `search-index.json` file from the navigation manifest
+  - Automatically writes `web/search-index.json` during build (enabled by default)
+  - JSON includes: title, path, category, description, keywords, excerpt, and icon for each page
+  - Enables external sites to fetch and search documentation content
+  - Can be disabled via `generateSearchIndex: false` in `KnowledgeBaseApp.create()`
+
 ## [1.0.0] - 2025-01-11
 
 ### Added
