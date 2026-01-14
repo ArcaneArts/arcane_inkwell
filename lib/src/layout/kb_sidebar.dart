@@ -82,19 +82,13 @@ class KBSidebar extends StatelessComponent {
         div(
           classes: 'sidebar-controls',
           [
-            // Search input
+            // Search input - uses RawText to prevent Jaspr client hydration
             if (config.searchEnabled)
               div(
                 classes: 'sidebar-search',
                 [
-                  input(
-                    id: 'kb-search',
-                    attributes: const {
-                      'type': 'text',
-                      'placeholder': 'Search...',
-                      'autocomplete': 'off',
-                    },
-                  ),
+                  // Raw HTML input to bypass Jaspr event interception
+                  const RawText('<input id="kb-search" type="text" placeholder="Search..." autocomplete="off">'),
                   div(classes: 'search-icon', [ArcaneIcon.search(size: IconSize.sm)]),
                   // Search results dropdown
                   div(id: 'search-results', classes: 'search-results', []),
