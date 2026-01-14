@@ -1,6 +1,6 @@
 ---
 title: Icons Reference
-description: All available Lucide icons for sections and pages
+description: All available icons for sections and pages
 icon: sparkles
 order: 4
 tags:
@@ -9,11 +9,18 @@ tags:
   - ui
 ---
 
-Arcane Inkwell includes 90+ Lucide icons that can be used in frontmatter and section configuration. Use the icon name string in your `icon` field.
+Arcane Inkwell supports three types of icons in frontmatter and section configuration:
+
+1. **Lucide icons** - 90+ built-in icon names
+2. **SVG files** - Reference external `.svg` files
+3. **Raw SVG** - Inline SVG markup
 
 ## Usage
 
-In frontmatter:
+### Lucide Icons (Recommended)
+
+Use a Lucide icon name string:
+
 ```yaml
 ---
 title: My Page
@@ -21,13 +28,47 @@ icon: rocket
 ---
 ```
 
-In section config:
 ```json5
 {
   "title": "Guide",
   "icon": "book"
 }
 ```
+
+### SVG Files
+
+Reference an SVG file by path (relative to your site root or absolute URL):
+
+```yaml
+---
+title: My Page
+icon: /images/custom-icon.svg
+---
+```
+
+```json5
+{
+  "title": "Guide",
+  "icon": "/assets/icons/guide.svg"
+}
+```
+
+External URLs are also supported:
+
+```yaml
+icon: https://example.com/icon.svg
+```
+
+### Raw SVG Markup
+
+Embed SVG directly (useful for simple icons):
+
+```yaml
+icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+```
+
+> [!NOTE]
+> Raw SVG markup is rendered at 16x16 pixels and inherits the current text color via `currentColor`.
 
 ## Documents and Files
 

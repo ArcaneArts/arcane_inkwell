@@ -1,3 +1,6 @@
+/// Base URL from environment, set via `--define=BASE_URL=/path`.
+const String _envBaseUrl = String.fromEnvironment('BASE_URL');
+
 /// Configuration for the knowledge base site.
 class SiteConfig {
   /// The name of the site displayed in the header.
@@ -72,12 +75,16 @@ class SiteConfig {
   /// Width of the sidebar (CSS value, e.g., '280px', '300px', '20rem').
   final String sidebarWidth;
 
+  /// Left indent for sidebar tree items (CSS value, e.g., '10px', '0.625rem').
+  /// Controls spacing between tree connector lines and icons.
+  final String sidebarTreeIndent;
+
   const SiteConfig({
     required this.name,
     this.description,
     this.logo,
     this.githubUrl,
-    this.baseUrl = '',
+    this.baseUrl = _envBaseUrl,
     this.contentDirectory = 'content',
     this.homeRoute = '/',
     this.searchEnabled = true,
@@ -97,6 +104,7 @@ class SiteConfig {
     this.ratingPromptText = 'Was this page helpful?',
     this.ratingThankYouText = 'Thanks for your feedback!',
     this.sidebarWidth = '280px',
+    this.sidebarTreeIndent = '10px',
   });
 
   /// Get the full URL for a path, including the base URL.

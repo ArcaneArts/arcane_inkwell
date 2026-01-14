@@ -52,7 +52,7 @@ component: AuthDemo
 |-------|------|---------|-------------|
 | `title` | `String` | Filename | Display title for the page |
 | `description` | `String?` | `null` | Page description (shown below title, used in meta tags) |
-| `icon` | `String` | `null` | Lucide icon name for sidebar (see [Icons Reference](/reference/icons)) |
+| `icon` | `String` | `null` | Icon name, SVG path, or raw SVG (see [Icons Reference](/reference/icons)) |
 | `order` | `int` | `999` | Sort order within section (lower = first) |
 
 ### Visibility

@@ -56,6 +56,10 @@ SiteConfig(
   ratingPromptText: 'Was this page helpful?',
   ratingThankYouText: 'Thanks for your feedback!',
 
+  // Sidebar customization
+  sidebarWidth: '280px',
+  sidebarTreeIndent: '10px',
+
   // Navigation
   headerLinks: [
     NavLink(label: 'Docs', href: '/'),
@@ -183,9 +187,37 @@ SocialLink.youtube('https://youtube.com/...')
 > [!TIP]
 > The rating widget integrates with Firebase. See the [Rating System](/reference/rating) documentation for Firebase integration details.
 
+### Sidebar Customization
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `sidebarWidth` | `String` | `'280px'` | Width of the sidebar (CSS value) |
+| `sidebarTreeIndent` | `String` | `'10px'` | Left indent for tree items and section headers |
+
+```dart
+SiteConfig(
+  name: 'My Docs',
+  sidebarWidth: '320px',      // Wider sidebar
+  sidebarTreeIndent: '12px',  // More space from tree connectors
+)
+```
+
+> [!NOTE]
+> The `sidebarTreeIndent` controls the spacing between tree connector lines and the icons/text in navigation items. Increase this value if icons appear too close to the tree lines.
+
 ## Subdirectory Hosting
 
-When hosting your docs at a subdirectory (e.g., `example.com/docs`), set `baseUrl`:
+When hosting your docs at a subdirectory (e.g., `example.com/docs`), use the `--define=BASE_URL` flag when building:
+
+```bash
+jaspr build --define=BASE_URL=/docs
+```
+
+The `BASE_URL` environment variable is automatically read and applied to all navigation links. No need to manually set `baseUrl` in your config.
+
+### Manual Override
+
+If needed, you can also set `baseUrl` explicitly in your config (this takes precedence over the environment variable):
 
 ```dart
 SiteConfig(
@@ -194,11 +226,8 @@ SiteConfig(
 )
 ```
 
-Then build with the base URL defined:
-
-```bash
-jaspr build --define=BASE_URL=/docs
-```
+> [!TIP]
+> Using `--define=BASE_URL` is the recommended approach as it allows the same code to work in both development (no base URL) and production (with base URL) without code changes.
 
 ## Helper Methods
 

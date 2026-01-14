@@ -156,6 +156,7 @@ class KBSidebar extends StatelessComponent {
             Component.element(
               tag: 'summary',
               classes: 'sidebar-summary',
+              styles: Styles(raw: {'padding-left': config.sidebarTreeIndent}),
               children: [
                 if (section.icon != null) _buildIcon(section.icon!),
                 span([Component.text(section.title)]),
@@ -192,6 +193,7 @@ class KBSidebar extends StatelessComponent {
         a(
           href: fullHref,
           classes: 'sidebar-link${isActive ? ' active' : ''}',
+          styles: Styles(raw: {'padding-left': config.sidebarTreeIndent}),
           [
             if (item.icon != null) _buildIcon(item.icon!),
             Component.text(item.title),
@@ -201,8 +203,47 @@ class KBSidebar extends StatelessComponent {
     );
   }
 
-  /// Map icon name strings to ArcaneIcon components.
+  /// Build an icon from a name, SVG markup, or SVG URL.
+  ///
+  /// Supports:
+  /// - Raw SVG markup: `<svg>...</svg>`
+  /// - SVG file URL: `/icons/my-icon.svg` or `https://example.com/icon.svg`
+  /// - Lucide icon name: `rocket`, `file-text`, etc.
   Component _buildIcon(String iconName) {
+    // Raw SVG markup
+    if (iconName.trimLeft().startsWith('<svg')) {
+      return span(
+        classes: 'sidebar-icon sidebar-icon-svg',
+        styles: const Styles(raw: {
+          'display': 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          'width': '16px',
+          'height': '16px',
+        }),
+        [RawText(iconName)],
+      );
+    }
+
+    // SVG file URL
+    if (iconName.endsWith('.svg')) {
+      return img(
+        classes: 'sidebar-icon sidebar-icon-svg',
+        src: iconName.startsWith('/') ? config.fullPath(iconName) : iconName,
+        alt: '',
+        styles: const Styles(raw: {
+          'width': '16px',
+          'height': '16px',
+        }),
+      );
+    }
+
+    // Lucide icon name (default)
+    return _buildLucideIcon(iconName);
+  }
+
+  /// Map Lucide icon name strings to ArcaneIcon components.
+  Component _buildLucideIcon(String iconName) {
     return switch (iconName) {
       // Documents & Files
       'file-text' => ArcaneIcon.fileText(size: IconSize.sm),
