@@ -221,6 +221,7 @@ debug.log
 .tmp/
 .temp/
 .cache/
+.pubspec.yaml.local
 
 # Node (in case of tooling)
 node_modules/

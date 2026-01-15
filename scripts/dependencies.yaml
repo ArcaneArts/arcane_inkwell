@@ -1,0 +1,14 @@
+# Dependency switching configuration
+# This file defines how dependencies should be resolved in local vs remote mode
+
+# Dependencies that need switching
+dependencies:
+  - package: arcane_jaspr
+    local_path: /Users/brianfopiano/Developer/RemoteGit/ArcaneArts/arcane_jaspr
+    git_url: https://github.com/ArcaneArts/arcane_jaspr.git
+
+# Pubspec files to process and which dependencies to switch in each
+pubspec_files:
+  - path: pubspec.yaml
+    dependencies:
+      - arcane_jaspr
