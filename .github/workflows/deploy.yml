@@ -6,6 +6,7 @@ on:
     paths:
       - 'example/**'
       - 'lib/**'
+      - 'scripts/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -21,9 +22,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: example
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,19 +31,30 @@ jobs:
         with:
           sdk: stable
 
+      - name: Get dependencies (scripts)
+        working-directory: scripts
+        run: dart pub get
+
+      - name: Switch to remote dependencies
+        run: dart scripts/switch_dependencies.dart remote
+
       - name: Install dependencies
+        working-directory: example
         run: dart pub get
 
       - name: Install jaspr CLI
         run: dart pub global activate jaspr_cli
 
       - name: Build static site
+        working-directory: example
         run: dart pub global run jaspr_cli:jaspr build --dart-define=BASE_URL=/arcane_inkwell
 
       - name: Add .nojekyll
+        working-directory: example
         run: touch build/jaspr/.nojekyll
 
       - name: Copy 404.html for SPA routing
+        working-directory: example
         run: cp build/jaspr/index.html build/jaspr/404.html
 
       - name: Setup Pages
