@@ -103,113 +103,137 @@ if (themeToggle) {
 
   String _searchFunctionality() => '''
 // ===== SEARCH FUNCTIONALITY =====
-var searchInput = document.getElementById('kb-search');
-var searchResults = document.getElementById('search-results');
-var searchIndex = [];
-var selectedIndex = -1;
-var currentResults = [];
+(function() {
+  // Guard against multiple initializations
+  if (window.__kbSearchInitialized) return;
+  window.__kbSearchInitialized = true;
 
-// Build search index from sidebar navigation
-document.querySelectorAll('.sidebar-link').forEach(function(link) {
-  var text = link.textContent.trim();
-  var href = link.getAttribute('href');
-  if (text && href) {
-    var parts = href.split('/');
-    var category = parts.length > 1 ? parts[1] : '';
-    category = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
-    searchIndex.push({
-      title: text,
-      href: href,
-      category: category,
-      searchText: text.toLowerCase()
-    });
-  }
-});
+  var searchInput = document.getElementById('kb-search');
+  var searchResults = document.getElementById('search-results');
 
-function filterSearchResults(query) {
-  return searchIndex.filter(function(item) {
-    return item.searchText.includes(query);
-  }).slice(0, ${KBScriptConfig.maxSearchResults});
-}
-
-function updateHighlight() {
-  if (!searchResults) return;
-  var items = searchResults.querySelectorAll('a');
-  items.forEach(function(item, i) {
-    if (i === selectedIndex) {
-      item.style.background = 'var(--accent)';
-    } else {
-      item.style.background = 'transparent';
-    }
-  });
-}
-
-function showResults(results) {
-  if (!searchResults) return;
-  currentResults = results;
-  selectedIndex = -1;
-  if (results.length === 0) {
-    searchResults.innerHTML = '<div style="padding: 12px; color: var(--muted-foreground); text-align: center;">No results found</div>';
-    searchResults.style.display = 'block';
+  // Bail early if elements not found
+  if (!searchInput || !searchResults) {
+    console.warn('[KB Search] Search elements not found');
     return;
   }
-  var basePath = '$basePath';
-  var html = results.map(function(item, index) {
-    var fullHref = basePath + item.href;
-    return '<a href="' + fullHref + '" data-index="' + index + '" style="display: block; padding: 10px 12px; text-decoration: none; border-bottom: 1px solid var(--border); transition: background 0.15s;">' +
-      '<div style="font-weight: 500; color: var(--foreground);">' + item.title + '</div>' +
-      '<div style="font-size: 12px; color: var(--muted-foreground);">' + item.category + '</div>' +
-    '</a>';
-  }).join('');
-  searchResults.innerHTML = html;
-  searchResults.style.display = 'block';
-  searchResults.querySelectorAll('a').forEach(function(link) {
-    link.addEventListener('mouseenter', function() {
-      selectedIndex = parseInt(this.dataset.index, 10);
-      updateHighlight();
-    });
-    link.addEventListener('mouseleave', function() {
-      this.style.background = 'transparent';
-    });
-  });
-}
 
-function hideResults() {
-  if (searchResults) {
+  var searchIndex = [];
+  var selectedIndex = -1;
+  var currentResults = [];
+  var basePath = '$basePath';
+
+  // Build search index from sidebar navigation
+  document.querySelectorAll('.sidebar-link').forEach(function(link) {
+    var text = link.textContent.trim();
+    var href = link.getAttribute('href');
+    if (text && href) {
+      var parts = href.split('/');
+      var category = parts.length > 1 ? parts[1] : '';
+      category = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
+      searchIndex.push({
+        title: text,
+        href: href,
+        category: category,
+        searchText: text.toLowerCase()
+      });
+    }
+  });
+
+  function filterSearchResults(query) {
+    return searchIndex.filter(function(item) {
+      return item.searchText.includes(query);
+    }).slice(0, ${KBScriptConfig.maxSearchResults});
+  }
+
+  function updateHighlight() {
+    var items = searchResults.querySelectorAll('a[data-index]');
+    items.forEach(function(item, i) {
+      if (i === selectedIndex) {
+        item.style.background = 'var(--accent)';
+        // Scroll into view if needed
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        item.style.background = 'transparent';
+      }
+    });
+  }
+
+  function showResults(results) {
+    currentResults = results;
+    selectedIndex = -1;
+    if (results.length === 0) {
+      searchResults.innerHTML = '<div style="padding: 12px; color: var(--muted-foreground); text-align: center;">No results found</div>';
+      searchResults.style.display = 'block';
+      return;
+    }
+    var html = results.map(function(item, index) {
+      var fullHref = basePath + item.href;
+      return '<a href="' + fullHref + '" data-index="' + index + '" style="display: block; padding: 10px 12px; text-decoration: none; border-bottom: 1px solid var(--border); transition: background 0.15s;">' +
+        '<div style="font-weight: 500; color: var(--foreground);">' + item.title + '</div>' +
+        '<div style="font-size: 12px; color: var(--muted-foreground);">' + item.category + '</div>' +
+      '</a>';
+    }).join('');
+    searchResults.innerHTML = html;
+    searchResults.style.display = 'block';
+
+    // Attach hover handlers to new elements
+    searchResults.querySelectorAll('a[data-index]').forEach(function(link) {
+      link.addEventListener('mouseenter', function() {
+        selectedIndex = parseInt(this.dataset.index, 10);
+        updateHighlight();
+      });
+    });
+  }
+
+  function hideResults() {
     searchResults.style.display = 'none';
     selectedIndex = -1;
     currentResults = [];
   }
-}
 
-function isResultsVisible() {
-  return searchResults && searchResults.style.display === 'block';
-}
-
-function navigateToSelected() {
-  if (selectedIndex >= 0 && selectedIndex < currentResults.length) {
-    var basePath = '$basePath';
-    var href = basePath + currentResults[selectedIndex].href;
-    window.location.href = href;
+  function isResultsVisible() {
+    return searchResults.style.display === 'block';
   }
-}
 
-if (searchInput) {
+  function navigateToSelected() {
+    if (selectedIndex >= 0 && selectedIndex < currentResults.length) {
+      var href = basePath + currentResults[selectedIndex].href;
+      window.location.href = href;
+    }
+  }
+
+  // Input handler
   searchInput.addEventListener('input', function() {
     var query = this.value.toLowerCase().trim();
-    if (query.length < ${KBScriptConfig.minSearchQueryLength}) { hideResults(); return; }
+    if (query.length < ${KBScriptConfig.minSearchQueryLength}) {
+      hideResults();
+      return;
+    }
     showResults(filterSearchResults(query));
   });
 
+  // Focus handler
   searchInput.addEventListener('focus', function() {
     if (this.value.length >= ${KBScriptConfig.minSearchQueryLength}) {
       showResults(filterSearchResults(this.value.toLowerCase().trim()));
     }
   });
 
-  // Keyboard navigation - attached to input for when it has focus
+  // Blur handler - hide after small delay to allow click on results
+  searchInput.addEventListener('blur', function() {
+    setTimeout(function() {
+      // Only hide if focus didn't move to search results
+      if (!searchResults.contains(document.activeElement)) {
+        hideResults();
+      }
+    }, 150);
+  });
+
+  // Keyboard navigation on the input element
   searchInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
+    var key = e.key;
+
+    if (key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
       hideResults();
@@ -219,59 +243,69 @@ if (searchInput) {
 
     if (!isResultsVisible()) return;
 
-    if (e.key === 'ArrowDown') {
+    if (key === 'ArrowDown') {
       e.preventDefault();
       e.stopPropagation();
       if (currentResults.length > 0) {
         selectedIndex = Math.min(selectedIndex + 1, currentResults.length - 1);
         updateHighlight();
       }
-    } else if (e.key === 'ArrowUp') {
+    } else if (key === 'ArrowUp') {
       e.preventDefault();
       e.stopPropagation();
       if (currentResults.length > 0) {
         selectedIndex = Math.max(selectedIndex - 1, -1);
         updateHighlight();
       }
-    } else if (e.key === 'Enter') {
+    } else if (key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
       if (selectedIndex >= 0) {
         navigateToSelected();
       } else if (currentResults.length > 0) {
+        // Navigate to first result if none selected
         selectedIndex = 0;
         navigateToSelected();
       }
     }
-  });
+  }, true); // Capture phase
 
-  // Click-outside handler - use capture phase to run first
+  // Click-outside handler using capture phase
   document.addEventListener('click', function(e) {
-    if (!searchInput || !searchResults) return;
-    var clickedInsideSearch = searchInput.contains(e.target);
-    var clickedInsideResults = searchResults.contains(e.target);
-    if (!clickedInsideSearch && !clickedInsideResults) {
-      hideResults();
-    }
-  }, true);
+    var target = e.target;
+    var clickedInsideSearch = searchInput === target || searchInput.contains(target);
+    var clickedInsideResults = searchResults === target || searchResults.contains(target);
 
-  // Global ESC handler as fallback
+    if (!clickedInsideSearch && !clickedInsideResults && isResultsVisible()) {
+      hideResults();
+      searchInput.blur();
+    }
+  }, true); // Capture phase - runs before other handlers
+
+  // Global keyboard handler using capture phase
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && isResultsVisible()) {
+    var key = e.key;
+
+    // ESC to close (fallback if input doesn't have focus)
+    if (key === 'Escape' && isResultsVisible()) {
       e.preventDefault();
       e.stopPropagation();
       hideResults();
-      if (searchInput) searchInput.blur();
+      searchInput.blur();
+      return;
     }
+
     // Ctrl+K / Cmd+K to open search
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    if ((e.metaKey || e.ctrlKey) && key === 'k') {
       e.preventDefault();
       e.stopPropagation();
       searchInput.focus();
       searchInput.select();
     }
-  }, true);
-}
+  }, true); // Capture phase - runs before other handlers
+
+  console.log('[KB Search] Initialized with ' + searchIndex.length + ' items');
+})();
 ''';
 
   static String _codeBlockCopyButtons() => '''

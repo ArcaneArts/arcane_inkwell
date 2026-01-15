@@ -82,18 +82,18 @@ class KBSidebar extends StatelessComponent {
         div(
           classes: 'sidebar-controls',
           [
-            // Search input - uses RawText to prevent Jaspr client hydration
+            // Search - entire structure is raw HTML to bypass Jaspr client hydration
+            // This ensures vanilla JS event handlers work without framework interference
             if (config.searchEnabled)
-              div(
-                classes: 'sidebar-search',
-                [
-                  // Raw HTML input to bypass Jaspr event interception
-                  const RawText('<input id="kb-search" type="text" placeholder="Search..." autocomplete="off">'),
-                  div(classes: 'search-icon', [ArcaneIcon.search(size: IconSize.sm)]),
-                  // Search results dropdown
-                  div(id: 'search-results', classes: 'search-results', []),
-                ],
-              ),
+              const RawText('''
+<div class="sidebar-search">
+  <input id="kb-search" type="text" placeholder="Search..." autocomplete="off">
+  <div class="search-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+  </div>
+  <div id="search-results" class="search-results"></div>
+</div>
+'''),
             // Theme toggle button
             if (config.themeToggleEnabled)
               button(
