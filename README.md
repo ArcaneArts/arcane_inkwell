@@ -129,6 +129,15 @@ dependencies:
       url: https://github.com/ArcaneArts/arcane_inkwell
 ```
 
+## Related Projects
+
+| Project | Path | Description |
+|---------|------|-------------|
+| **QualityNode Web** | `/Users/brianfopiano/Developer/RemoteGit/QualityNodeLLC/QualityNode-web` | Main Arcane Jaspr website |
+| **QualityNode Knowledgebase** | `/Users/brianfopiano/Developer/RemoteGit/QualityNodeLLC/Qualitynode-Knowledgebase` | Arcane Inkwell documentation site |
+| **arcane_jaspr** | `/Users/brianfopiano/Developer/RemoteGit/ArcaneArts/arcane_jaspr` | Jaspr UI library for all apps |
+| **arcane_inkwell** | `/Users/brianfopiano/Developer/RemoteGit/ArcaneArts/arcane_inkwell` | Library that generates sites from markdown |
+
 ## License
 
 GPL-3.0
