@@ -31,13 +31,6 @@ jobs:
         with:
           sdk: stable
 
-      - name: Get dependencies (scripts)
-        working-directory: scripts
-        run: dart pub get
-
-      - name: Switch to remote dependencies
-        run: dart scripts/switch_dependencies.dart remote
-
       - name: Install dependencies
         working-directory: example
         run: dart pub get
