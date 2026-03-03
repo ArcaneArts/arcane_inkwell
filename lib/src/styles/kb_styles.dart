@@ -18,6 +18,7 @@ $_sidebarTreeConnectors
 $_sidebarLinks
 $_mediaStyles
 $_markdownAlerts
+$_lightThemeReadability
 ''';
 
   static const String _chromeStyles = '''
@@ -780,6 +781,68 @@ figure.kb-media-video video {
 
 .dark .markdown-alert-caution {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(239, 68, 68, 0.04) 100%);
+}
+''';
+
+  static const String _lightThemeReadability = '''
+html.light .prose p,
+html.light .prose li,
+html.light .prose blockquote,
+#arcane-root.light .prose p,
+#arcane-root.light .prose li,
+#arcane-root.light .prose blockquote {
+  color: var(--foreground);
+}
+
+html.light .prose li::marker,
+#arcane-root.light .prose li::marker {
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+}
+
+html.light .sidebar-brand-title,
+html.light .sidebar-section-header,
+html.light .sidebar-summary,
+html.light .sidebar-link,
+html.light .sidebar-chevron,
+#arcane-root.light .sidebar-brand-title,
+#arcane-root.light .sidebar-section-header,
+#arcane-root.light .sidebar-summary,
+#arcane-root.light .sidebar-link,
+#arcane-root.light .sidebar-chevron {
+  color: var(--foreground);
+}
+
+html.light .toc-title,
+html.light .toc-content a,
+#arcane-root.light .toc-title,
+#arcane-root.light .toc-content a {
+  color: var(--foreground);
+}
+
+html.light .kb-topbar-brand,
+html.light .kb-topbar-link,
+#arcane-root.light .kb-topbar-brand,
+#arcane-root.light .kb-topbar-link {
+  color: var(--foreground);
+}
+
+html.light .kb-topbar-link.active,
+#arcane-root.light .kb-topbar-link.active {
+  color: var(--foreground);
+}
+
+html.light .kb-callout-content,
+html.light .markdown-alert p,
+#arcane-root.light .kb-callout-content,
+#arcane-root.light .markdown-alert p {
+  color: var(--foreground);
+}
+
+html.light .prose th,
+html.light .prose td,
+#arcane-root.light .prose th,
+#arcane-root.light .prose td {
+  color: var(--foreground);
 }
 ''';
 }

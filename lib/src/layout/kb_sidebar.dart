@@ -59,7 +59,7 @@ class KBSidebar extends StatelessComponent {
                       .toList(),
                 ),
               for (NavSection section in manifest.sortedSections)
-                _buildCollapsibleSection(section),
+                _buildCollapsibleSection(section, depth: 0),
             ],
           ),
         ],
@@ -149,7 +149,7 @@ class KBSidebar extends StatelessComponent {
   }
 
   /// Build a collapsible section using native details/summary
-  Component _buildCollapsibleSection(NavSection section) {
+  Component _buildCollapsibleSection(NavSection section, {int depth = 0}) {
     final bool shouldExpand =
         section.shouldExpandFor(currentPath) || !section.collapsed;
 
@@ -162,7 +162,7 @@ class KBSidebar extends StatelessComponent {
           Component.element(
             tag: 'summary',
             classes: 'sidebar-summary',
-            styles: Styles(raw: {'padding-left': config.sidebarTreeIndent}),
+            styles: _treeRowStyles(depth, isFolder: true),
             children: [
               if (section.icon != null) _buildIcon(section.icon!),
               span([Component.text(section.title)]),
@@ -174,10 +174,10 @@ class KBSidebar extends StatelessComponent {
           div(classes: 'sidebar-tree', [
             // Items in this section
             for (final NavItem item in section.visibleItems)
-              _buildNavItem(item),
+              _buildNavItem(item, depth: depth + 1),
             // Nested sections
             for (final NavSection nested in section.sortedSections)
-              _buildCollapsibleSection(nested),
+              _buildCollapsibleSection(nested, depth: depth + 1),
           ]),
         ],
       ),
@@ -185,7 +185,7 @@ class KBSidebar extends StatelessComponent {
   }
 
   /// Build a navigation item that links to a page
-  Component _buildNavItem(NavItem item) {
+  Component _buildNavItem(NavItem item, {int depth = 0}) {
     final String fullHref = config.fullPath(item.path);
     final bool isActive = _isActive(item.path);
 
@@ -193,13 +193,25 @@ class KBSidebar extends StatelessComponent {
       a(
         href: fullHref,
         classes: 'sidebar-link${isActive ? ' active' : ''}',
-        styles: Styles(raw: {'padding-left': config.sidebarTreeIndent}),
+        styles: _treeRowStyles(depth, isFolder: false),
         [
           if (item.icon != null) _buildIcon(item.icon!),
           Component.text(item.title),
         ],
       ),
     ]);
+  }
+
+  Styles _treeRowStyles(int depth, {required bool isFolder}) {
+    final Map<String, String> rawStyles = <String, String>{
+      'padding-left': config.sidebarTreeIndent,
+    };
+
+    if (isFolder && depth > 0) {
+      rawStyles['margin-left'] = '0.75rem';
+    }
+
+    return Styles(raw: rawStyles);
   }
 
   /// Build an icon from a name, SVG markup, or SVG URL.
