@@ -1,238 +1,487 @@
 ---
 title: Components
-description: Reusable layout components for documentation pages
+description: Complete component catalog for Arcane Inkwell
 icon: layers
 order: 7
 tags:
   - reference
   - components
+  - markdown
   - layout
 ---
 
-Arcane Inkwell includes several reusable components for building documentation pages.
+Arcane Inkwell ships two component layers:
 
-## KBChangelog
+1. Rich markdown components available directly in `.md` files.
+2. Dart layout components you can use when composing custom layouts.
 
-Displays a styled changelog timeline from CHANGELOG.md content.
+## Rich Markdown Components
 
-### Usage
+The following components are registered by default through `KBRichMarkdownComponents.defaults()`.
+
+### Link Cards
+
+#### CardGroup + Card
+
+```markdown
+<CardGroup cols={3}>
+  <Card title="Quick Start" href="/guide/basics/installation" icon="rocket">
+    Install and launch your docs app.
+  </Card>
+  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_inkwell" icon="github">
+    External links show the external-link indicator.
+  </Card>
+</CardGroup>
+```
+
+<CardGroup cols={3}>
+  <Card title="Quick Start" href="/guide/basics/installation" icon="rocket">
+    Install and launch your docs app.
+  </Card>
+  <Card title="SiteConfig" href="/reference/site-config" icon="settings">
+    Configure global behavior and layout toggles.
+  </Card>
+  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_inkwell" icon="github">
+    External links show the external-link indicator.
+  </Card>
+</CardGroup>
+
+#### Tiles + Tile
+
+```markdown
+<Tiles cols={3}>
+  <Tile title="Docs" href="/" icon="book">Internal navigation tile.</Tile>
+  <Tile title="Discord" href="https://discord.gg/arcane" icon="message-circle">External support link.</Tile>
+  <Tile title="Status" icon="activity">Tile without href acts as static content.</Tile>
+</Tiles>
+```
+
+<Tiles cols={3}>
+  <Tile title="Docs" href="/" icon="book">Internal navigation tile.</Tile>
+  <Tile title="Discord" href="https://discord.gg/arcane" icon="message-circle">External support link.</Tile>
+  <Tile title="Status" icon="activity">Tile without href acts as static content.</Tile>
+</Tiles>
+
+### Layout Blocks
+
+#### Columns + Column
+
+```markdown
+<Columns cols={2}>
+  <Column>Left column content.</Column>
+  <Column>Right column content.</Column>
+</Columns>
+```
+
+<Columns cols={2}>
+  <Column>
+    <Panel title="Left" icon="columns">Column layout is responsive and stacks on mobile.</Panel>
+  </Column>
+  <Column>
+    <Panel title="Right" icon="columns">Use this for side-by-side comparisons.</Panel>
+  </Column>
+</Columns>
+
+#### Steps + Step
+
+```markdown
+<Steps>
+  <Step title="Install dependency">Add `arcane_inkwell` to `pubspec.yaml`.</Step>
+  <Step title="Run dev server">Execute `jaspr serve`.</Step>
+</Steps>
+```
+
+<Steps>
+  <Step title="Install dependency">Add `arcane_inkwell` to `pubspec.yaml`.</Step>
+  <Step title="Run dev server">Execute `jaspr serve`.</Step>
+  <Step title="Verify output">Confirm navigation, callouts, and cards render.</Step>
+</Steps>
+
+#### AccordionGroup + Accordion
+
+```markdown
+<AccordionGroup>
+  <Accordion title="Can this contain markdown?">Yes.</Accordion>
+  <Accordion title="Can it start open?" defaultOpen={true}>Yes.</Accordion>
+</AccordionGroup>
+```
+
+<AccordionGroup>
+  <Accordion title="Can this contain markdown?">Yes. Tables, code fences, and links are supported.</Accordion>
+  <Accordion title="Can it start open?" defaultOpen={true}>Set `defaultOpen={true}`.</Accordion>
+</AccordionGroup>
+
+#### Expandable
+
+```markdown
+<Expandable title="More details" defaultOpen={false}>
+  Hidden content until expanded.
+</Expandable>
+```
+
+<Expandable title="More details" defaultOpen={false}>
+  Use this when you only need one collapsible block and do not need an accordion group.
+</Expandable>
+
+### Status and Content Wrappers
+
+#### Badge
+
+```markdown
+<Badge color="info">Beta</Badge>
+<Badge color="success">Stable</Badge>
+<Badge color="warning">Preview</Badge>
+<Badge color="danger">Breaking</Badge>
+```
+
+<Badge color="info">Beta</Badge>
+<Badge color="success">Stable</Badge>
+<Badge color="warning">Preview</Badge>
+<Badge color="danger">Breaking</Badge>
+
+#### Banner
+
+```markdown
+<Banner title="Deployment" href="/guide/basics/running" type="info">
+  Review runtime and build commands.
+</Banner>
+```
+
+<Banner title="Deployment" href="/guide/basics/running" type="info">
+  Review runtime and build commands.
+</Banner>
+
+#### Panel
+
+```markdown
+<Panel title="Implementation Notes" icon="panel">
+  Group related text with a titled wrapper.
+</Panel>
+```
+
+<Panel title="Implementation Notes" icon="panel">
+  Group related text with a titled wrapper.
+</Panel>
+
+#### Frame
+
+```markdown
+<Frame label="Preview" caption="Optional caption text.">
+  Content goes here.
+</Frame>
+```
+
+<Frame label="Preview" caption="Optional caption text.">
+  Frame content supports standard markdown.
+</Frame>
+
+#### Update
+
+```markdown
+<Update label="Last updated" date="2026-03-03">
+  Changelog summary.
+</Update>
+```
+
+<Update label="Last updated" date="2026-03-03">
+  This component is useful for release notes or page maintenance history.
+</Update>
+
+### API and Data Display
+
+#### FieldGroup + ParamField + ResponseField
+
+```markdown
+<FieldGroup>
+  <ParamField query="page" type="number" required={true}>Page number.</ParamField>
+  <ResponseField name="items" type="array">Returned items.</ResponseField>
+</FieldGroup>
+```
+
+<FieldGroup>
+  <ParamField query="page" type="number" required={true}>Page number.</ParamField>
+  <ParamField body="filter" type="object">Optional filter object.</ParamField>
+  <ResponseField name="items" type="array" required={true}>Returned items.</ResponseField>
+</FieldGroup>
+
+#### Tree + Tree.Folder + Tree.File
+
+```markdown
+<Tree>
+  <Tree.Folder name="content" defaultOpen={true}>
+    <Tree.File name="index.md" />
+    <Tree.File name="guide/installation.md" />
+  </Tree.Folder>
+</Tree>
+```
+
+<Tree>
+  <Tree.Folder name="content" defaultOpen={true}>
+    <Tree.File name="index.md" />
+    <Tree.File name="guide/installation.md" />
+  </Tree.Folder>
+</Tree>
+
+#### Color + Color.Item
+
+```markdown
+<Color>
+  <Color.Item label="Primary" value="#3b82f6" />
+  <Color.Item label="Success" value="#22c55e" />
+</Color>
+```
+
+<Color>
+  <Color.Item label="Primary" value="#3b82f6" />
+  <Color.Item label="Success" value="#22c55e" />
+  <Color.Item label="Warning" value="#f59e0b" />
+</Color>
+
+#### View
+
+```markdown
+<View title="Configuration Snapshot">
+  Any markdown content can be wrapped.
+</View>
+```
+
+<View title="Configuration Snapshot">
+  Use this as a labeled container for grouped output.
+</View>
+
+### Inline and Utility Components
+
+#### Tooltip
+
+```markdown
+<Tooltip tip="Native tooltip text">Hover me</Tooltip>
+```
+
+<Tooltip tip="Native tooltip text">Hover me</Tooltip>
+
+#### Icon
+
+```markdown
+<Icon name="sparkles" size="sm" />
+```
+
+<Icon name="sparkles" size="sm" />
+<Icon name="palette" size="sm" />
+<Icon name="lightbulb" size="sm" />
+
+#### CodeGroup
+
+````markdown
+<CodeGroup title="CLI">
+```bash
+jaspr serve
+```
+```bash
+jaspr build --define=BASE_URL=/docs
+```
+</CodeGroup>
+````
+
+<CodeGroup title="CLI">
+```bash
+jaspr serve
+```
+```bash
+jaspr build --define=BASE_URL=/docs
+```
+</CodeGroup>
+
+### Callout Tag Components
+
+Callout tag components are available in addition to GitHub callout markdown syntax.
+
+Supported tags:
+- `Note`
+- `Tip`
+- `Warning`
+- `Info`
+- `Check`
+- `Caution`
+- `Important`
+
+```markdown
+<Warning title="Java 21 Required">
+  Use Java 21 or newer.
+</Warning>
+```
+
+<Note title="Callout Tag">
+  Tag-based callouts are rendered with Arcane Lucide icons.
+</Note>
+
+<Tip title="Pro Tip">
+  Use `title` to override the default heading text.
+</Tip>
+
+<Info title="Info Alias">
+  `Info` renders as the note style variant.
+</Info>
+
+<Check title="Check Alias">
+  `Check` renders as the tip style variant.
+</Check>
+
+<Warning title="Warning">
+  Warning callout tags are available directly in markdown.
+</Warning>
+
+<Caution title="Caution">
+  Caution callouts use the danger-style icon treatment.
+</Caution>
+
+<Important title="Important">
+  Important callouts use the circle-alert icon treatment.
+</Important>
+
+### Tabs
+
+`Tabs` is provided via `jaspr_content/components/tabs.dart` and is included in defaults.
+
+```markdown
+<Tabs defaultValue="one">
+  <TabItem label="First" value="one">First tab content</TabItem>
+  <TabItem label="Second" value="two">Second tab content</TabItem>
+</Tabs>
+```
+
+<Tabs defaultValue="one">
+  <TabItem label="First" value="one">First tab content</TabItem>
+  <TabItem label="Second" value="two">Second tab content</TabItem>
+</Tabs>
+
+## Dart Layout Components
+
+These components are available for custom layout composition in Dart.
+
+### KBLayout
+
+Main page layout used when frontmatter sets `layout: kb`.
 
 ```dart
-import 'package:arcane_inkwell/arcane_inkwell.dart';
-
-// Parse changelog content
-final versions = ChangelogParser.parse(changelogContent);
-
-// Render component
-KBChangelog(
-  versions: versions,
-  maxVersions: 5,              // Optional: limit displayed versions
-  githubUrl: 'https://github.com/org/repo',  // Optional: adds release links
+KBLayout(
+  config: config,
+  manifest: manifest,
+  stylesheet: stylesheet,
 )
 ```
 
-### Features
+### KBPageNav
 
-- **Version badges**: Each version shown with styled badge
-- **Date display**: Shows release date if present
-- **GitHub release links**: Automatic links to releases when `githubUrl` provided
-- **Color-coded sections**: Different colors for Added, Changed, Fixed, etc.
-- **Section icons**: Visual icons for each change type
+Sequential previous/next navigation based on sorted visible pages.
 
-### Changelog Format
+- Global toggle: `SiteConfig.pageNavEnabled`
+- Per-page override: frontmatter `pageNav: true|false`
 
-Uses the [Keep a Changelog](https://keepachangelog.com/) format:
-
-```markdown
-## [1.2.0] - 2024-01-15
-
-### Added
-- New feature X
-- New feature Y
-
-### Changed
-- Updated behavior of Z
-
-### Fixed
-- Bug fix for issue #123
-
-## [1.1.0] - 2024-01-01
-
-### Added
-- Initial feature A
+```dart
+KBPageNav(
+  config: config,
+  manifest: manifest,
+  currentPath: '/guide/basics/installation',
+)
 ```
 
-### Section Colors
+### KBSidebar + KBTopBar
 
-| Section | Color | Icon |
-|---------|-------|------|
-| Added | Green | Plus |
-| Changed | Blue | Pencil |
-| Deprecated | Yellow | Warning |
-| Removed | Red | Trash |
-| Fixed | Purple | Wrench |
-| Security | Orange | Shield |
+Navigation chrome components used by the default layout.
 
-## KBRelatedPages
+- `navigationBarEnabled`
+- `navigationBarPosition` (`top` or `bottom`)
 
-Displays related pages based on shared tags.
+```dart
+KBSidebar(
+  config: config,
+  manifest: manifest,
+  currentPath: '/reference/components',
+  showSearch: true,
+  showThemeToggle: true,
+)
+```
 
-### Usage
+```dart
+KBTopBar(
+  config: config,
+  currentPath: '/reference/components',
+  showThemeToggle: true,
+)
+```
+
+### KBRating
+
+Thumbs up/down rating block controlled by:
+
+- `SiteConfig.ratingEnabled`
+- `SiteConfig.ratingPromptText`
+- `SiteConfig.ratingThankYouText`
+
+```dart
+KBRating(
+  pagePath: '/reference/components',
+  config: KBRatingConfig(
+    promptText: config.ratingPromptText,
+    thankYouText: config.ratingThankYouText,
+  ),
+)
+```
+
+### KBChangelog
+
+Renderable timeline view for parsed changelog entries.
+
+```dart
+final ChangelogParser parser = ChangelogParser();
+final List<ChangelogVersion> versions = parser.parse(changelogMarkdown);
+
+KBChangelog(
+  versions: versions,
+  maxVersions: 5,
+  githubUrl: config.githubUrl,
+)
+```
+
+### KBSubpages and KBRelatedPages
+
+Both are exported and available for custom layouts.
+
+- `KBSubpages` shows children for the current section.
+- `KBRelatedPages` computes similarity from shared tags.
+
+These are not auto-injected by the default layout; use them explicitly in custom layout composition if needed.
+
+```dart
+KBSubpages(
+  manifest: manifest,
+  currentPath: '/guide',
+)
+```
 
 ```dart
 KBRelatedPages(
-  config: siteConfig,
-  manifest: navManifest,
-  currentPath: '/guide/authentication',
-  currentTags: ['security', 'authentication'],
-  maxItems: 3,  // Default: 3
+  allPages: pages,
+  currentPath: '/guide/basics/configuration',
 )
 ```
 
-### Features
+### DemoBuilder
 
-- **Tag-based matching**: Finds pages with shared tags
-- **Relevance ranking**: More shared tags = higher ranking
-- **Card layout**: Grid of clickable cards
-- **Description preview**: Shows truncated page descriptions
-- **Shared tag display**: Shows which tags are shared
-
-### Automatic Integration
-
-Related pages are automatically displayed at the bottom of pages when:
-1. The current page has tags in frontmatter
-2. Other pages share at least one tag
-
-## KBSubpages
-
-Displays child pages of the current section in a grid.
-
-### Features
-
-- **Grid layout**: Responsive card grid
-- **Icon display**: Shows page icons
-- **Description**: Page descriptions
-- **Page count**: For subsections, shows number of pages
-
-### Automatic Integration
-
-Subpages are automatically shown on section index pages (`index.md`).
-
-## KBPageNav
-
-Previous/Next page navigation at the bottom of pages.
-
-### Features
-
-- **Sequential navigation**: Based on sidebar order
-- **Respects visibility**: Skips hidden and draft pages
-- **Full-width layout**: Previous on left, next on right
-
-### Automatic Integration
-
-Page navigation is automatically shown on all content pages.
-
-## KBBreadcrumbs
-
-Path-based breadcrumb navigation.
-
-### Features
-
-- **Auto-generated**: From URL path
-- **Home link**: Always includes link to home
-- **Current page**: Last segment is non-clickable
-- **Chevron separator**: Visual separation between levels
-
-### Automatic Integration
-
-Breadcrumbs are automatically shown at the top of all content pages.
-
-## KBToc (Table of Contents)
-
-Sticky table of contents sidebar.
-
-### Features
-
-- **Auto-generated**: From page headings (H2, H3, H4)
-- **Active tracking**: Highlights current section while scrolling
-- **Smooth scroll**: Clicking jumps to section
-- **Sticky positioning**: Stays visible while scrolling
-
-### Configuration
-
-```dart
-SiteConfig(
-  name: 'My Docs',
-  tocEnabled: true,  // Default: true
-)
-```
-
-### Supported Heading Levels
-
-- H2 (`##`) - Primary sections
-- H3 (`###`) - Subsections
-- H4 (`####`) - Sub-subsections
-
-> [!NOTE]
-> H1 (`#`) is reserved for the page title and not included in TOC.
-
-## KBSidebar
-
-The main navigation sidebar component.
-
-### Features
-
-- **Brand section**: Site name and description
-- **Search input**: Integrated search
-- **Theme toggle**: Dark/light mode switch
-- **Collapsible sections**: Expandable navigation tree
-- **Active highlighting**: Current page highlighted
-- **Scroll persistence**: Remembers scroll position
-
-### Configuration
-
-See [SiteConfig Reference](/reference/site-config) for sidebar options:
-- `searchEnabled`
-- `themeToggleEnabled`
-- `sidebarFooter`
-- `sidebarFooterUrl`
-
-## DemoBuilder
-
-Enables live component demos in documentation pages.
-
-### Usage
-
-1. Add `component` field to frontmatter:
-
-```yaml
----
-title: Button Component
-component: ButtonDemo
----
-```
-
-2. Provide a builder function:
+Use `KnowledgeBaseApp.create(..., demoBuilder: ...)` and page frontmatter `component: ...` to render live Dart components above markdown content.
 
 ```dart
 KnowledgeBaseApp.create(
   config: config,
   stylesheet: stylesheet,
   demoBuilder: (String componentType) {
-    return switch (componentType) {
-      'ButtonDemo' => const InteractiveButtonDemo(),
-      'FormDemo' => const InteractiveFormDemo(),
-      _ => null,
-    };
+    if (componentType == 'ButtonDemo') {
+      return ArcaneButton(
+        onPressed: () {},
+        child: const ArcaneText('Demo'),
+      );
+    }
+    return null;
   },
 )
 ```
-
-3. The returned component renders above the page content.
-
-### Use Cases
-
-- Interactive component previews
-- Live code examples
-- API playgrounds
-- Configuration demos

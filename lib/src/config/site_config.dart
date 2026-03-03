@@ -72,6 +72,8 @@ class SiteConfig {
   /// Custom thank you text shown after rating.
   final String ratingThankYouText;
 
+  final bool pageNavEnabled;
+
   /// Width of the sidebar (CSS value, e.g., '280px', '300px', '20rem').
   final String sidebarWidth;
 
@@ -107,6 +109,7 @@ class SiteConfig {
     this.ratingEnabled = false,
     this.ratingPromptText = 'Was this page helpful?',
     this.ratingThankYouText = 'Thanks for your feedback!',
+    this.pageNavEnabled = true,
     this.sidebarWidth = '280px',
     this.sidebarTreeIndent = '10px',
     this.navigationBarEnabled = true,

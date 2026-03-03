@@ -65,8 +65,3 @@ Use three dashes to create a horizontal rule:
 ---
 
 Content continues after the rule.
-
-## Links
-
-- [Internal link](/guide/basics/installation)
-- [External link](https://github.com) (shows indicator icon)

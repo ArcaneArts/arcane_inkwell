@@ -1,23 +1,19 @@
 ---
-title: Tags & Related Pages
-description: Organize and connect content with tags
+title: Tags Metadata
+description: Organize pages with tags and enrich generated search index data
 icon: tags
 order: 7
 tags:
   - tags
-  - organization
-  - navigation
+  - metadata
+  - search
 author: Arcane Arts
-date: 2025-01-11
+date: 2026-03-03
 ---
 
-# Tags & Related Pages
-
-Tags help organize your documentation and show related content to readers.
+Tags are page metadata defined in frontmatter.
 
 ## Adding Tags
-
-Add tags to any page using the frontmatter:
 
 ```yaml
 ---
@@ -29,27 +25,20 @@ tags:
 ---
 ```
 
-## Tag Display
+## Where Tags Are Used
 
-Tags are displayed in the page header as visual badges. Readers can quickly see what topics a page covers.
+- Displayed in page metadata/footer chips by the default layout.
+- Included in generated search-index entries (`SearchIndexGenerator`).
+- Available to custom components/layout logic.
 
-## Related Pages
+## Current Default Layout Behavior
 
-At the bottom of each page, a "Related Pages" section automatically appears showing other pages that share tags with the current page. This helps readers discover related content.
-
-The related pages feature:
-
-- Ranks pages by how many tags they share with the current page
-- Shows up to 5 related pages
-- Excludes the current page from results
-
-## Search Integration
-
-Tags are also indexed for search, so readers can find pages by searching for tag names.
+The default `KBLayout` does not auto-render `KBRelatedPages`. If you want related-page cards, use `KBRelatedPages` explicitly in a custom layout composition.
 
 ## Best Practices
 
-1. **Use consistent tag names** - stick to a set vocabulary
-2. **Be specific** - use descriptive tags like "api-reference" instead of just "api"
-3. **Don't over-tag** - 3-5 tags per page is usually sufficient
-4. **Use lowercase with hyphens** - e.g., "getting-started" instead of "Getting Started"
+1. Use consistent lowercase tag naming.
+2. Prefer specific tags (`api-reference`) over generic tags (`api`).
+3. Keep 3-6 tags per page.
+4. Keep tags as a YAML list for reliable parsing.
+

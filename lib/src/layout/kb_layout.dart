@@ -7,6 +7,7 @@ import '../navigation/nav_item.dart';
 import '../navigation/nav_section.dart';
 import '../scripts/kb_scripts.dart';
 import '../styles/kb_styles.dart';
+import 'kb_page_nav.dart';
 import 'kb_rating.dart';
 import 'kb_sidebar.dart';
 import 'kb_top_bar.dart';
@@ -43,6 +44,14 @@ class KBLayout extends PageLayoutBase {
 
     final Map<String, dynamic> pageData = page.data.page;
     final String assetPrefix = config.assetPrefix;
+    String rewrittenBaseCss = _rewriteAssetUrls(
+      stylesheet.baseCss,
+      assetPrefix,
+    );
+    String rewrittenComponentCss = _rewriteAssetUrls(
+      stylesheet.componentCss,
+      assetPrefix,
+    );
 
     // Title
     final String title = pageData['title'] as String? ?? config.name;
@@ -88,7 +97,7 @@ class KBLayout extends PageLayoutBase {
     yield Component.element(
       tag: 'style',
       attributes: const {'id': 'arcane-theme-vars'},
-      children: [RawText(stylesheet.baseCss)],
+      children: [RawText(rewrittenBaseCss)],
     );
 
     // Inject default KB component styles (base structural styles)
@@ -104,7 +113,7 @@ class KBLayout extends PageLayoutBase {
     yield Component.element(
       tag: 'style',
       attributes: const {'id': 'arcane-component-styles'},
-      children: [RawText(stylesheet.componentCss)],
+      children: [RawText(rewrittenComponentCss)],
     );
 
     // Load external CSS (Google Fonts, etc.)
@@ -170,6 +179,18 @@ class KBLayout extends PageLayoutBase {
 
     // Extract component type for demo injection
     final String? componentType = pageData['component'] as String?;
+    bool? pageNavOverride;
+    dynamic rawPageNav = pageData['pageNav'];
+    if (rawPageNav is bool) {
+      pageNavOverride = rawPageNav;
+    } else if (rawPageNav is String) {
+      String normalizedPageNav = rawPageNav.trim().toLowerCase();
+      if (normalizedPageNav == 'true') {
+        pageNavOverride = true;
+      } else if (normalizedPageNav == 'false') {
+        pageNavOverride = false;
+      }
+    }
 
     // Find the NavItem for this page to get lastModified
     final NavItem? navItem = _findNavItem(page.url);
@@ -190,9 +211,100 @@ class KBLayout extends PageLayoutBase {
       date: date,
       lastModified: lastModified,
       componentType: componentType,
+      pageNavOverride: pageNavOverride,
       demoBuilder: demoBuilder,
       content: child,
     );
+  }
+
+  String _rewriteAssetUrls(String css, String assetPrefix) {
+    return KBLayout.rewriteAssetUrlsForBasePath(css, assetPrefix);
+  }
+
+  static String rewriteAssetUrlsForBasePath(String css, String assetPrefix) {
+    final String normalizedPrefix =
+        assetPrefix.endsWith('/') && assetPrefix.isNotEmpty
+        ? assetPrefix.substring(0, assetPrefix.length - 1)
+        : assetPrefix;
+    String rewritten = css;
+    if (normalizedPrefix.isNotEmpty) {
+      rewritten = rewritten.replaceAll(
+        "url('/assets/",
+        "url('$normalizedPrefix/assets/",
+      );
+      rewritten = rewritten.replaceAll(
+        'url("/assets/',
+        'url("$normalizedPrefix/assets/',
+      );
+      rewritten = rewritten.replaceAll(
+        'url(/assets/',
+        'url($normalizedPrefix/assets/',
+      );
+    }
+    rewritten = _withLucideRootFallback(rewritten, normalizedPrefix);
+    return rewritten;
+  }
+
+  static String _withLucideRootFallback(String css, String normalizedPrefix) {
+    final RegExp lucideSrcPattern = RegExp(
+      "(@font-face\\s*\\{[^\\}]*font-family:\\s*'lucide';[^\\}]*?src:\\s*)([^;]+)(;)",
+      multiLine: true,
+      dotAll: true,
+    );
+    final List<String> woff2Urls = <String>[
+      if (normalizedPrefix.isNotEmpty)
+        '$normalizedPrefix/assets/fonts/lucide/lucide.woff2',
+      '/assets/fonts/lucide/lucide.woff2',
+      '/fonts/lucide/lucide.woff2',
+      'assets/fonts/lucide/lucide.woff2',
+      'fonts/lucide/lucide.woff2',
+      '../assets/fonts/lucide/lucide.woff2',
+      '../fonts/lucide/lucide.woff2',
+      '../../assets/fonts/lucide/lucide.woff2',
+      '../../fonts/lucide/lucide.woff2',
+      'https://cdn.jsdelivr.net/gh/ArcaneArts/arcane_jaspr@master/assets/fonts/lucide/lucide.woff2',
+    ];
+    final List<String> woffUrls = <String>[
+      if (normalizedPrefix.isNotEmpty)
+        '$normalizedPrefix/assets/fonts/lucide/lucide.woff',
+      '/assets/fonts/lucide/lucide.woff',
+      '/fonts/lucide/lucide.woff',
+      'assets/fonts/lucide/lucide.woff',
+      'fonts/lucide/lucide.woff',
+      '../assets/fonts/lucide/lucide.woff',
+      '../fonts/lucide/lucide.woff',
+      '../../assets/fonts/lucide/lucide.woff',
+      '../../fonts/lucide/lucide.woff',
+    ];
+    final List<String> ttfUrls = <String>[
+      if (normalizedPrefix.isNotEmpty)
+        '$normalizedPrefix/assets/fonts/lucide/lucide.ttf',
+      '/assets/fonts/lucide/lucide.ttf',
+      '/fonts/lucide/lucide.ttf',
+      'assets/fonts/lucide/lucide.ttf',
+      'fonts/lucide/lucide.ttf',
+      '../assets/fonts/lucide/lucide.ttf',
+      '../fonts/lucide/lucide.ttf',
+      '../../assets/fonts/lucide/lucide.ttf',
+      '../../fonts/lucide/lucide.ttf',
+    ];
+    final List<String> candidates = <String>[
+      ...woff2Urls.map(
+        (String url) => "url('$url') format('woff2')",
+      ),
+      ...woffUrls.map(
+        (String url) => "url('$url') format('woff')",
+      ),
+      ...ttfUrls.map(
+        (String url) => "url('$url') format('truetype')",
+      ),
+    ];
+    final String rewrittenSrc = candidates.join(',\n       ');
+    final String rewritten = css.replaceFirstMapped(
+      lucideSrcPattern,
+      (Match match) => '${match.group(1)!}$rewrittenSrc${match.group(3)!}',
+    );
+    return rewritten;
   }
 
   /// Find a NavItem by its path in the manifest.
@@ -240,6 +352,7 @@ class ThemedKBPage extends StatefulComponent {
   final String? date;
   final String? lastModified;
   final String? componentType;
+  final bool? pageNavOverride;
   final DemoBuilder? demoBuilder;
   final Component content;
 
@@ -258,6 +371,7 @@ class ThemedKBPage extends StatefulComponent {
     this.date,
     this.lastModified,
     this.componentType,
+    this.pageNavOverride,
     this.demoBuilder,
     required this.content,
   });
@@ -419,8 +533,22 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
         div(classes: 'prose', [component.content]),
         if (component.tags.isNotEmpty) _buildTagsFooter(),
         if (component.config.ratingEnabled) _buildRating(),
+        if (_showPageNav())
+          KBPageNav(
+            config: component.config,
+            manifest: component.manifest,
+            currentPath: component.currentPath,
+          ),
       ],
     );
+  }
+
+  bool _showPageNav() {
+    bool? pageOverride = component.pageNavOverride;
+    if (pageOverride != null) {
+      return pageOverride;
+    }
+    return component.config.pageNavEnabled;
   }
 
   /// Build page rating widget

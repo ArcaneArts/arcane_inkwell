@@ -1,12 +1,14 @@
 import 'dart:io' as io;
 
-import 'package:arcane_jaspr/arcane_jaspr.dart' hide TableOfContents, ReadingTimeExtension;
+import 'package:arcane_jaspr/arcane_jaspr.dart'
+    hide TableOfContents, ReadingTimeExtension;
 import 'package:jaspr_content/jaspr_content.dart';
 
 import '../config/site_config.dart';
 import '../navigation/nav_builder.dart';
 import '../layout/kb_layout.dart';
 import '../scripts/kb_scripts.dart';
+import '../components/rich_markdown_components.dart';
 import '../extensions/reading_time_extension.dart';
 import '../extensions/callout_extension.dart';
 import '../extensions/media_extension.dart';
@@ -54,6 +56,7 @@ class KnowledgeBaseApp {
     required SiteConfig config,
     required ArcaneStylesheet stylesheet,
     List<PageExtension>? extensions,
+    List<CustomComponent>? components,
     DemoBuilder? demoBuilder,
     bool generateSearchIndex = true,
   }) async {
@@ -90,11 +93,15 @@ class KnowledgeBaseApp {
       const ReadingTimeExtension(),
     ];
 
+    final List<CustomComponent> defaultComponents =
+        KBRichMarkdownComponents.defaults();
+
     return ContentApp(
       directory: config.contentDirectory,
       parsers: [const MarkdownParser()],
       layouts: [layout],
       extensions: [...defaultExtensions, ...?extensions],
+      components: [...defaultComponents, ...?components],
     );
   }
 
@@ -105,10 +112,7 @@ class KnowledgeBaseApp {
     SiteConfig config,
     NavManifest manifest,
   ) async {
-    final generator = SearchIndexGenerator(
-      config: config,
-      manifest: manifest,
-    );
+    final generator = SearchIndexGenerator(config: config, manifest: manifest);
 
     final json = generator.generate();
 
@@ -141,6 +145,7 @@ class KnowledgeBaseApp {
     required NavManifest manifest,
     required ArcaneStylesheet stylesheet,
     List<PageExtension>? extensions,
+    List<CustomComponent>? components,
     DemoBuilder? demoBuilder,
   }) {
     // Create scripts
@@ -164,11 +169,15 @@ class KnowledgeBaseApp {
       const ReadingTimeExtension(),
     ];
 
+    final List<CustomComponent> defaultComponents =
+        KBRichMarkdownComponents.defaults();
+
     return ContentApp(
       directory: config.contentDirectory,
       parsers: [const MarkdownParser()],
       layouts: [layout],
       extensions: [...defaultExtensions, ...?extensions],
+      components: [...defaultComponents, ...?components],
     );
   }
 }

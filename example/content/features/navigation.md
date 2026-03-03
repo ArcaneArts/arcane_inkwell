@@ -1,30 +1,79 @@
 ---
 title: Navigation
-description: Sidebar, breadcrumbs, and page navigation
+description: Sidebar, top/bottom nav bar, breadcrumbs, and page navigation
 icon: compass
 order: 1
 tags:
   - navigation
   - organization
 author: Arcane Arts
-date: 2025-01-11
+date: 2026-03-03
 ---
+
+Arcane Inkwell navigation is generated from the content tree and section configs.
 
 ## Sidebar Navigation
 
-The sidebar is auto-generated from your folder structure. Each folder with a `_section.json5` becomes a collapsible section.
+- Built from folders/files in `contentDirectory`.
+- Controlled with `_section.json5` or `_section.yaml`.
+- Supports section collapse memory via localStorage.
+- Supports Lucide icon names, SVG URLs, and raw SVG markup in section/page icons.
+
+## Top/Bottom Navigation Bar
+
+Global top bar behavior:
+
+```dart
+SiteConfig(
+  name: 'My Docs',
+  navigationBarEnabled: true,
+  navigationBarPosition: KBNavigationBarPosition.top, // or bottom
+)
+```
+
+Includes:
+- Brand/home link
+- Header links
+- Search (when enabled)
+- Theme toggle (when enabled)
+- GitHub link (when configured)
 
 ## Breadcrumbs
 
-Breadcrumbs show the current path. Visit the [Guide](/guide) section for deeper nesting.
+Breadcrumbs are generated from the current URL path and rendered above page content.
 
-## Previous/Next
+## Footer Prev/Next Navigation
 
-Look at the bottom of this page. You'll see links to navigate sequentially through the documentation.
+`KBPageNav` is rendered by default and follows manifest order of visible pages.
 
-| Feature | Location |
-|---------|----------|
-| Sidebar | Left panel |
-| Breadcrumbs | Above title |
-| Prev/Next | Below content |
-| TOC | Right panel |
+Global toggle:
+
+```dart
+SiteConfig(
+  name: 'My Docs',
+  pageNavEnabled: true,
+)
+```
+
+Per-page override:
+
+```yaml
+---
+layout: kb
+pageNav: false
+---
+```
+
+## TOC Panel
+
+Right-side TOC is enabled by:
+
+```dart
+SiteConfig(
+  name: 'My Docs',
+  tocEnabled: true,
+)
+```
+
+It tracks heading anchors and highlights the active section during scroll.
+

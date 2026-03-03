@@ -37,64 +37,144 @@ class MediaExtension implements PageExtension {
   }
 
   String _transformMedia(String content) {
-    String result = content;
-
-    // Transform @[type attrs](src) syntax
-    final RegExp mediaPattern = RegExp(
-      r'@\[(\w+)([^\]]*)\]\(([^)]+)\)',
+    final RegExp fencedCodePattern = RegExp(
+      r'(```[\s\S]*?```|~~~[\s\S]*?~~~)',
       multiLine: true,
     );
 
-    result = result.replaceAllMapped(mediaPattern, (match) {
+    StringBuffer result = StringBuffer();
+    int cursor = 0;
+    for (Match match in fencedCodePattern.allMatches(content)) {
+      String segment = content.substring(cursor, match.start);
+      result.write(_transformMediaInSegment(segment));
+      result.write(match.group(0)!);
+      cursor = match.end;
+    }
+    result.write(_transformMediaInSegment(content.substring(cursor)));
+    return result.toString();
+  }
+
+  String _transformMediaInSegment(String segment) {
+    final RegExp mediaPattern = RegExp(
+      r'@\[([a-zA-Z0-9_-]+)([^\]]*)\]\(([^)]+)\)',
+      multiLine: true,
+    );
+
+    String transformed = segment.replaceAllMapped(mediaPattern, (match) {
       final String type = match.group(1)!.toLowerCase();
       final String attrs = match.group(2)?.trim() ?? '';
       final String src = match.group(3)!.trim();
-
-      return switch (type) {
-        'youtube' => _buildYouTube(src, attrs),
-        'video' => _buildVideo(src, attrs),
-        'image' || 'img' => _buildImage(src, attrs),
-        'gif' => _buildGif(src, attrs),
-        'apng' => _buildApng(src, attrs),
-        'twitter' || 'x' => _buildTwitter(src, attrs),
-        'iframe' => _buildIframe(src, attrs),
-        _ => match.group(0)!, // Return original if unknown type
-      };
+      return _buildEmbed(type, attrs, src, fallback: match.group(0)!);
     });
 
-    return result;
+    final RegExp shorthandPattern = RegExp(
+      r'(^|[\s>])@([a-zA-Z][a-zA-Z0-9_-]*)(?:\[([^\]]*)\])?\(([^)]+)\)',
+      multiLine: true,
+    );
+
+    transformed = transformed.replaceAllMapped(shorthandPattern, (match) {
+      final String prefix = match.group(1) ?? '';
+      final String type = (match.group(2) ?? '').toLowerCase();
+      final String attrs = match.group(3)?.trim() ?? '';
+      final String src = (match.group(4) ?? '').trim();
+      final String rendered = _buildEmbed(type, attrs, src, fallback: '');
+      if (rendered.isEmpty) {
+        return match.group(0)!;
+      }
+      return '$prefix$rendered';
+    });
+
+    return transformed;
+  }
+
+  String _buildEmbed(
+    String type,
+    String attrs,
+    String src, {
+    required String fallback,
+  }) {
+    return switch (type) {
+      'youtube' => _buildYouTube(src, attrs),
+      'video' => _buildVideo(src, attrs),
+      'image' || 'img' => _buildImage(src, attrs),
+      'gif' => _buildGif(src, attrs),
+      'apng' => _buildApng(src, attrs),
+      'twitter' || 'x' => _buildTwitter(src, attrs),
+      'iframe' => _buildIframe(src, attrs),
+      _ => fallback,
+    };
   }
 
   /// Extract YouTube video ID from various URL formats
   String _extractYouTubeId(String src) {
+    String normalized = src.trim();
+
     // Already just an ID
-    if (!src.contains('/') && !src.contains('.')) {
-      return src;
+    if (!normalized.contains('/') && !normalized.contains('.')) {
+      return normalized;
+    }
+
+    Uri? uri = Uri.tryParse(normalized);
+    if (uri != null && uri.host.isNotEmpty) {
+      String host = uri.host.toLowerCase();
+      if (host == 'youtu.be' && uri.pathSegments.isNotEmpty) {
+        String shortId = uri.pathSegments.first.trim();
+        if (shortId.isNotEmpty) {
+          return shortId;
+        }
+      }
+      if (host.contains('youtube.com') ||
+          host.contains('youtube-nocookie.com')) {
+        String queryId = uri.queryParameters['v']?.trim() ?? '';
+        if (queryId.isNotEmpty) {
+          return queryId;
+        }
+        if (uri.pathSegments.length >= 2 &&
+            (uri.pathSegments.first == 'embed' ||
+                uri.pathSegments.first == 'shorts' ||
+                uri.pathSegments.first == 'live')) {
+          String pathId = uri.pathSegments[1].trim();
+          if (pathId.isNotEmpty) {
+            return pathId;
+          }
+        }
+      }
     }
 
     // youtube.com/watch?v=ID
     final RegExp watchPattern = RegExp(r'[?&]v=([a-zA-Z0-9_-]{11})');
-    final Match? watchMatch = watchPattern.firstMatch(src);
+    final Match? watchMatch = watchPattern.firstMatch(normalized);
     if (watchMatch != null) {
       return watchMatch.group(1)!;
     }
 
     // youtu.be/ID
     final RegExp shortPattern = RegExp(r'youtu\.be/([a-zA-Z0-9_-]{11})');
-    final Match? shortMatch = shortPattern.firstMatch(src);
+    final Match? shortMatch = shortPattern.firstMatch(normalized);
     if (shortMatch != null) {
       return shortMatch.group(1)!;
     }
 
     // youtube.com/embed/ID
-    final RegExp embedPattern = RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})');
-    final Match? embedMatch = embedPattern.firstMatch(src);
+    final RegExp embedPattern = RegExp(
+      r'youtube\.com/embed/([a-zA-Z0-9_-]{11})',
+    );
+    final Match? embedMatch = embedPattern.firstMatch(normalized);
     if (embedMatch != null) {
       return embedMatch.group(1)!;
     }
 
+    // youtube.com/shorts/ID
+    final RegExp shortsPattern = RegExp(
+      r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})',
+    );
+    final Match? shortsMatch = shortsPattern.firstMatch(normalized);
+    if (shortsMatch != null) {
+      return shortsMatch.group(1)!;
+    }
+
     // Fallback: return as-is
-    return src;
+    return normalized;
   }
 
   /// Parse attributes string into a map
@@ -117,7 +197,6 @@ class MediaExtension implements PageExtension {
     final String videoId = _extractYouTubeId(src);
     final Map<String, String> attrMap = _parseAttrs(attrs);
 
-    // Build URL parameters
     final List<String> params = <String>[];
     if (attrMap.containsKey('autoplay')) params.add('autoplay=1');
     if (attrMap.containsKey('loop')) params.add('loop=1&playlist=$videoId');
@@ -125,15 +204,26 @@ class MediaExtension implements PageExtension {
     if (attrMap.containsKey('start')) params.add('start=${attrMap['start']}');
     if (attrMap.containsKey('end')) params.add('end=${attrMap['end']}');
 
+    params.add('playsinline=1');
+    params.add('modestbranding=1');
+    params.add('rel=0');
     final String urlParams = params.isNotEmpty ? '?${params.join('&')}' : '';
     final String title = attrMap['title'] ?? 'YouTube video player';
+    final String primaryUrl = 'https://www.youtube.com/embed/$videoId$urlParams';
+    final String fallbackUrl =
+        'https://www.youtube-nocookie.com/embed/$videoId$urlParams';
+    final String watchUrl = 'https://www.youtube.com/watch?v=$videoId';
 
     return '''
 
 <div class="kb-media kb-media-video kb-media-youtube">
   <iframe
-    src="https://www.youtube.com/embed/$videoId$urlParams"
+    src="$primaryUrl"
+    data-kb-src="$primaryUrl"
+    data-kb-fallback-src="$fallbackUrl"
+    data-kb-watch-url="$watchUrl"
     title="$title"
+    loading="eager"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     referrerpolicy="strict-origin-when-cross-origin"
@@ -152,6 +242,11 @@ class MediaExtension implements PageExtension {
     if (attrMap.containsKey('loop')) videoAttrs.add('loop');
     if (attrMap.containsKey('muted')) videoAttrs.add('muted');
     if (attrMap.containsKey('playsinline')) videoAttrs.add('playsinline');
+    if (attrMap.containsKey('preload')) {
+      videoAttrs.add('preload="${attrMap['preload']}"');
+    } else {
+      videoAttrs.add('preload="metadata"');
+    }
 
     String posterAttr = '';
     if (attrMap.containsKey('poster')) {
@@ -176,8 +271,8 @@ class MediaExtension implements PageExtension {
     return '''
 
 <figure class="kb-media kb-media-video kb-media-local">
-  <video ${videoAttrs.join(' ')}$posterAttr>
-    <source src="$src" type="$mimeType">
+  <video ${videoAttrs.join(' ')}$posterAttr data-src="$src">
+    <source src="$src" data-src="$src" type="$mimeType">
     Your browser does not support the video tag.
   </video>
   $captionHtml
@@ -270,7 +365,6 @@ class MediaExtension implements PageExtension {
   <blockquote class="twitter-tweet" data-theme="$theme">
     <a href="https://twitter.com/x/status/$tweetId">Loading tweet...</a>
   </blockquote>
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </div>
 
 ''';

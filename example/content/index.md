@@ -1,10 +1,10 @@
 ---
 title: Arcane Inkwell
-description: Transform markdown directories into beautiful documentation sites
+description: Transform markdown directories into documentation sites
 order: 0
 ---
 
-**Arcane Inkwell** transforms your markdown files into a fully-featured documentation website. Built on [Jaspr](https://github.com/schultek/jaspr) (Dart's web framework) with one-line theming via [arcane_jaspr](https://github.com/ArcaneArts/arcane_jaspr).
+**Arcane Inkwell** transforms markdown content into a documentation site with generated navigation, rich markdown components, and one-line theming.
 
 ## Quick Start
 
@@ -27,36 +27,26 @@ void main() async {
 }
 ```
 
-## Features
+## Current Built-In Capabilities
 
-- **Auto-generated navigation** - Sidebar built from folder structure
-- **GitHub-style callouts** - Note, Tip, Warning, Important, Caution blocks
-- **Syntax highlighting** - Dart, JavaScript, YAML, and more
-- **Dark/light themes** - One-line theming with multiple color options
-- **Search** - Built-in client-side search
-- **Table of contents** - Auto-generated from headings
-- **Edit links** - Direct links to edit pages on GitHub
-- **Reading time** - Automatic calculation
-- **Related pages** - Tag-based discovery
-- **Sitemap** - SEO-optimized XML sitemap
+- Auto-generated navigation from folder structure.
+- Top/bottom navigation bar modes.
+- Footer previous/next navigation with global and per-page toggles.
+- Callout markdown + callout tag components.
+- Rich markdown components (cards, steps, fields, tree, colors, tabs, and more).
+- Syntax highlighting and code-copy buttons.
+- Media embed extension (`@[youtube]`, `@[video]`, `@[image]`, etc.).
+- Reading time and metadata row rendering.
+- Optional generated `web/search-index.json` for external search integrations.
 
-## Explore This Documentation
+## Explore Documentation
 
 | Section | Description |
 |---------|-------------|
-| [Guide](/guide) | Getting started tutorials |
-| [Features](/features) | Visual feature demonstrations |
-| [Reference](/reference) | Complete API documentation |
-
-## Configuration Options
-
-See the [Reference](/reference) section for comprehensive documentation:
-
-- [SiteConfig](/reference/site-config) - Site-level options
-- [Frontmatter](/reference/frontmatter) - Page metadata
-- [Section Config](/reference/section-config) - Folder configuration
-- [Icons](/reference/icons) - 90+ available icons
-- [Theming](/reference/theming) - Stylesheets and themes
+| [Guide](/guide) | Setup and workflow guides |
+| [Features](/features) | Visual behavior and component showcases |
+| [Reference](/reference) | API and implementation reference |
 
 > [!TIP]
-> Start with the [Installation](/guide/basics/installation) guide to add Arcane Inkwell to your project.
+> Start with [Installation](/guide/basics/installation), then review [Rich Markdown Blocks](/features/rich-markdown).
+

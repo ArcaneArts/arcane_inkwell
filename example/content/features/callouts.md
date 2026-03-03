@@ -1,6 +1,6 @@
 ---
 title: Callout Blocks
-description: Use GitHub-style callouts for important information
+description: GitHub callout markdown and callout tag components
 icon: info
 order: 6
 tags:
@@ -8,68 +8,92 @@ tags:
   - alerts
   - admonitions
 author: Arcane Arts
-date: 2025-01-11
+date: 2026-03-03
 ---
 
-# Callout Blocks
+Arcane Inkwell supports two callout authoring styles:
 
-Arcane Jaspr MD supports GitHub-style callout blocks (also known as admonitions or alerts). These are useful for highlighting important information.
+1. GitHub-style callout markdown (`> [!TYPE]`).
+2. Rich markdown callout tags (`<Note>`, `<Warning>`, etc.).
 
-## Note
+## GitHub-Style Callouts
 
-Use notes for informational content:
+### Note
 
 > [!NOTE]
-> This is an informational note. Notes are great for additional context or tips that aren't critical but are helpful to know.
+> Informational content for additional context.
 
-## Tip
-
-Use tips for helpful suggestions:
+### Tip
 
 > [!TIP]
-> Here's a helpful tip! Tips work well for best practices or recommendations that improve the user experience.
+> Suggestions and best-practice guidance.
 
-## Important
-
-Use important callouts for critical information:
+### Important
 
 > [!IMPORTANT]
-> This is important information that users should pay attention to. Don't skip this!
+> High-priority content that should not be skipped.
 
-## Warning
-
-Use warnings for potentially problematic situations:
+### Warning
 
 > [!WARNING]
-> Be careful with this operation. Warnings help users avoid common pitfalls or mistakes.
+> Potentially problematic operations or caveats.
 
-## Caution
-
-Use caution for dangerous actions:
+### Caution
 
 > [!CAUTION]
-> This action cannot be undone! Caution callouts are for actions that could cause data loss or other serious consequences.
+> Dangerous or irreversible actions.
+
+### Optional Title
+
+> [!WARNING] Java 21 Required
+> Arcane Inkwell tooling requires Java 21 or newer in this environment.
+
+## Rich Callout Tags
+
+<Note title="Tag Note">
+  Tag-based callouts are component-rendered.
+</Note>
+
+<Tip title="Tag Tip">
+  These use Arcane Lucide icons.
+</Tip>
+
+<Info title="Tag Info">
+  Info maps to note styling.
+</Info>
+
+<Check title="Tag Check">
+  Check maps to tip styling.
+</Check>
+
+<Warning title="Tag Warning">
+  Warning style variant.
+</Warning>
+
+<Caution title="Tag Caution">
+  Caution style variant.
+</Caution>
+
+<Important title="Tag Important">
+  Important style variant.
+</Important>
 
 ## Syntax
 
-Callouts use the GitHub-style alert syntax:
+### GitHub Syntax
 
 ```markdown
 > [!NOTE]
-> Your note content here.
-> Can span multiple lines.
+> Note body text
 
-> [!TIP]
-> Your tip content here.
-
-> [!IMPORTANT]
-> Important information here.
-
-> [!WARNING]
-> Warning message here.
-
-> [!CAUTION]
-> Caution message here.
+> [!WARNING] Optional title
+> Warning body text
 ```
 
-The callout type (NOTE, TIP, IMPORTANT, WARNING, CAUTION) is case-insensitive.
+### Tag Syntax
+
+```markdown
+<Warning title="Java 21 Required">
+  Warning body text
+</Warning>
+```

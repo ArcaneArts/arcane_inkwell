@@ -1,6 +1,6 @@
 # Arcane Inkwell
 
-Transform markdown into documentation sites. Built on [Jaspr](https://github.com/schultek/jaspr) and [arcane_jaspr](https://github.com/ArcaneArts/arcane_jaspr).
+Transform markdown directories into documentation sites with Jaspr + Arcane stylesheets.
 
 **[Live Demo](https://arcanearts.github.io/arcane_inkwell/)** | **[GitHub](https://github.com/ArcaneArts/arcane_inkwell)**
 
@@ -11,116 +11,101 @@ import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
 
 void main() async {
   Jaspr.initializeApp(options: defaultServerOptions);
+
   runApp(
     await KnowledgeBaseApp.create(
       config: const SiteConfig(
         name: 'My Docs',
         contentDirectory: 'content',
       ),
-      // Single line theming - swap themes instantly:
       stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.charcoal),
     ),
   );
 }
 ```
 
-## Features
+## What Ships by Default
 
-| Category | Capabilities |
-|----------|--------------|
-| **Navigation** | Auto-generated sidebar, breadcrumbs, prev/next links, TOC |
-| **Content** | Markdown, code highlighting, copy button, callouts, tables |
-| **Metadata** | Tags, reading time, author, date, draft mode |
-| **Search** | Full-text search with content indexing |
-| **Theming** | 1-line theme swap, dark/light toggle, ShadCN styling |
-| **Structure** | Nested folders, section configs, icons, ordering |
+- Generated nav from markdown folders/files.
+- Sidebar + top/bottom navigation bar modes.
+- Breadcrumbs and footer prev/next navigation.
+- GitHub-style callout syntax with optional title.
+- Media embed syntax (`@[youtube]`, `@[video]`, `@[image]`, etc.).
+- Highlight.js code blocks with copy buttons.
+- Reading time + metadata row.
+- Optional build-time `web/search-index.json` generation.
 
-## Content Structure
+## Default Rich Markdown Components
 
-```
-content/
-├── index.md                 # Homepage
-├── getting-started/
-│   ├── _section.json5       # { "title": "Getting Started", "icon": "rocket" }
-│   ├── index.md
-│   └── installation.md
-└── api/
-    └── endpoints/
-        └── users.md
-```
+Registered through `KBRichMarkdownComponents.defaults()`:
+
+- `CardGroup`, `Card`
+- `Columns`, `Column`
+- `Tiles`, `Tile`
+- `Steps`, `Step`
+- `AccordionGroup`, `Accordion`, `Expandable`
+- `Badge`, `Banner`, `Panel`, `Frame`, `Update`
+- `Tooltip`, `Icon`, `CodeGroup`
+- `FieldGroup`, `ParamField`, `ResponseField`
+- `Tree`, `Tree.Folder`, `Tree.File`
+- `Color`, `Color.Item`
+- `View`
+- `Note`, `Tip`, `Warning`, `Info`, `Check`, `Caution`, `Important`
+- `Tabs`, `TabItem`
 
 ## Page Frontmatter
 
 ```yaml
 ---
+layout: kb
 title: Installation
 description: How to install
 icon: download
 order: 1
-tags: [setup, install]
-author: John Doe
-date: 2025-01-01
+tags:
+  - setup
+author: Arcane Arts
+date: 2026-03-03
+pageNav: true
+component: ExampleDemo
 draft: false
 hidden: false
 ---
 ```
 
-## Section Config (`_section.json5`)
-
-```json5
-{
-  "title": "Getting Started",
-  "icon": "rocket",
-  "order": 1,
-  "collapsed": false,
-  "ignore": false
-}
-```
-
-## Callouts
-
-```markdown
-> [!NOTE]
-> Informational callout
-
-> [!TIP]
-> Helpful tip
-
-> [!WARNING]
-> Warning message
-
-> [!CAUTION]
-> Danger alert
-```
-
-## Site Configuration
+## SiteConfig
 
 ```dart
 SiteConfig(
   name: 'Site Name',
-  description: 'Site description',
   contentDirectory: 'content',
-  baseUrl: '/docs',                    // Subdirectory hosting
   githubUrl: 'https://github.com/...',
-  showEditLink: true,
-  defaultTheme: KBThemeMode.dark,
   searchEnabled: true,
   tocEnabled: true,
   themeToggleEnabled: true,
+  pageNavEnabled: true,
   navigationBarEnabled: true,
   navigationBarPosition: KBNavigationBarPosition.top,
-  headerLinks: [NavLink(label: 'GitHub', href: '...', external: true)],
-  footerText: 'Built with Arcane Inkwell',
+  sidebarWidth: '280px',
+  sidebarTreeIndent: '10px',
 )
 ```
 
 ## Build
 
 ```bash
-jaspr serve              # Development
-jaspr build              # Production
-jaspr build --define=BASE_URL=/docs  # Subdirectory
+jaspr serve
+jaspr build
+jaspr build --define=BASE_URL=/docs
 ```
+
+## Package Docs Coverage
+
+Implementation-matching docs and showcases live in:
+
+- `example/content/reference` (API + behavior reference)
+- `example/content/features` (visual showcase pages)
+- `example/content/guide` (workflow-oriented setup and utility usage)
 
 ## Installation
 
@@ -130,15 +115,6 @@ dependencies:
     git:
       url: https://github.com/ArcaneArts/arcane_inkwell
 ```
-
-## Related Projects
-
-| Project | Path | Description |
-|---------|------|-------------|
-| **QualityNode Web** | `/Users/brianfopiano/Developer/RemoteGit/QualityNodeLLC/QualityNode-web` | Main Arcane Jaspr website |
-| **QualityNode Knowledgebase** | `/Users/brianfopiano/Developer/RemoteGit/QualityNodeLLC/Qualitynode-Knowledgebase` | Arcane Inkwell documentation site |
-| **arcane_jaspr** | `/Users/brianfopiano/Developer/RemoteGit/ArcaneArts/arcane_jaspr` | Jaspr UI library for all apps |
-| **arcane_inkwell** | `/Users/brianfopiano/Developer/RemoteGit/ArcaneArts/arcane_inkwell` | Library that generates sites from markdown |
 
 ## License
 

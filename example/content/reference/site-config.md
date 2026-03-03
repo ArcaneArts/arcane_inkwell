@@ -7,10 +7,10 @@ tags:
   - configuration
   - reference
 author: Arcane Arts
-date: 2025-01-11
+date: 2026-03-03
 ---
 
-`SiteConfig` is the main configuration object for your documentation site. Pass it to `KnowledgeBaseApp.create()` to configure your site.
+`SiteConfig` controls global behavior for your Arcane Inkwell site.
 
 ## Basic Example
 
@@ -27,225 +27,146 @@ SiteConfig(
 
 ```dart
 SiteConfig(
-  // Required
   name: 'My Docs',
-
-  // Site metadata
   description: 'Documentation for My Project',
   logo: '/assets/logo.svg',
-
-  // Content settings
-  contentDirectory: 'content',
-  baseUrl: '/docs',  // For subdirectory hosting
-  homeRoute: '/',
-
-  // GitHub integration
   githubUrl: 'https://github.com/myorg/myproject',
-  editBranch: 'main',
-  showEditLink: true,
-
-  // Feature toggles
+  baseUrl: '/docs',
+  contentDirectory: 'content',
+  homeRoute: '/',
   searchEnabled: true,
   tocEnabled: true,
   themeToggleEnabled: true,
   defaultTheme: KBThemeMode.dark,
-  primaryColor: '#6366f1',
-
-  // Page rating
-  ratingEnabled: true,
-  ratingPromptText: 'Was this page helpful?',
-  ratingThankYouText: 'Thanks for your feedback!',
-
-  // Sidebar customization
-  sidebarWidth: '280px',
-  sidebarTreeIndent: '10px',
-
-  // Navigation
+  primaryColor: '#3b82f6',
+  footerText: 'Built with Arcane Inkwell',
+  copyright: '2026 My Company',
   headerLinks: [
     NavLink(label: 'Docs', href: '/'),
-    NavLink(label: 'GitHub', href: 'https://github.com/...', external: true),
+    NavLink(label: 'GitHub', href: 'https://github.com/myorg/myproject', external: true),
   ],
   socialLinks: [
-    SocialLink.github('https://github.com/myorg'),
-    SocialLink.discord('https://discord.gg/...'),
+    SocialLink.github('https://github.com/myorg/myproject'),
+    SocialLink.discord('https://discord.gg/example'),
   ],
-
-  // Footer
-  footerText: 'Built with Arcane Inkwell',
-  copyright: '2024 My Company',
-  sidebarFooter: 'v1.0.0',
+  sidebarFooter: 'v1.2.0',
   sidebarFooterUrl: 'https://github.com/myorg/myproject/releases',
+  editBranch: 'main',
+  showEditLink: true,
+  ratingEnabled: false,
+  ratingPromptText: 'Was this page helpful?',
+  ratingThankYouText: 'Thanks for your feedback!',
+  pageNavEnabled: true,
+  sidebarWidth: '280px',
+  sidebarTreeIndent: '10px',
+  navigationBarEnabled: true,
+  navigationBarPosition: KBNavigationBarPosition.top,
 )
 ```
 
 ## All Options
 
-### Required
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `name` | `String` | The site name displayed in the sidebar header |
-
-### Site Metadata
-
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `description` | `String?` | `null` | Brief site description for meta tags |
-| `logo` | `String?` | `null` | Path to logo image (displayed in header) |
+| `name` | `String` | required | Site name |
+| `description` | `String?` | `null` | Meta/site description |
+| `logo` | `String?` | `null` | Optional logo path or URL |
+| `githubUrl` | `String?` | `null` | Repository URL for GitHub link/edit links |
+| `baseUrl` | `String` | `String.fromEnvironment('BASE_URL')` | Subpath prefix (for hosted subdirectories) |
+| `contentDirectory` | `String` | `'content'` | Markdown content directory |
+| `homeRoute` | `String` | `'/'` | Home route |
+| `searchEnabled` | `bool` | `true` | Enable search input/logic |
+| `tocEnabled` | `bool` | `true` | Enable right-side TOC |
+| `themeToggleEnabled` | `bool` | `true` | Show theme toggle button |
+| `defaultTheme` | `KBThemeMode` | `KBThemeMode.dark` | Initial theme |
+| `primaryColor` | `String?` | `null` | Optional theme accent override |
+| `footerText` | `String?` | `null` | Footer text |
+| `copyright` | `String?` | `null` | Copyright text |
+| `headerLinks` | `List<NavLink>` | `[]` | Top navigation links |
+| `socialLinks` | `List<SocialLink>` | `[]` | Social links data |
+| `sidebarFooter` | `String?` | `null` | Sidebar bottom text |
+| `sidebarFooterUrl` | `String?` | `null` | Sidebar bottom link |
+| `editBranch` | `String` | `'main'` | Git branch used by edit links |
+| `showEditLink` | `bool` | `true` | Show/hide "Edit this page" links |
+| `ratingEnabled` | `bool` | `false` | Enable rating widget |
+| `ratingPromptText` | `String` | `'Was this page helpful?'` | Rating prompt text |
+| `ratingThankYouText` | `String` | `'Thanks for your feedback!'` | Rating thank-you text |
+| `pageNavEnabled` | `bool` | `true` | Enable footer prev/next navigation globally |
+| `sidebarWidth` | `String` | `'280px'` | Sidebar width |
+| `sidebarTreeIndent` | `String` | `'10px'` | Sidebar tree/link indent |
+| `navigationBarEnabled` | `bool` | `true` | Enable top/bottom navigation bar |
+| `navigationBarPosition` | `KBNavigationBarPosition` | `KBNavigationBarPosition.top` | Navigation bar position |
 
-### Content Settings
+## Default Layout Consumption Notes
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `contentDirectory` | `String` | `'content'` | Directory containing markdown files |
-| `baseUrl` | `String` | `''` | Base URL for subdirectory hosting (e.g., `/docs`) |
-| `homeRoute` | `String` | `'/'` | Route for the home page |
+`SiteConfig` exposes some fields that are currently not consumed by the default `KBLayout` rendering path:
 
-### GitHub Integration
+- `homeRoute`
+- `primaryColor`
+- `footerText`
+- `copyright`
+- `socialLinks`
+- `sidebarFooter`
+- `sidebarFooterUrl`
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `githubUrl` | `String?` | `null` | GitHub repository URL (enables GitHub link and edit links) |
-| `editBranch` | `String` | `'main'` | Git branch for "Edit this page" links |
-| `showEditLink` | `bool` | `true` | Whether to show "Edit this page" links |
+You can still use these fields in custom layouts/components.
 
-> [!NOTE]
-> When `githubUrl` is set, edit links are automatically generated in the format:
-> `{githubUrl}/edit/{editBranch}/{contentDirectory}/{pagePath}.md`
-
-### Feature Toggles
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `searchEnabled` | `bool` | `true` | Enable/disable search functionality |
-| `tocEnabled` | `bool` | `true` | Enable/disable table of contents on pages |
-| `themeToggleEnabled` | `bool` | `true` | Show/hide the theme toggle button |
-| `defaultTheme` | `KBThemeMode` | `.dark` | Default theme mode |
-| `primaryColor` | `String?` | `null` | Custom primary accent color (CSS color value) |
-
-### KBThemeMode Values
+## Enums
 
 ```dart
-enum KBThemeMode {
-  dark,    // Dark theme
-  light,   // Light theme
-  system,  // Follow system preference
-}
+enum KBThemeMode { dark, light, system }
+enum KBNavigationBarPosition { top, bottom }
 ```
 
-### Navigation
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `headerLinks` | `List<NavLink>` | `[]` | Navigation links for the header |
-| `socialLinks` | `List<SocialLink>` | `[]` | Social media links |
-
-#### NavLink
+## NavLink
 
 ```dart
 NavLink(
-  label: 'Docs',           // Display text
-  href: '/',               // Link URL
-  external: false,         // Opens in new tab if true
+  label: 'GitHub',
+  href: 'https://github.com/ArcaneArts/arcane_inkwell',
+  external: true,
 )
 ```
 
-#### SocialLink
+## SocialLink
 
 ```dart
-// Custom social link
-SocialLink(
-  name: 'Twitter',
-  url: 'https://twitter.com/...',
-  icon: 'twitter',  // Lucide icon name
-)
-
-// Built-in presets
-SocialLink.github('https://github.com/...')
-SocialLink.twitter('https://twitter.com/...')
-SocialLink.discord('https://discord.gg/...')
-SocialLink.youtube('https://youtube.com/...')
+SocialLink(name: 'Discord', url: 'https://discord.gg/example', icon: 'message-circle')
+SocialLink.github('https://github.com/ArcaneArts/arcane_inkwell')
+SocialLink.twitter('https://x.com/arcanearts')
+SocialLink.discord('https://discord.gg/example')
+SocialLink.youtube('https://youtube.com/@arcanearts')
 ```
 
-### Footer
+## BASE_URL and Subpath Hosting
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `footerText` | `String?` | `null` | Custom footer text |
-| `copyright` | `String?` | `null` | Copyright text for footer |
-| `sidebarFooter` | `String?` | `null` | Text at bottom of sidebar (e.g., version) |
-| `sidebarFooterUrl` | `String?` | `null` | URL for sidebar footer (e.g., releases page) |
-
-### Page Rating
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `ratingEnabled` | `bool` | `false` | Enable thumbs up/down rating widget on pages |
-| `ratingPromptText` | `String` | `'Was this page helpful?'` | Text shown above rating buttons |
-| `ratingThankYouText` | `String` | `'Thanks for your feedback!'` | Text shown after user submits rating |
-
-> [!TIP]
-> The rating widget integrates with Firebase. See the [Rating System](/reference/rating) documentation for Firebase integration details.
-
-### Sidebar Customization
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `sidebarWidth` | `String` | `'280px'` | Width of the sidebar (CSS value) |
-| `sidebarTreeIndent` | `String` | `'10px'` | Left indent for tree items and section headers |
-
-```dart
-SiteConfig(
-  name: 'My Docs',
-  sidebarWidth: '320px',      // Wider sidebar
-  sidebarTreeIndent: '12px',  // More space from tree connectors
-)
-```
-
-> [!NOTE]
-> The `sidebarTreeIndent` controls the spacing between tree connector lines and the icons/text in navigation items. Increase this value if icons appear too close to the tree lines.
-
-## Subdirectory Hosting
-
-When hosting your docs at a subdirectory (e.g., `example.com/docs`), use the `--define=BASE_URL` flag when building:
+`baseUrl` defaults to `BASE_URL` from build defines:
 
 ```bash
 jaspr build --define=BASE_URL=/docs
 ```
 
-The `BASE_URL` environment variable is automatically read and applied to all navigation links. No need to manually set `baseUrl` in your config.
-
-### Manual Override
-
-If needed, you can also set `baseUrl` explicitly in your config (this takes precedence over the environment variable):
-
-```dart
-SiteConfig(
-  name: 'My Docs',
-  baseUrl: '/docs',
-)
-```
-
-> [!TIP]
-> Using `--define=BASE_URL` is the recommended approach as it allows the same code to work in both development (no base URL) and production (with base URL) without code changes.
+This keeps one config working for both local root hosting and deployed subpath hosting.
 
 ## Helper Methods
 
 ### `fullPath(String path)`
 
-Returns the full URL path including the base URL:
+Adds `baseUrl` prefix when needed.
 
 ```dart
-config.fullPath('/guide')  // Returns '/docs/guide' if baseUrl is '/docs'
+config.fullPath('/guide') // '/docs/guide' when baseUrl is '/docs'
 ```
+
+### `assetPrefix`
+
+Computed getter for static asset prefix.
 
 ### `editUrl(String pagePath)`
 
-Generates the GitHub edit URL for a page:
+Builds GitHub edit URL when `githubUrl` is set and `showEditLink` is `true`.
 
 ```dart
-config.editUrl('/guide/installation')
-// Returns 'https://github.com/.../edit/main/content/guide/installation.md'
+config.editUrl('/guide/basics/installation')
+// https://github.com/.../edit/main/content/guide/basics/installation.md
 ```
-
-Returns `null` if `githubUrl` is not set or `showEditLink` is `false`.

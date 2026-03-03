@@ -1,21 +1,27 @@
 ---
 title: Features
-description: Visual demonstrations of all Arcane Inkwell features
+description: Visual demonstrations of Arcane Inkwell behavior
 order: 0
 ---
 
-This section demonstrates all the visual features of Arcane Inkwell. Click through the pages below to see each feature in action.
+This section showcases built-in markdown rendering, navigation UX, and rich block components.
 
-## Navigation Features
+## Navigation and Layout
 
-Notice the **Previous/Next** navigation at the bottom of each page for sequential browsing.
+- [Navigation](/features/navigation)
+- Footer prev/next behavior is controlled by `SiteConfig.pageNavEnabled` and page-level `pageNav`.
 
-## What's Demonstrated
+## Markdown Rendering
 
-- **Typography** - Headings, lists, and text formatting
-- **Code blocks** - Syntax highlighting with copy button
-- **Tables** - Data presentation
-- **Links** - Internal and external link styling
-- **Callouts** - GitHub-style alert blocks
-- **Tags** - Content organization and related pages
-- **Navigation** - Sidebar, breadcrumbs, and pagination
+- [Typography](/features/typography)
+- [Code Blocks](/features/code-blocks)
+- [Tables](/features/tables)
+- [Links](/features/links)
+- [Callouts](/features/callouts)
+- [Media Embeds](/features/media)
+
+## Rich Markdown Showcase
+
+- [Rich Markdown Blocks](/features/rich-markdown)
+- [Tags Metadata](/features/tags)
+

@@ -42,10 +42,12 @@ class KBPageNav extends StatelessComponent {
     if (currentIndex == -1) return const ArcaneDiv(children: []);
 
     // Get prev/next
-    final PageNavLink? prevPage =
-        currentIndex > 0 ? allPages[currentIndex - 1] : null;
-    final PageNavLink? nextPage =
-        currentIndex < allPages.length - 1 ? allPages[currentIndex + 1] : null;
+    final PageNavLink? prevPage = currentIndex > 0
+        ? allPages[currentIndex - 1]
+        : null;
+    final PageNavLink? nextPage = currentIndex < allPages.length - 1
+        ? allPages[currentIndex + 1]
+        : null;
 
     if (prevPage == null && nextPage == null) {
       return const ArcaneDiv(children: []);
@@ -227,9 +229,7 @@ class KBSubpages extends StatelessComponent {
 
     return ArcaneDiv(
       classes: 'kb-subpages',
-      styles: const ArcaneStyleData(
-        margin: MarginPreset.bottomXl,
-      ),
+      styles: const ArcaneStyleData(margin: MarginPreset.bottomXl),
       children: [
         const ArcaneDiv(
           classes: 'kb-subpages-title',
@@ -243,124 +243,121 @@ class KBSubpages extends StatelessComponent {
         ),
         ArcaneDiv(
           classes: 'kb-subpages-grid',
-          styles: const ArcaneStyleData(
-            display: Display.grid,
-            gap: Gap.md,
-          ),
+          styles: const ArcaneStyleData(display: Display.grid, gap: Gap.md),
           children: [
             // Child pages
-            ...subpages.map((NavItem item) => ArcaneLink(
-                  href: config.fullPath(item.path),
-                  classes: 'kb-subpage-card',
-                  styles: const ArcaneStyleData(
-                    display: Display.flex,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    gap: Gap.md,
-                    padding: PaddingPreset.md,
-                    border: BorderPreset.subtle,
-                    borderRadius: Radius.md,
-                    background: Background.surface,
-                    textDecoration: TextDecoration.none,
-                  ),
-                  child: ArcaneRow(
-                    gapSize: Gap.md,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (item.icon != null)
+            ...subpages.map(
+              (NavItem item) => ArcaneLink(
+                href: config.fullPath(item.path),
+                classes: 'kb-subpage-card',
+                styles: const ArcaneStyleData(
+                  display: Display.flex,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  gap: Gap.md,
+                  padding: PaddingPreset.md,
+                  border: BorderPreset.subtle,
+                  borderRadius: Radius.md,
+                  background: Background.surface,
+                  textDecoration: TextDecoration.none,
+                ),
+                child: ArcaneRow(
+                  gapSize: Gap.md,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (item.icon != null)
+                      ArcaneDiv(
+                        styles: const ArcaneStyleData(
+                          textColor: TextColor.primary,
+                        ),
+                        children: [_buildIcon(item.icon!)],
+                      ),
+                    ArcaneDiv(
+                      styles: const ArcaneStyleData(flex: FlexPreset.expand),
+                      children: [
                         ArcaneDiv(
                           styles: const ArcaneStyleData(
+                            fontWeight: FontWeight.w500,
                             textColor: TextColor.primary,
                           ),
-                          children: [_buildIcon(item.icon!)],
+                          children: [ArcaneText(item.title)],
                         ),
-                      ArcaneDiv(
-                        styles: const ArcaneStyleData(
-                          flex: FlexPreset.expand,
-                        ),
-                        children: [
-                          ArcaneDiv(
-                            styles: const ArcaneStyleData(
-                              fontWeight: FontWeight.w500,
-                              textColor: TextColor.primary,
-                            ),
-                            children: [ArcaneText(item.title)],
-                          ),
-                          if (item.description != null)
-                            ArcaneDiv(
-                              styles: const ArcaneStyleData(
-                                fontSize: FontSize.sm,
-                                textColor: TextColor.mutedForeground,
-                              ),
-                              children: [ArcaneText(item.description!)],
-                            ),
-                        ],
-                      ),
-                      ArcaneDiv(
-                        styles: const ArcaneStyleData(
-                          textColor: TextColor.mutedForeground,
-                        ),
-                        children: [ArcaneIcon.arrowRight(size: IconSize.sm)],
-                      ),
-                    ],
-                  ),
-                )),
-            // Child sections
-            ...subsections.map((NavSection section) => ArcaneLink(
-                  href: config.fullPath(section.path),
-                  classes: 'kb-subpage-card kb-subpage-section',
-                  styles: const ArcaneStyleData(
-                    display: Display.flex,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    gap: Gap.md,
-                    padding: PaddingPreset.md,
-                    border: BorderPreset.subtle,
-                    borderRadius: Radius.md,
-                    background: Background.surface,
-                    textDecoration: TextDecoration.none,
-                  ),
-                  child: ArcaneRow(
-                    gapSize: Gap.md,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (section.icon != null)
-                        ArcaneDiv(
-                          styles: const ArcaneStyleData(
-                            textColor: TextColor.primary,
-                          ),
-                          children: [_buildIcon(section.icon!)],
-                        ),
-                      ArcaneDiv(
-                        styles: const ArcaneStyleData(
-                          flex: FlexPreset.expand,
-                        ),
-                        children: [
-                          ArcaneDiv(
-                            styles: const ArcaneStyleData(
-                              fontWeight: FontWeight.w500,
-                              textColor: TextColor.primary,
-                            ),
-                            children: [ArcaneText(section.title)],
-                          ),
+                        if (item.description != null)
                           ArcaneDiv(
                             styles: const ArcaneStyleData(
                               fontSize: FontSize.sm,
                               textColor: TextColor.mutedForeground,
                             ),
-                            children: [
-                              ArcaneText('${section.items.length} pages'),
-                            ],
+                            children: [ArcaneText(item.description!)],
                           ),
-                        ],
+                      ],
+                    ),
+                    ArcaneDiv(
+                      styles: const ArcaneStyleData(
+                        textColor: TextColor.mutedForeground,
                       ),
+                      children: [ArcaneIcon.arrowRight(size: IconSize.sm)],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Child sections
+            ...subsections.map(
+              (NavSection section) => ArcaneLink(
+                href: config.fullPath(section.path),
+                classes: 'kb-subpage-card kb-subpage-section',
+                styles: const ArcaneStyleData(
+                  display: Display.flex,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  gap: Gap.md,
+                  padding: PaddingPreset.md,
+                  border: BorderPreset.subtle,
+                  borderRadius: Radius.md,
+                  background: Background.surface,
+                  textDecoration: TextDecoration.none,
+                ),
+                child: ArcaneRow(
+                  gapSize: Gap.md,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (section.icon != null)
                       ArcaneDiv(
                         styles: const ArcaneStyleData(
-                          textColor: TextColor.mutedForeground,
+                          textColor: TextColor.primary,
                         ),
-                        children: [ArcaneIcon.chevronRight(size: IconSize.sm)],
+                        children: [_buildIcon(section.icon!)],
                       ),
-                    ],
-                  ),
-                )),
+                    ArcaneDiv(
+                      styles: const ArcaneStyleData(flex: FlexPreset.expand),
+                      children: [
+                        ArcaneDiv(
+                          styles: const ArcaneStyleData(
+                            fontWeight: FontWeight.w500,
+                            textColor: TextColor.primary,
+                          ),
+                          children: [ArcaneText(section.title)],
+                        ),
+                        ArcaneDiv(
+                          styles: const ArcaneStyleData(
+                            fontSize: FontSize.sm,
+                            textColor: TextColor.mutedForeground,
+                          ),
+                          children: [
+                            ArcaneText('${section.items.length} pages'),
+                          ],
+                        ),
+                      ],
+                    ),
+                    ArcaneDiv(
+                      styles: const ArcaneStyleData(
+                        textColor: TextColor.mutedForeground,
+                      ),
+                      children: [ArcaneIcon.chevronRight(size: IconSize.sm)],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ],
@@ -393,6 +390,9 @@ class KBSubpages extends StatelessComponent {
       'file-text' => ArcaneIcon.fileText(size: IconSize.md),
       'folder' => ArcaneIcon.folder(size: IconSize.md),
       'sliders' => ArcaneIcon.slidersHorizontal(size: IconSize.md),
+      'component' => ArcaneIcon.blocks(size: IconSize.md),
+      'lightbulb' => ArcaneIcon.lightbulb(size: IconSize.md),
+      'palette' => ArcaneIcon.palette(size: IconSize.md),
       'life-buoy' => ArcaneIcon.lifeBuoy(size: IconSize.md),
       _ => ArcaneIcon.fileText(size: IconSize.md),
     };

@@ -1,6 +1,6 @@
 ---
 title: Extensions
-description: Markdown extensions and customization
+description: Built-in page extensions and custom extension hooks
 icon: code
 order: 8
 tags:
@@ -9,265 +9,151 @@ tags:
   - extensions
 ---
 
-Arcane Inkwell includes several markdown extensions and supports custom extensions.
+Arcane Inkwell registers a default extension pipeline for every page.
 
-## Built-in Extensions
+## Default Extension Order
 
-These extensions are automatically enabled:
+`KnowledgeBaseApp.create()` currently applies extensions in this order:
 
-### CalloutExtension
+1. `MediaExtension`
+2. `CalloutExtension`
+3. `HeadingAnchorsExtension`
+4. `TableOfContentsExtension`
+5. `ReadingTimeExtension`
 
-Transforms GitHub-style alert syntax into styled callout blocks.
+Custom extensions passed in `extensions:` are appended after these defaults.
 
-**Syntax:**
+## MediaExtension
+
+Transforms custom media syntax:
+
+```markdown
+@[youtube](dQw4w9WgXcQ)
+@[video autoplay loop muted](demo.mp4)
+@[image caption="Screenshot"](image.png)
+@[gif](loader.gif)
+@[apng](animation.png)
+@[twitter](1215212801876090880)
+@[iframe title="Embed" height="500"](https://example.com/embed)
+```
+
+Supported media types:
+- `youtube`
+- `video`
+- `image` / `img`
+- `gif`
+- `apng`
+- `twitter` / `x`
+- `iframe`
+
+## CalloutExtension
+
+Transforms GitHub-style callouts into rich callout tags.
 
 ```markdown
 > [!NOTE]
-> This is a note callout.
-> It can span multiple lines.
+> Informational message.
+
+> [!WARNING] Java 21 Required
+> Use Java 21 or newer.
 ```
 
-**Supported Types:**
+Supported types:
+- `NOTE`
+- `TIP`
+- `IMPORTANT`
+- `WARNING`
+- `CAUTION`
 
-| Type | Usage | Description |
-|------|-------|-------------|
-| `NOTE` | `> [!NOTE]` | Informational note |
-| `TIP` | `> [!TIP]` | Helpful tip |
-| `IMPORTANT` | `> [!IMPORTANT]` | Important information |
-| `WARNING` | `> [!WARNING]` | Warning message |
-| `CAUTION` | `> [!CAUTION]` | Danger/caution message |
+Optional title is supported on the marker line.
 
-**Example:**
+## HeadingAnchorsExtension
 
-> [!NOTE]
-> This is a note callout rendered by the CalloutExtension.
+Adds heading anchors so sections are deep-linkable.
 
-> [!TIP]
-> Tips are great for best practices and recommendations.
+## TableOfContentsExtension
 
-> [!WARNING]
-> Warnings alert users to potential issues.
+Generates TOC data consumed by the right-side TOC panel when `SiteConfig.tocEnabled` is `true`.
 
-### ReadingTimeExtension
+## ReadingTimeExtension
 
-Automatically calculates and displays reading time for pages.
+Adds:
+- `readingTime`
+- `wordCount`
 
-**Features:**
-- Calculates words per minute (default: 200 WPM)
-- Excludes code blocks from word count
-- Excludes inline code
-- Removes markdown formatting before counting
-
-**Output:**
-
-Adds to page data:
-- `readingTime` - Estimated minutes to read
-- `wordCount` - Total word count
-
-**Configuration:**
+Default reading speed is `200` WPM.
 
 ```dart
 KnowledgeBaseApp.create(
   config: config,
   stylesheet: stylesheet,
-  extensions: [
-    const ReadingTimeExtension(wordsPerMinute: 250), // Custom WPM
+  extensions: const <PageExtension>[
+    ReadingTimeExtension(wordsPerMinute: 250),
   ],
 )
 ```
 
-### HeadingAnchorsExtension
+## Default Custom Components
 
-Adds anchor IDs to headings for deep linking.
+In addition to extensions, Arcane Inkwell registers default custom markdown components.
 
-**Example:**
+See [Components](/reference/components) for complete syntax and live examples.
 
-```markdown
-## My Section
+Registered by default:
+- `CardGroup`, `Card`
+- `Columns`, `Column`
+- `Tiles`, `Tile`
+- `Steps`, `Step`
+- `AccordionGroup`, `Accordion`, `Expandable`
+- `Badge`, `Banner`, `Panel`, `Frame`, `Update`
+- `Tooltip`, `Icon`, `CodeGroup`
+- `FieldGroup`, `ParamField`, `ResponseField`
+- `Tree`, `Tree.Folder`, `Tree.File`
+- `Color`, `Color.Item`
+- `View`
+- Callout tags: `Note`, `Tip`, `Warning`, `Info`, `Check`, `Caution`, `Important`
+- `Tabs` and `TabItem`
 
-Becomes linkable as #my-section
-```
-
-### TableOfContentsExtension
-
-Generates a table of contents from headings.
-
-**Features:**
-- Extracts H2, H3, H4 headings
-- Provides nested structure
-- Used by KBToc component
-
-## Custom Extensions
-
-Add custom extensions by passing them to `KnowledgeBaseApp.create()`:
+## Adding Custom Extensions
 
 ```dart
-KnowledgeBaseApp.create(
-  config: config,
-  stylesheet: stylesheet,
-  extensions: [
-    const MyCustomExtension(),
-  ],
-)
-```
-
-### Creating an Extension
-
-Extensions implement the `PageExtension` interface from jaspr_content:
-
-```dart
-import 'package:jaspr_content/jaspr_content.dart';
-
 class MyExtension implements PageExtension {
   const MyExtension();
 
   @override
   Future<List<Node>> apply(Page page, List<Node> nodes) async {
-    // Access page content
-    final String content = page.content;
+    String content = page.content;
+    String updated = content.replaceAll('foo', 'bar');
 
-    // Modify content
-    final String processedContent = content.replaceAll('foo', 'bar');
-
-    // Apply changes
-    if (processedContent != content) {
-      page.apply(content: processedContent);
+    if (updated != content) {
+      page.apply(content: updated);
     }
-
-    // Or add page data
-    page.apply(data: {
-      'myField': 'myValue',
-    });
 
     return nodes;
   }
 }
 ```
 
-### Extension Order
-
-Extensions run in the order they're provided:
-
 ```dart
-extensions: [
-  const FirstExtension(),   // Runs first
-  const SecondExtension(),  // Runs second
-],
+KnowledgeBaseApp.create(
+  config: config,
+  stylesheet: stylesheet,
+  extensions: const <PageExtension>[
+    MyExtension(),
+  ],
+)
 ```
 
-Default extensions run before custom extensions.
+## Syntax Highlighting Notes
 
-## Syntax Highlighting
+Arcane Inkwell includes Highlight.js setup in `KBLayout` scripts.
 
-Code blocks use Highlight.js for syntax highlighting.
-
-**Supported Languages:**
+Common classes are normalized for:
 - `dart`
 - `javascript` / `js`
-- `typescript` / `ts`
 - `yaml`
-- `json`
 - `bash` / `shell`
+- `json`
 - `html`
 - `css`
-- `markdown`
 
-**Usage:**
-
-````markdown
-```dart
-void main() {
-  print('Hello, World!');
-}
-```
-````
-
-## Markdown Features
-
-Standard markdown features supported:
-
-### Headings
-
-```markdown
-# H1 (page title)
-## H2 (section)
-### H3 (subsection)
-#### H4 (sub-subsection)
-```
-
-### Text Formatting
-
-```markdown
-**bold text**
-*italic text*
-`inline code`
-~~strikethrough~~
-```
-
-### Lists
-
-```markdown
-- Unordered item
-- Another item
-  - Nested item
-
-1. Ordered item
-2. Another item
-   1. Nested item
-```
-
-### Links
-
-```markdown
-[Link text](https://example.com)
-[Internal link](/guide/installation)
-```
-
-### Images
-
-```markdown
-![Alt text](/path/to/image.png)
-```
-
-### Tables
-
-```markdown
-| Header 1 | Header 2 |
-|----------|----------|
-| Cell 1   | Cell 2   |
-| Cell 3   | Cell 4   |
-```
-
-### Blockquotes
-
-```markdown
-> This is a blockquote.
-> It can span multiple lines.
-```
-
-### Horizontal Rules
-
-```markdown
----
-```
-
-### Code Blocks
-
-````markdown
-```language
-code here
-```
-````
-
-## HTML in Markdown
-
-Raw HTML is supported in markdown content:
-
-```markdown
-<div class="custom-class">
-  Custom HTML content
-</div>
-```
-
-> [!CAUTION]
-> HTML is not sanitized. Only use HTML in trusted content.

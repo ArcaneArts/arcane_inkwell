@@ -1,165 +1,106 @@
 ---
 title: Configuration
-description: Configure your documentation site
+description: Configure Arcane Inkwell site behavior
 icon: settings
 order: 2
 tags:
   - configuration
   - getting-started
 author: Arcane Arts
-date: 2025-01-11
+date: 2026-03-03
 ---
 
-Arcane Inkwell is configured through three main mechanisms: site configuration, section configuration, and page frontmatter.
+Arcane Inkwell configuration is split across:
+
+1. `SiteConfig` (global behavior)
+2. `_section.json5` / `_section.yaml` (folder sections)
+3. page frontmatter (page-level metadata and overrides)
 
 ## SiteConfig
 
-The main configuration object passed to `KnowledgeBaseApp.create()`:
-
 ```dart
 SiteConfig(
-  // Required
   name: 'My Docs',
-
-  // Content
   contentDirectory: 'content',
-  baseUrl: '',  // For subdirectory hosting
-
-  // GitHub integration
   githubUrl: 'https://github.com/your/repo',
-  editBranch: 'main',
-  showEditLink: true,
-
-  // Features
   searchEnabled: true,
   tocEnabled: true,
   themeToggleEnabled: true,
-  defaultTheme: KBThemeMode.dark,
-
-  // Navigation
-  headerLinks: [
-    NavLink(label: 'Docs', href: '/'),
-    NavLink(label: 'GitHub', href: 'https://github.com/...', external: true),
-  ],
-
-  // Footer
-  sidebarFooter: 'v1.0.0',
-  sidebarFooterUrl: 'https://github.com/.../releases',
+  pageNavEnabled: true,
+  navigationBarEnabled: true,
+  navigationBarPosition: KBNavigationBarPosition.top,
+  sidebarWidth: '280px',
+  sidebarTreeIndent: '10px',
 )
 ```
 
-> [!TIP]
-> See [SiteConfig Reference](/reference/site-config) for all available options.
+See [SiteConfig Reference](/reference/site-config) for full option coverage.
 
 ## Section Config
 
-Create `_section.json5` (preferred) or `_section.yaml` in any folder to configure that section:
+`_section.json5` example:
 
 ```json5
 {
-  // JSON5 supports comments
   "title": "Getting Started",
   "icon": "rocket",
   "order": 1,
   "collapsed": false,
-  "ignore": false  // Set true to exclude from navigation
+  "ignore": false
 }
 ```
 
-Or in YAML:
-
-```yaml
-title: Getting Started
-icon: rocket
-order: 1
-collapsed: false
-```
-
-> [!TIP]
-> See [Section Config Reference](/reference/section-config) for all options.
+See [Section Configuration](/reference/section-config).
 
 ## Page Frontmatter
 
-Every markdown file can include YAML frontmatter:
-
 ```yaml
 ---
+layout: kb
 title: My Page
-description: Page description for meta tags
+description: Description text
 icon: file-text
 order: 1
-hidden: false
-draft: false
 tags:
   - getting-started
-  - configuration
-author: Your Name
+author: Arcane Arts
+date: 2026-03-03
+pageNav: true
+component: ExampleDemo
 ---
 ```
 
-| Field | Description |
-|-------|-------------|
-| `title` | Display title (falls back to filename) |
-| `description` | Meta description |
-| `icon` | Lucide icon name |
-| `order` | Sort order (lower = first) |
-| `hidden` | Hide from nav but keep accessible |
-| `draft` | Hidden + shows draft badge |
-| `tags` | For related pages and search |
+See [Frontmatter Reference](/reference/frontmatter).
 
-> [!TIP]
-> See [Frontmatter Reference](/reference/frontmatter) for all fields.
-
-## Theming
-
-Single-line theme configuration:
+## Theme Selection
 
 ```dart
 KnowledgeBaseApp.create(
   config: config,
-  // Choose a stylesheet and theme:
   stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.midnight),
-  // Or:
-  // stylesheet: const CodexStylesheet(theme: CodexTheme.green),
+  // or
+  // stylesheet: const CodexStylesheet(theme: CodexTheme.blue),
 )
 ```
 
-### Available Themes
+## Directory Shape
 
-**ShadcnStylesheet** (clean, modern):
-- `midnight`, `charcoal`, `cream`, `slate`
-- `rose`, `lavender`, `mint`, `sky`, `peach`, `teal`
-
-**CodexStylesheet** (gamer aesthetic):
-- `green`, `red`, `blue`, `purple`, `cyan`, `pink`, `orange`, `rainbow`
-
-> [!TIP]
-> See [Theming Reference](/reference/theming) for details.
-
-## Directory Structure
-
-A typical content directory:
-
-```
+```text
 content/
-  index.md                    # Home page
+  index.md
   guide/
-    _section.json5            # Section config
-    index.md                  # Section index
+    _section.json5
+    index.md
     basics/
-      _section.json5          # Subsection config
+      _section.json5
       installation.md
       configuration.md
     advanced/
       _section.json5
-      customization.md
+      sitemap.md
   reference/
     _section.json5
     site-config.md
-    frontmatter.md
+    components.md
 ```
 
-## Next Steps
-
-- Browse the [Features](/features) section to see components in action
-- Check the [Reference](/reference) section for complete API documentation

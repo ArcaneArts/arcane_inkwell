@@ -1,6 +1,6 @@
 ---
 title: Frontmatter Reference
-description: All page-level frontmatter options for markdown files
+description: Page-level frontmatter options recognized by Arcane Inkwell
 icon: file-text
 order: 2
 tags:
@@ -8,17 +8,18 @@ tags:
   - reference
   - markdown
 author: Arcane Arts
-date: 2025-01-11
+date: 2026-03-03
 ---
 
-Frontmatter is YAML metadata at the top of your markdown files. It controls how pages appear in navigation and how they're rendered.
+Frontmatter is YAML metadata at the top of markdown files.
 
 ## Basic Example
 
 ```yaml
 ---
-title: Getting Started
-description: Learn how to install and configure Arcane Inkwell
+layout: kb
+title: Installation
+description: Install and run Arcane Inkwell
 icon: rocket
 order: 1
 ---
@@ -28,185 +29,83 @@ order: 1
 
 ```yaml
 ---
+layout: kb
 title: Authentication Guide
 description: Complete guide to implementing authentication
 icon: shield
 order: 5
 hidden: false
 draft: false
+pageNav: true
 tags:
   - security
   - authentication
-  - guide
 author: Jane Developer
-date: 2024-01-15
+date: 2026-03-03
 component: AuthDemo
 ---
 ```
 
-## All Options
-
-### Page Metadata
+## Supported Fields
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `String` | Filename | Display title for the page |
-| `description` | `String?` | `null` | Page description (shown below title, used in meta tags) |
-| `icon` | `String` | `null` | Icon name, SVG path, or raw SVG (see [Icons Reference](/reference/icons)) |
-| `order` | `int` | `999` | Sort order within section (lower = first) |
+| `layout` | `String` | none | Use `kb` for the Arcane Inkwell layout |
+| `title` | `String?` | filename-derived title | Page title |
+| `description` | `String?` | `null` | Page summary/meta description |
+| `icon` | `String?` | `null` | Icon name, SVG URL, or raw SVG markup |
+| `order` | `int` | `999` | Sort order within section |
+| `hidden` | `bool` | `false` | Hide from navigation but keep URL accessible |
+| `draft` | `bool` | `false` | Hide from nav and mark page as draft |
+| `tags` | `List<String>` | `[]` | Tags for metadata/search-index enrichment |
+| `author` | `String?` | `null` | Author shown in metadata row |
+| `date` | `String?` | `null` | Date shown in metadata row |
+| `component` | `String?` | `null` | DemoBuilder component key |
+| `pageNav` | `bool` or `'true'/'false'` | inherits `SiteConfig.pageNavEnabled` | Per-page footer prev/next override |
 
-### Visibility
+## Generated Data Fields
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `hidden` | `bool` | `false` | Hide from navigation (page still accessible via URL) |
-| `draft` | `bool` | `false` | Mark as draft (hidden from nav + shows draft badge) |
-
-> [!TIP]
-> Use `hidden: true` for pages you want to link to directly but not show in navigation.
-> Use `draft: true` for work-in-progress pages that show a "Draft" indicator.
-
-### Categorization
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `tags` | `List<String>` | `[]` | Tags for categorization and related pages |
-| `author` | `String?` | `null` | Author name (displayed in page metadata) |
-| `date` | `String?` | `null` | Publication date (displayed in page metadata) |
-
-### Advanced
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `component` | `String?` | `null` | Component name for DemoBuilder integration |
-
-## Auto-Generated Fields
-
-These fields are automatically added by extensions and available in templates:
+These are added by runtime extensions/layout processing:
 
 | Field | Source | Description |
 |-------|--------|-------------|
-| `readingTime` | `ReadingTimeExtension` | Estimated reading time in minutes |
-| `wordCount` | `ReadingTimeExtension` | Total word count |
-| `toc` | `TableOfContentsExtension` | Table of contents from headings |
-| `lastModified` | File system | File's last modified timestamp (automatic) |
+| `readingTime` | `ReadingTimeExtension` | Estimated read time in minutes |
+| `wordCount` | `ReadingTimeExtension` | Parsed word count |
+| `toc` | `TableOfContentsExtension` | Table of contents structure |
+| `lastModified` | NavBuilder file stat | Last modified timestamp (ISO-8601) |
 
-> [!NOTE]
-> The `lastModified` date is automatically tracked from the file system. This shows when the markdown file was last edited, separate from any `date` field you set manually.
+## Visibility Flags
 
-## Title Fallback
+### `hidden: true`
 
-If no `title` is specified in frontmatter, the filename is converted to a title:
+- Hidden from sidebar/nav manifests.
+- Still directly routable if URL is known.
 
-| Filename | Generated Title |
-|----------|-----------------|
-| `getting-started.md` | Getting Started |
-| `api_reference.md` | Api Reference |
-| `README.md` | Readme |
-| `index.md` | Index |
+### `draft: true`
 
-## Tags System
-
-Tags enable several features:
-
-### 1. Visual Badges
-
-Tags are displayed as badges on pages:
-
-```yaml
-tags:
-  - security
-  - authentication
-```
-
-### 2. Related Pages
-
-Pages with shared tags appear in the "Related Pages" section. The more tags pages share, the higher their relevance ranking.
-
-### 3. Search Integration
-
-Tags are indexed for search, making it easier to find related content.
-
-## Draft Pages
-
-Draft pages are useful for work-in-progress documentation:
-
-```yaml
----
-title: New Feature
-draft: true
----
-```
-
-Draft pages:
-- Are hidden from navigation
-- Show a "Draft" badge when accessed directly
-- Can still be accessed via direct URL
-- Are excluded from sitemap generation
-
-## Hidden Pages
-
-Hidden pages remain accessible but don't appear in navigation:
-
-```yaml
----
-title: Secret Page
-hidden: true
----
-```
-
-Use cases:
-- Landing pages linked from external sources
-- Pages that should only be accessed via direct links
-- Archived content you don't want prominently displayed
+- Hidden from navigation.
+- Marked with draft badge where applicable.
+- Excluded from search index generation and sitemap utilities when those utilities are used.
 
 ## Ordering
 
-Pages within a section are sorted by:
-1. `order` field (ascending, lower numbers first)
-2. Title (alphabetical) if order is equal
+Sort behavior:
 
-```yaml
-# Shows first
----
-title: Introduction
-order: 1
----
+1. `order` ascending.
+2. `title` alphabetical for ties.
 
-# Shows second
----
-title: Installation
-order: 2
----
+## Filename Title Fallback
 
-# Shows last (default order: 999)
----
-title: Advanced Topics
----
-```
+When `title` is missing, title is derived from filename.
 
-## Component Integration
+| Filename | Generated Title |
+|----------|-----------------|
+| `getting-started.md` | `Getting Started` |
+| `api_reference.md` | `Api Reference` |
+| `quick-start.md` | `Quick Start` |
 
-The `component` field enables live component demos:
+## Notes
 
-```yaml
----
-title: Button Component
-component: ButtonDemo
----
-```
+- Keep `tags` as a YAML list for reliable parsing.
+- `previous`/`next` frontmatter links are not currently consumed by the default `KBPageNav`; navigation order is derived from manifest ordering.
 
-When a `DemoBuilder` is provided to `KnowledgeBaseApp.create()`, it receives the component name and can return a Component to render above the page content.
-
-```dart
-KnowledgeBaseApp.create(
-  config: config,
-  stylesheet: stylesheet,
-  demoBuilder: (String componentType) {
-    return switch (componentType) {
-      'ButtonDemo' => const MyButtonDemo(),
-      _ => null,
-    };
-  },
-)
-```

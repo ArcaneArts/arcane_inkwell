@@ -1,6 +1,6 @@
 ---
-title: Sitemap Generation
-description: Automatic XML sitemap generation for SEO
+title: Sitemap Utility
+description: Generate sitemap XML with SitemapGenerator
 icon: globe
 order: 3
 tags:
@@ -9,91 +9,57 @@ tags:
   - deployment
 ---
 
-Arcane Inkwell automatically generates an XML sitemap for search engine optimization.
+Arcane Inkwell exports `SitemapGenerator` for sitemap XML generation.
 
-## How It Works
+## Current Behavior
 
-During the build process, a `sitemap.xml` file is generated at the root of your site containing all visible pages.
+- `KnowledgeBaseApp` currently auto-generates `web/search-index.json` (when enabled).
+- `sitemap.xml` generation is available as a utility and can be wired into your build workflow.
 
-## Features
-
-### Automatic Generation
-
-The sitemap is built from the navigation manifest, ensuring it stays in sync with your content.
-
-### Visibility Filtering
-
-The sitemap automatically excludes:
-- Hidden pages (`hidden: true` in frontmatter)
-- Draft pages (`draft: true` in frontmatter)
-
-### Priority Calculation
-
-Page priority is calculated based on URL depth:
-
-| Depth | Path Example | Priority |
-|-------|--------------|----------|
-| 0 | `/` (home) | 1.0 |
-| 1 | `/guide` | 0.8 |
-| 2 | `/guide/basics` | 0.6 |
-| 3 | `/guide/basics/install` | 0.4 |
-| 4+ | `/guide/basics/sub/page` | 0.3 |
-
-### Change Frequency
-
-All pages are marked with `<changefreq>weekly</changefreq>` by default.
-
-## Sitemap Format
-
-The generated sitemap follows the standard XML sitemap protocol:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://example.com/</loc>
-    <priority>1.0</priority>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://example.com/guide</loc>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-  </url>
-  <!-- ... more URLs -->
-</urlset>
-```
-
-## Usage
-
-### Accessing the Sitemap
-
-After building, the sitemap is available at:
-```
-https://your-docs-site.com/sitemap.xml
-```
-
-### Submitting to Search Engines
-
-Submit your sitemap to search engines for faster indexing:
-
-1. **Google Search Console**: Add your sitemap URL in the Sitemaps section
-2. **Bing Webmaster Tools**: Submit via the Sitemaps feature
-3. **robots.txt**: Add a sitemap directive:
-
-```
-Sitemap: https://your-docs-site.com/sitemap.xml
-```
-
-## Base URL Configuration
-
-If hosting at a subdirectory, ensure `baseUrl` is configured:
+## Generating a Sitemap
 
 ```dart
-SiteConfig(
-  name: 'My Docs',
-  baseUrl: '/docs',
-)
+import 'dart:io';
+import 'package:arcane_inkwell/arcane_inkwell.dart';
+
+Future<void> generateSitemap() async {
+  SiteConfig config = const SiteConfig(
+    name: 'My Docs',
+    contentDirectory: 'content',
+    baseUrl: '/docs',
+  );
+
+  NavBuilder navBuilder = NavBuilder(
+    contentDirectory: config.contentDirectory,
+    baseUrl: config.baseUrl,
+  );
+
+  NavManifest manifest = await navBuilder.build();
+
+  SitemapGenerator generator = SitemapGenerator(
+    config: config,
+    manifest: manifest,
+    siteUrl: 'https://example.com',
+  );
+
+  String xml = generator.generate();
+  await File('web/sitemap.xml').writeAsString(xml);
+}
 ```
 
-The sitemap URLs will include the base path.
+## Output Rules
+
+- Hidden pages (`hidden: true`) are excluded.
+- Draft pages (`draft: true`) are excluded.
+- Priority is depth-based:
+  - `/` -> `1.0`
+  - depth 1 -> `0.8`
+  - depth 2 -> `0.6`
+  - depth 3 -> `0.4`
+  - depth 4+ -> `0.3`
+- Change frequency is `weekly`.
+
+## Subpath Hosting
+
+If you host docs at a subpath, keep `baseUrl` consistent with deployment (`/docs`, `/help`, etc.) so generated locations match production URLs.
+

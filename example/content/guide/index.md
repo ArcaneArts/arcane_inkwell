@@ -4,15 +4,19 @@ description: Learn how to use Arcane Inkwell
 order: 0
 ---
 
-This section contains step-by-step guides for getting started with Arcane Inkwell.
+This section contains step-by-step guides for building and running an Arcane Inkwell site.
 
-## Getting Started
+## Basics
 
-Start with the **Basics** subsection to learn how to install, configure, and run your documentation site.
+Start in **Basics** for:
+- installation
+- project configuration
+- local development and production build commands
 
-## Advanced Topics
+## Advanced
 
-Once you're comfortable with the basics, explore the **Advanced** subsection for:
-- Keyboard shortcuts and accessibility
-- GitHub integration
-- SEO and sitemap generation
+Then move to **Advanced** for:
+- GitHub integration patterns
+- keyboard and interaction behavior
+- sitemap utility usage
+

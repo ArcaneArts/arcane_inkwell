@@ -1,6 +1,6 @@
 ---
 title: GitHub Integration
-description: Edit links, releases, and repository integration
+description: Edit links and repository linking behavior
 icon: link
 order: 2
 tags:
@@ -9,73 +9,48 @@ tags:
   - configuration
 ---
 
-Arcane Inkwell includes several GitHub integration features.
+Arcane Inkwell provides GitHub integration through `SiteConfig.githubUrl` and `SiteConfig.editBranch`.
 
 ## Edit This Page Links
 
-When `githubUrl` is configured, each page displays an "Edit this page" link that opens the file directly in GitHub's editor.
-
-### Configuration
+When `githubUrl` is configured and `showEditLink` is `true`, pages include an edit link.
 
 ```dart
 SiteConfig(
   name: 'My Docs',
   githubUrl: 'https://github.com/myorg/myproject',
-  editBranch: 'main',      // Default: 'main'
-  showEditLink: true,      // Default: true
+  editBranch: 'main',
+  showEditLink: true,
 )
 ```
 
-### How It Works
+Edit URL shape:
 
-Edit URLs are generated in the format:
-```
+```text
 {githubUrl}/edit/{editBranch}/{contentDirectory}/{pagePath}.md
 ```
 
-For example, if your config is:
-- `githubUrl`: `https://github.com/acme/docs`
-- `editBranch`: `main`
-- `contentDirectory`: `content`
+Example:
 
-Then the page `/guide/installation` generates:
-```
-https://github.com/acme/docs/edit/main/content/guide/installation.md
+```text
+https://github.com/acme/docs/edit/main/content/guide/basics/installation.md
 ```
 
-### Disabling Edit Links
+## Repository Link in Navigation Bar
 
-To disable edit links site-wide:
+When `githubUrl` is present and the top/bottom navigation bar is enabled, the default `KBTopBar` renders a GitHub icon link.
 
 ```dart
 SiteConfig(
   name: 'My Docs',
   githubUrl: 'https://github.com/myorg/myproject',
-  showEditLink: false,
+  navigationBarEnabled: true,
 )
 ```
 
-## GitHub Repository Link
+## Changelog Release Links
 
-When `githubUrl` is set, a GitHub link appears in the sidebar/header for easy access to your repository.
-
-## Sidebar Footer with Releases
-
-Link to your releases page from the sidebar footer:
-
-```dart
-SiteConfig(
-  name: 'My Docs',
-  sidebarFooter: 'v1.2.0',
-  sidebarFooterUrl: 'https://github.com/myorg/myproject/releases',
-)
-```
-
-This displays a version badge that links to your releases page.
-
-## Changelog Integration
-
-The `KBChangelog` component integrates with GitHub releases:
+`KBChangelog` can generate release links when you pass `githubUrl`.
 
 ```dart
 KBChangelog(
@@ -84,20 +59,13 @@ KBChangelog(
 )
 ```
 
-Each version in the changelog gets a "Release" link pointing to:
-```
+Release URL shape:
+
+```text
 {githubUrl}/releases/tag/v{version}
 ```
 
-## Social Links
+## Notes on Sidebar Footer Fields
 
-Add GitHub to your social links:
+`sidebarFooter` and `sidebarFooterUrl` exist on `SiteConfig`, but the default `KBLayout` path does not currently render them. Use a custom layout if you need them displayed.
 
-```dart
-SiteConfig(
-  name: 'My Docs',
-  socialLinks: [
-    SocialLink.github('https://github.com/myorg'),
-  ],
-)
-```

@@ -306,6 +306,9 @@ class KBSidebar extends StatelessComponent {
       'code' => ArcaneIcon.code(size: IconSize.sm),
       'braces' => ArcaneIcon.braces(size: IconSize.sm),
       'brackets' => ArcaneIcon.brackets(size: IconSize.sm),
+      'component' => ArcaneIcon.blocks(size: IconSize.sm),
+      'lightbulb' => ArcaneIcon.lightbulb(size: IconSize.sm),
+      'palette' => ArcaneIcon.palette(size: IconSize.sm),
 
       // Files & Folders
       'folder' => ArcaneIcon.folder(size: IconSize.sm),
