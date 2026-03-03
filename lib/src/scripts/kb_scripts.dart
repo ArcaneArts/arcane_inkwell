@@ -26,17 +26,25 @@ class KBScripts {
   /// Generate the complete knowledge base scripts.
   String generate() {
     return '''
-document.addEventListener('DOMContentLoaded', function() {
-  ${_themeUtilities()}
-  ${_themeToggleHandler()}
-  ${_searchFunctionality()}
-  ${_codeBlockCopyButtons()}
-  ${_syntaxHighlighting()}
-  ${_tocScrollTracking()}
-  ${_sidebarCollapse()}
-  ${_backToTop()}
-  ${_ratingFunctionality()}
-});
+	(function() {
+	  function initializeKnowledgeBaseScripts() {
+	    ${_themeUtilities()}
+	    ${_themeToggleHandler()}
+	    ${_searchFunctionality()}
+	    ${_codeBlockCopyButtons()}
+	    ${_syntaxHighlighting()}
+	    ${_tocScrollTracking()}
+	    ${_sidebarCollapse()}
+	    ${_backToTop()}
+	    ${_ratingFunctionality()}
+	  }
+
+	  if (document.readyState === 'loading') {
+	    document.addEventListener('DOMContentLoaded', initializeKnowledgeBaseScripts);
+	  } else {
+	    initializeKnowledgeBaseScripts();
+	  }
+})();
 ''';
   }
 
@@ -368,18 +376,106 @@ proseBlocks.forEach(function(pre) {
 
   static String _syntaxHighlighting() => '''
 // ===== SYNTAX HIGHLIGHTING =====
-if (typeof hljs !== 'undefined') {
-  hljs.configure({
-    ignoreUnescapedHTML: true,
-    languages: ['dart', 'javascript', 'yaml', 'bash', 'json', 'html', 'css']
-  });
-  document.querySelectorAll('pre code').forEach(function(block) {
-    if (!block.className || !block.className.includes('language-')) {
+(function() {
+  if (window.__kbSyntaxHighlightInitialized) return;
+  window.__kbSyntaxHighlightInitialized = true;
+
+  var maxRetries = 30;
+  var retryDelayMs = 60;
+  var highlightAttribute = 'data-kb-highlighted';
+  var languageClasses = ['dart', 'javascript', 'yaml', 'bash', 'json', 'html', 'css'];
+
+  function hasLanguageClass(className) {
+    if (!className) return false;
+    return className.split(' ').some(function(token) {
+      return token === 'language-dart' ||
+             token === 'language-javascript' ||
+             token === 'language-yaml' ||
+             token === 'language-bash' ||
+             token === 'language-json' ||
+             token === 'language-html' ||
+             token === 'language-css' ||
+             token === 'language-js' ||
+             token === 'language-shell' ||
+             token === 'language-sh';
+    });
+  }
+
+  function normalizeLanguageClasses(block) {
+    if (block.getAttribute(highlightAttribute) === '1') return;
+    var className = block.className || '';
+    if (!hasLanguageClass(className) &&
+        className.indexOf('language-') === -1) {
       block.classList.add('language-dart');
+      return;
     }
-  });
-  hljs.highlightAll();
-}
+    if (!hasLanguageClass(className) && className.indexOf('language-') !== -1) {
+      var classes = className.trim().split(/\\s+/);
+      var languageClass = null;
+      for (var i = 0; i < classes.length; i++) {
+        if (classes[i].indexOf('language-') === 0) {
+          languageClass = classes[i];
+          break;
+        }
+      }
+      if (!languageClass) return;
+      if (languageClass === 'language-js' || languageClass === 'language-shell') {
+        block.classList.remove(languageClass);
+        block.classList.add(languageClass.replace('language-js', 'language-javascript'));
+      }
+    }
+  }
+
+  function highlight() {
+    if (typeof hljs === 'undefined' || typeof hljs.highlightElement !== 'function') {
+      return false;
+    }
+
+    hljs.configure({
+      ignoreUnescapedHTML: true,
+      languages: languageClasses,
+    });
+
+    document.querySelectorAll('pre code').forEach(function(block) {
+      normalizeLanguageClasses(block);
+      if (block.getAttribute(highlightAttribute) === '1') return;
+      if (block.className.indexOf('hljs-') !== -1) return;
+      hljs.highlightElement(block);
+      block.setAttribute(highlightAttribute, '1');
+    });
+
+    return true;
+  }
+
+  function initWithRetry(retriesLeft) {
+    if (highlight()) return;
+    if (retriesLeft <= 0) return;
+    window.setTimeout(function() {
+      initWithRetry(retriesLeft - 1);
+    }, retryDelayMs);
+  }
+
+  function observeDynamicCodeBlocks() {
+    if (window.__kbSyntaxHighlightObserver || !window.MutationObserver) return;
+    window.__kbSyntaxHighlightObserver = new MutationObserver(function() {
+      highlight();
+    });
+    window.__kbSyntaxHighlightObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      initWithRetry(maxRetries);
+      observeDynamicCodeBlocks();
+    });
+  } else {
+    initWithRetry(maxRetries);
+    observeDynamicCodeBlocks();
+  }
+})();
 ''';
 
   static String _tocScrollTracking() => '''
