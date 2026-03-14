@@ -1,13 +1,13 @@
 /// A package for creating beautiful knowledge base websites from markdown files.
 ///
-/// Arcane Inkwell transforms a directory of markdown files into a fully-featured
+/// Arcane Lexicon transforms a directory of markdown files into a fully-featured
 /// documentation site with auto-generated navigation, search, theming, and more.
 ///
 /// ## Quick Start
 ///
 /// Create a full knowledge base site with 1-line theming:
 /// ```dart
-/// import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+/// import 'package:arcane_lexicon/arcane_lexicon.dart' hide runApp;
 ///
 /// void main() async {
 ///   Jaspr.initializeApp(options: defaultServerOptions);
@@ -23,7 +23,7 @@
 ///   );
 /// }
 /// ```
-library arcane_inkwell;
+library arcane_lexicon;
 
 // Re-export jaspr and arcane_jaspr for convenience (hide conflicts)
 export 'package:jaspr/jaspr.dart' hide State, Text;

@@ -11,7 +11,7 @@ author: Arcane Arts
 date: 2026-03-03
 ---
 
-This page renders the default rich markdown component set that Arcane Inkwell registers automatically.
+This page renders the default rich markdown component set that Arcane Lexicon registers automatically.
 
 ## Cards and Tiles
 
@@ -22,7 +22,7 @@ This page renders the default rich markdown component set that Arcane Inkwell re
   <Card title="SiteConfig" href="/reference/site-config" icon="settings">
     Configure global behavior and layout flags.
   </Card>
-  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_inkwell" icon="github">
+  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_lexicon" icon="github">
     External links get a top-right external indicator.
   </Card>
 </CardGroup>

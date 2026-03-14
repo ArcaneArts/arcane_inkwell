@@ -23,7 +23,7 @@ export '../layout/kb_layout.dart' show DemoBuilder;
 ///
 /// Example usage with 1-line theming:
 /// ```dart
-/// import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+/// import 'package:arcane_lexicon/arcane_lexicon.dart' hide runApp;
 ///
 /// void main() async {
 ///   Jaspr.initializeApp(options: defaultServerOptions);
@@ -120,7 +120,7 @@ class KnowledgeBaseApp {
     final possiblePaths = [
       'web/search-index.json',
       // When run from project root
-      io.Directory.current.path + '/web/search-index.json',
+      '${io.Directory.current.path}/web/search-index.json',
     ];
 
     for (final path in possiblePaths) {

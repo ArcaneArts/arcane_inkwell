@@ -1,5 +1,5 @@
-name: arcane_inkwell_scripts
-description: Build and CI scripts for arcane_inkwell
+name: arcane_lexicon_scripts
+description: Build and CI scripts for arcane_lexicon
 publish_to: 'none'
 
 environment:

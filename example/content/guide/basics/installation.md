@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Add Arcane Inkwell to your project
+description: Add Arcane Lexicon to your project
 icon: download
 order: 1
 author: Arcane Arts
@@ -13,9 +13,9 @@ Notice the **breadcrumbs** above the title showing: Guide > Basics > Installatio
 
 ```yaml
 dependencies:
-  arcane_inkwell:
+  arcane_lexicon:
     git:
-      url: https://github.com/ArcaneArts/arcane_inkwell
+      url: https://github.com/ArcaneArts/arcane_lexicon
 ```
 
 ## Install

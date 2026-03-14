@@ -1,6 +1,6 @@
 ---
 title: Features
-description: Visual demonstrations of Arcane Inkwell behavior
+description: Visual demonstrations of Arcane Lexicon behavior
 order: 0
 ---
 

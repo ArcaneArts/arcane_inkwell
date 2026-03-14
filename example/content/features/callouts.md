@@ -11,7 +11,7 @@ author: Arcane Arts
 date: 2026-03-03
 ---
 
-Arcane Inkwell supports two callout authoring styles:
+Arcane Lexicon supports two callout authoring styles:
 
 1. GitHub-style callout markdown (`> [!TYPE]`).
 2. Rich markdown callout tags (`<Note>`, `<Warning>`, etc.).
@@ -46,7 +46,7 @@ Arcane Inkwell supports two callout authoring styles:
 ### Optional Title
 
 > [!WARNING] Java 21 Required
-> Arcane Inkwell tooling requires Java 21 or newer in this environment.
+> Arcane Lexicon tooling requires Java 21 or newer in this environment.
 
 ## Rich Callout Tags
 

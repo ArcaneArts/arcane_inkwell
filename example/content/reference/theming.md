@@ -11,12 +11,12 @@ author: Arcane Arts
 date: 2025-01-11
 ---
 
-Arcane Inkwell uses the arcane_jaspr stylesheet system for theming. Swap themes with a single line of code.
+Arcane Lexicon uses the arcane_jaspr stylesheet system for theming. Swap themes with a single line of code.
 
 ## Basic Usage
 
 ```dart
-import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+import 'package:arcane_lexicon/arcane_lexicon.dart' hide runApp;
 
 void main() async {
   Jaspr.initializeApp(options: defaultServerOptions);

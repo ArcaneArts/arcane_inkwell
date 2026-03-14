@@ -2,7 +2,7 @@
 library;
 
 import 'package:jaspr/server.dart';
-import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+import 'package:arcane_lexicon/arcane_lexicon.dart' hide runApp;
 
 import 'main.server.options.dart';
 
@@ -13,9 +13,9 @@ void main() async {
     await KnowledgeBaseApp.create(
       config: const SiteConfig(
         name: 'Example Docs',
-        description: 'Arcane Inkwell demo site',
+        description: 'Arcane Lexicon demo site',
         contentDirectory: 'content',
-        githubUrl: 'https://github.com/ArcaneArts/arcane_inkwell',
+        githubUrl: 'https://github.com/ArcaneArts/arcane_lexicon',
         showEditLink: true,
         editBranch: 'main',
         navigationBarEnabled: true,
@@ -24,14 +24,14 @@ void main() async {
           NavLink(label: 'Docs', href: '/'),
           NavLink(
             label: 'GitHub',
-            href: 'https://github.com/ArcaneArts/arcane_inkwell',
+            href: 'https://github.com/ArcaneArts/arcane_lexicon',
             external: true,
           ),
         ],
-        footerText: 'Built with Arcane Inkwell',
+        footerText: 'Built with Arcane Lexicon',
         sidebarFooter: 'v1.0.0',
         sidebarFooterUrl:
-            'https://github.com/ArcaneArts/arcane_inkwell/releases',
+            'https://github.com/ArcaneArts/arcane_lexicon/releases',
       ),
       // Single line theming - swap themes by changing this line:
       // stylesheet: const CodexStylesheet(theme: CodexTheme.blue),

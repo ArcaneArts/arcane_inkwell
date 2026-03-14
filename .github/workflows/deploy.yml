@@ -43,7 +43,7 @@ jobs:
 
       - name: Build static site
         working-directory: example
-        run: dart pub global run jaspr_cli:jaspr build --dart-define=BASE_URL=/arcane_inkwell
+        run: dart pub global run jaspr_cli:jaspr build --dart-define=BASE_URL=/arcane_lexicon
 
       - name: Add .nojekyll
         working-directory: example

@@ -9,7 +9,7 @@ tags:
   - extensions
 ---
 
-Arcane Inkwell registers a default extension pipeline for every page.
+Arcane Lexicon registers a default extension pipeline for every page.
 
 ## Default Extension Order
 
@@ -95,7 +95,7 @@ KnowledgeBaseApp.create(
 
 ## Default Custom Components
 
-In addition to extensions, Arcane Inkwell registers default custom markdown components.
+In addition to extensions, Arcane Lexicon registers default custom markdown components.
 
 See [Components](/reference/components) for complete syntax and live examples.
 
@@ -146,7 +146,7 @@ KnowledgeBaseApp.create(
 
 ## Syntax Highlighting Notes
 
-Arcane Inkwell includes Highlight.js setup in `KBLayout` scripts.
+Arcane Lexicon includes Highlight.js setup in `KBLayout` scripts.
 
 Common classes are normalized for:
 - `dart`

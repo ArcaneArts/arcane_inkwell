@@ -14,7 +14,7 @@ date: 2025-01-13
 
 # Media Embeds
 
-Arcane Inkwell provides a special syntax for embedding media content. Use the `@[type](source)` syntax to embed videos, images, GIFs, and more.
+Arcane Lexicon provides a special syntax for embedding media content. Use the `@[type](source)` syntax to embed videos, images, GIFs, and more.
 
 ## YouTube Videos
 

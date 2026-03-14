@@ -9,7 +9,7 @@ tags:
   - ui
 ---
 
-Arcane Inkwell supports three types of icons in frontmatter and section configuration:
+Arcane Lexicon supports three types of icons in frontmatter and section configuration:
 
 1. **Lucide icons** - 90+ built-in icon names
 2. **SVG files** - Reference external `.svg` files

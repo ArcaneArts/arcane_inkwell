@@ -1,6 +1,6 @@
 ---
 title: Components
-description: Complete component catalog for Arcane Inkwell
+description: Complete component catalog for Arcane Lexicon
 icon: layers
 order: 7
 tags:
@@ -10,7 +10,7 @@ tags:
   - layout
 ---
 
-Arcane Inkwell ships two component layers:
+Arcane Lexicon ships two component layers:
 
 1. Rich markdown components available directly in `.md` files.
 2. Dart layout components you can use when composing custom layouts.
@@ -28,7 +28,7 @@ The following components are registered by default through `KBRichMarkdownCompon
   <Card title="Quick Start" href="/guide/basics/installation" icon="rocket">
     Install and launch your docs app.
   </Card>
-  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_inkwell" icon="github">
+  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_lexicon" icon="github">
     External links show the external-link indicator.
   </Card>
 </CardGroup>
@@ -41,7 +41,7 @@ The following components are registered by default through `KBRichMarkdownCompon
   <Card title="SiteConfig" href="/reference/site-config" icon="settings">
     Configure global behavior and layout toggles.
   </Card>
-  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_inkwell" icon="github">
+  <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_lexicon" icon="github">
     External links show the external-link indicator.
   </Card>
 </CardGroup>
@@ -86,13 +86,13 @@ The following components are registered by default through `KBRichMarkdownCompon
 
 ```markdown
 <Steps>
-  <Step title="Install dependency">Add `arcane_inkwell` to `pubspec.yaml`.</Step>
+  <Step title="Install dependency">Add `arcane_lexicon` to `pubspec.yaml`.</Step>
   <Step title="Run dev server">Execute `jaspr serve`.</Step>
 </Steps>
 ```
 
 <Steps>
-  <Step title="Install dependency">Add `arcane_inkwell` to `pubspec.yaml`.</Step>
+  <Step title="Install dependency">Add `arcane_lexicon` to `pubspec.yaml`.</Step>
   <Step title="Run dev server">Execute `jaspr serve`.</Step>
   <Step title="Verify output">Confirm navigation, callouts, and cards render.</Step>
 </Steps>

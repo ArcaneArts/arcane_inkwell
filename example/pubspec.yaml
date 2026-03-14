@@ -1,14 +1,13 @@
-name: arcane_inkwell_example
-description: Example knowledge base using arcane_inkwell
+name: arcane_lexicon_example
+description: Example knowledge base using arcane_lexicon
 version: 0.1.0
-publish_to: none
 
 environment:
   sdk: ^3.10.0
 
 dependencies:
   web: ^1.1.1
-  arcane_inkwell:
+  arcane_lexicon:
     path: ../
   jaspr: ^0.22.3
   jaspr_content: ^0.5.0

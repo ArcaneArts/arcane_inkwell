@@ -1,15 +1,15 @@
 ---
-title: Arcane Inkwell
+title: Arcane Lexicon
 description: Transform markdown directories into documentation sites
 order: 0
 ---
 
-**Arcane Inkwell** transforms markdown content into a documentation site with generated navigation, rich markdown components, and one-line theming.
+**Arcane Lexicon** transforms markdown content into a documentation site with generated navigation, rich markdown components, and one-line theming.
 
 ## Quick Start
 
 ```dart
-import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+import 'package:arcane_lexicon/arcane_lexicon.dart' hide runApp;
 
 void main() async {
   Jaspr.initializeApp(options: defaultServerOptions);

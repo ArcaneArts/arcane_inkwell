@@ -10,7 +10,7 @@ author: Arcane Arts
 date: 2026-03-03
 ---
 
-Arcane Inkwell navigation is generated from the content tree and section configs.
+Arcane Lexicon navigation is generated from the content tree and section configs.
 
 ## Sidebar Navigation
 

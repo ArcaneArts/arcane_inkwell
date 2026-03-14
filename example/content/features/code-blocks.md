@@ -45,9 +45,9 @@ function greet(name) {
 
 ```yaml
 dependencies:
-  arcane_inkwell:
+  arcane_lexicon:
     git:
-      url: https://github.com/ArcaneArts/arcane_inkwell
+      url: https://github.com/ArcaneArts/arcane_lexicon
 ```
 
 ## Bash
@@ -60,7 +60,7 @@ cd example && jaspr serve
 
 ```json
 {
-  "name": "arcane_inkwell",
+  "name": "arcane_lexicon",
   "version": "1.0.0",
   "dependencies": {}
 }

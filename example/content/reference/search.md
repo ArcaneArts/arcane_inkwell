@@ -9,7 +9,7 @@ tags:
   - reference
 ---
 
-Arcane Inkwell has two related search outputs:
+Arcane Lexicon has two related search outputs:
 
 1. Runtime UI search (client-side, instant).
 2. Optional generated `web/search-index.json` for external consumers.

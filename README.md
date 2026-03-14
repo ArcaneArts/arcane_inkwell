@@ -1,13 +1,13 @@
-# Arcane Inkwell
+# Arcane Lexicon
 
 Transform markdown directories into documentation sites with Jaspr + Arcane stylesheets.
 
-**[Live Demo](https://arcanearts.github.io/arcane_inkwell/)** | **[GitHub](https://github.com/ArcaneArts/arcane_inkwell)**
+**[Live Demo](https://arcanearts.github.io/arcane_lexicon/)** | **[GitHub](https://github.com/ArcaneArts/arcane_lexicon)**
 
 ## Quick Start
 
 ```dart
-import 'package:arcane_inkwell/arcane_inkwell.dart' hide runApp;
+import 'package:arcane_lexicon/arcane_lexicon.dart' hide runApp;
 
 void main() async {
   Jaspr.initializeApp(options: defaultServerOptions);
@@ -111,9 +111,9 @@ Implementation-matching docs and showcases live in:
 
 ```yaml
 dependencies:
-  arcane_inkwell:
+  arcane_lexicon:
     git:
-      url: https://github.com/ArcaneArts/arcane_inkwell
+      url: https://github.com/ArcaneArts/arcane_lexicon
 ```
 
 ## License

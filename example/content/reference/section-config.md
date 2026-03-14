@@ -15,7 +15,7 @@ Section configuration files control how folders appear in the sidebar navigation
 
 ## File Formats
 
-Arcane Inkwell supports two configuration formats:
+Arcane Lexicon supports two configuration formats:
 
 ### JSON5 (Recommended)
 

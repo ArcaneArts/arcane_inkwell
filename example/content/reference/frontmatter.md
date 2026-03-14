@@ -1,6 +1,6 @@
 ---
 title: Frontmatter Reference
-description: Page-level frontmatter options recognized by Arcane Inkwell
+description: Page-level frontmatter options recognized by Arcane Lexicon
 icon: file-text
 order: 2
 tags:
@@ -19,7 +19,7 @@ Frontmatter is YAML metadata at the top of markdown files.
 ---
 layout: kb
 title: Installation
-description: Install and run Arcane Inkwell
+description: Install and run Arcane Lexicon
 icon: rocket
 order: 1
 ---
@@ -50,7 +50,7 @@ component: AuthDemo
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `layout` | `String` | none | Use `kb` for the Arcane Inkwell layout |
+| `layout` | `String` | none | Use `kb` for the Arcane Lexicon layout |
 | `title` | `String?` | filename-derived title | Page title |
 | `description` | `String?` | `null` | Page summary/meta description |
 | `icon` | `String?` | `null` | Icon name, SVG URL, or raw SVG markup |

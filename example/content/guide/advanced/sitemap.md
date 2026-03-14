@@ -9,7 +9,7 @@ tags:
   - deployment
 ---
 
-Arcane Inkwell exports `SitemapGenerator` for sitemap XML generation.
+Arcane Lexicon exports `SitemapGenerator` for sitemap XML generation.
 
 ## Current Behavior
 
@@ -20,7 +20,7 @@ Arcane Inkwell exports `SitemapGenerator` for sitemap XML generation.
 
 ```dart
 import 'dart:io';
-import 'package:arcane_inkwell/arcane_inkwell.dart';
+import 'package:arcane_lexicon/arcane_lexicon.dart';
 
 Future<void> generateSitemap() async {
   SiteConfig config = const SiteConfig(

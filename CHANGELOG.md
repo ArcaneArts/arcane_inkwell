@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **ArcaneJaspr 3.1 Surface Compatibility**
-  - Updated `arcane_inkwell` to work with the Flutter-first `arcane_jaspr` primary import
+  - Updated `arcane_lexicon` to work with the Flutter-first `arcane_jaspr` primary import
   - Layout and rich markdown files now import low-level Jaspr and HTML surfaces explicitly instead of assuming raw `Component`, DOM helpers, and HTML wrappers come from `package:arcane_jaspr/arcane_jaspr.dart`
   - Adjusted the public export surface to avoid the `State` export collision introduced by the new Flutter-shaped base types
 

@@ -1,11 +1,11 @@
 ---
 title: Reference
-description: API and behavior reference for Arcane Inkwell
+description: API and behavior reference for Arcane Lexicon
 icon: book
 order: 0
 ---
 
-This section documents the current Arcane Inkwell implementation surface.
+This section documents the current Arcane Lexicon implementation surface.
 
 ## Core Configuration
 

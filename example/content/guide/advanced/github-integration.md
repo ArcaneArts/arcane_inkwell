@@ -9,7 +9,7 @@ tags:
   - configuration
 ---
 
-Arcane Inkwell provides GitHub integration through `SiteConfig.githubUrl` and `SiteConfig.editBranch`.
+Arcane Lexicon provides GitHub integration through `SiteConfig.githubUrl` and `SiteConfig.editBranch`.
 
 ## Edit This Page Links
 

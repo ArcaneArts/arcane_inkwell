@@ -9,7 +9,7 @@ tags:
   - accessibility
 ---
 
-Arcane Inkwell includes keyboard shortcuts and interaction helpers in `KBScripts`.
+Arcane Lexicon includes keyboard shortcuts and interaction helpers in `KBScripts`.
 
 ## Search Shortcuts
 

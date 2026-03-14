@@ -1,10 +1,10 @@
 ---
 title: Guide
-description: Learn how to use Arcane Inkwell
+description: Learn how to use Arcane Lexicon
 order: 0
 ---
 
-This section contains step-by-step guides for building and running an Arcane Inkwell site.
+This section contains step-by-step guides for building and running an Arcane Lexicon site.
 
 ## Basics
 

@@ -10,7 +10,7 @@ tags:
   - sitemap
 ---
 
-Arcane Inkwell exports utility classes that you can wire into your build or release workflow.
+Arcane Lexicon exports utility classes that you can wire into your build or release workflow.
 
 ## SitemapGenerator
 

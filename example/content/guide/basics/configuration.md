@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: Configure Arcane Inkwell site behavior
+description: Configure Arcane Lexicon site behavior
 icon: settings
 order: 2
 tags:
@@ -10,7 +10,7 @@ author: Arcane Arts
 date: 2026-03-03
 ---
 
-Arcane Inkwell configuration is split across:
+Arcane Lexicon configuration is split across:
 
 1. `SiteConfig` (global behavior)
 2. `_section.json5` / `_section.yaml` (folder sections)

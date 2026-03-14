@@ -10,7 +10,7 @@ author: Arcane Arts
 date: 2026-03-03
 ---
 
-`SiteConfig` controls global behavior for your Arcane Inkwell site.
+`SiteConfig` controls global behavior for your Arcane Lexicon site.
 
 ## Basic Example
 
@@ -39,7 +39,7 @@ SiteConfig(
   themeToggleEnabled: true,
   defaultTheme: KBThemeMode.dark,
   primaryColor: '#3b82f6',
-  footerText: 'Built with Arcane Inkwell',
+  footerText: 'Built with Arcane Lexicon',
   copyright: '2026 My Company',
   headerLinks: [
     NavLink(label: 'Docs', href: '/'),
@@ -123,7 +123,7 @@ enum KBNavigationBarPosition { top, bottom }
 ```dart
 NavLink(
   label: 'GitHub',
-  href: 'https://github.com/ArcaneArts/arcane_inkwell',
+  href: 'https://github.com/ArcaneArts/arcane_lexicon',
   external: true,
 )
 ```
@@ -132,7 +132,7 @@ NavLink(
 
 ```dart
 SocialLink(name: 'Discord', url: 'https://discord.gg/example', icon: 'message-circle')
-SocialLink.github('https://github.com/ArcaneArts/arcane_inkwell')
+SocialLink.github('https://github.com/ArcaneArts/arcane_lexicon')
 SocialLink.twitter('https://x.com/arcanearts')
 SocialLink.discord('https://discord.gg/example')
 SocialLink.youtube('https://youtube.com/@arcanearts')
