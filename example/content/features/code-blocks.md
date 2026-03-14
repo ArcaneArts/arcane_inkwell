@@ -19,17 +19,16 @@ Code blocks are automatically syntax highlighted using Highlight.js. Hover over 
 ## Dart
 
 ```dart
-class Example extends StatelessComponent {
+class Example extends StatelessWidget {
   final String title;
 
   const Example({required this.title});
 
   @override
-  Component build(BuildContext context) {
-    return div(classes: 'example', [
-      Component.text(title),
-    ]);
-  }
+  Widget build(BuildContext context) => ArcaneDiv(
+    classes: 'example',
+    children: [Text(title)],
+  );
 }
 ```
 

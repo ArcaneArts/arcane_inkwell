@@ -1,10 +1,10 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/web.dart'
-    show Component, RawText, StatelessComponent, a, button, div, img, nav, span;
+    show RawText, a, button, div, img, nav, span;
 
 import '../config/site_config.dart';
 
-class KBTopBar extends StatelessComponent {
+class KBTopBar extends StatelessWidget {
   final SiteConfig config;
   final String currentPath;
   final bool bottom;
@@ -16,7 +16,7 @@ class KBTopBar extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     String positionClass = bottom ? ' kb-topbar-bottom' : '';
     return div(classes: 'kb-topbar$positionClass', [
       div(classes: 'kb-topbar-inner', [
@@ -43,7 +43,7 @@ class KBTopBar extends StatelessComponent {
               ],
             ),
             span(classes: 'kb-topbar-brand-label', [
-              Component.text(config.name),
+              Widget.text(config.name),
             ]),
           ]),
           if (config.headerLinks.isNotEmpty)
@@ -76,7 +76,7 @@ class KBTopBar extends StatelessComponent {
     ]);
   }
 
-  Component _buildHeaderLink(NavLink link) {
+  Widget _buildHeaderLink(NavLink link) {
     bool isExternalLink = link.external || _isExternal(link.href);
     String href = isExternalLink ? link.href : config.fullPath(link.href);
     bool active = !isExternalLink && _isActive(link.href);
@@ -90,12 +90,12 @@ class KBTopBar extends StatelessComponent {
         : const <String, String>{};
 
     return a(href: href, classes: classes, attributes: attributes, [
-      Component.text(link.label),
+      Widget.text(link.label),
       if (isExternalLink) ArcaneIcon.externalLink(size: IconSize.xs),
     ]);
   }
 
-  Component _buildGithubLink(String githubUrl) {
+  Widget _buildGithubLink(String githubUrl) {
     return a(
       href: githubUrl,
       classes: 'kb-topbar-github',
@@ -108,7 +108,7 @@ class KBTopBar extends StatelessComponent {
     );
   }
 
-  Component _buildSearch() {
+  Widget _buildSearch() {
     return const RawText('''
 <div class="kb-search">
   <div class="kb-search-input-wrap">

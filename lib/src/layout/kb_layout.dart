@@ -1,8 +1,7 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv;
 import 'package:arcane_jaspr/web.dart'
-    show Component, RawText, StatefulComponent, div, link, meta, script;
-import 'package:jaspr/jaspr.dart' as jaspr show State;
+    show RawText, div, link, meta, script;
 import 'package:jaspr_content/jaspr_content.dart';
 
 import '../config/site_config.dart';
@@ -19,8 +18,8 @@ import 'kb_top_bar.dart';
 /// Callback type for building demo components.
 ///
 /// The callback receives the component type from frontmatter and returns
-/// a Component to render as the live demo, or null if no demo is available.
-typedef DemoBuilder = Component? Function(String componentType);
+/// a Widget to render as the live demo, or null if no demo is available.
+typedef DemoBuilder = Widget? Function(String componentType);
 
 /// The main layout wrapper for knowledge base pages.
 /// Matches the arcane_jaspr_codex pattern with single-line theming.
@@ -43,7 +42,7 @@ class KBLayout extends PageLayoutBase {
   Pattern get name => 'kb';
 
   @override
-  Iterable<Component> buildHead(Page page) sync* {
+  Iterable<Widget> buildHead(Page page) sync* {
     yield* super.buildHead(page);
 
     final Map<String, dynamic> pageData = page.data.page;
@@ -52,16 +51,16 @@ class KBLayout extends PageLayoutBase {
       stylesheet.baseCss,
       assetPrefix,
     );
-    String rewrittenComponentCss = _rewriteAssetUrls(
+    String rewrittenWidgetCss = _rewriteAssetUrls(
       stylesheet.componentCss,
       assetPrefix,
     );
 
     // Title
     final String title = pageData['title'] as String? ?? config.name;
-    yield Component.element(
+    yield Widget.element(
       tag: 'title',
-      children: [Component.text('$title - ${config.name}')],
+      children: [Widget.text('$title - ${config.name}')],
     );
 
     // Description
@@ -98,7 +97,7 @@ class KBLayout extends PageLayoutBase {
     );
 
     // Inject stylesheet base CSS (contains all CSS variables and base styles)
-    yield Component.element(
+    yield Widget.element(
       tag: 'style',
       attributes: const {'id': 'arcane-theme-vars'},
       children: [RawText(rewrittenBaseCss)],
@@ -106,7 +105,7 @@ class KBLayout extends PageLayoutBase {
 
     // Inject default KB component styles (base structural styles)
     // Injected BEFORE componentCss so stylesheet overrides can take precedence
-    yield Component.element(
+    yield Widget.element(
       tag: 'style',
       attributes: const {'id': 'arcane-kb-styles'},
       children: [RawText(KBStyles.generate())],
@@ -114,10 +113,10 @@ class KBLayout extends PageLayoutBase {
 
     // Inject stylesheet component CSS (contains sidebar styles, tree lines, etc.)
     // Comes after KB styles so stylesheet-specific overrides (like Codex) take precedence
-    yield Component.element(
+    yield Widget.element(
       tag: 'style',
       attributes: const {'id': 'arcane-component-styles'},
-      children: [RawText(rewrittenComponentCss)],
+      children: [RawText(rewrittenWidgetCss)],
     );
 
     // Load external CSS (Google Fonts, etc.)
@@ -155,7 +154,7 @@ class KBLayout extends PageLayoutBase {
   }
 
   @override
-  Component buildBody(Page page, Component child) {
+  Widget buildBody(Page page, Widget child) {
     final Map<String, dynamic> pageData = page.data.page;
 
     // Extract tags from frontmatter
@@ -330,7 +329,7 @@ class KBLayout extends PageLayoutBase {
 }
 
 /// Documentation page wrapper with light/dark mode toggle.
-class ThemedKBPage extends StatefulComponent {
+class ThemedKBPage extends StatefulWidget {
   final SiteConfig config;
   final NavManifest manifest;
   final ArcaneStylesheet stylesheet;
@@ -347,7 +346,7 @@ class ThemedKBPage extends StatefulComponent {
   final String? componentType;
   final bool? pageNavOverride;
   final DemoBuilder? demoBuilder;
-  final Component content;
+  final Widget content;
 
   const ThemedKBPage({
     required this.config,
@@ -370,10 +369,10 @@ class ThemedKBPage extends StatefulComponent {
   });
 
   @override
-  jaspr.State<ThemedKBPage> createState() => _ThemedKBPageState();
+  State<ThemedKBPage> createState() => _ThemedKBPageState();
 }
 
-class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
+class _ThemedKBPageState extends State<ThemedKBPage> {
   bool _isDark = true;
 
   @override
@@ -383,7 +382,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     // Dark mode uses .dark class (defined in stylesheet baseCss)
     final String themeClass = _isDark ? 'dark' : '';
     final String? stylesheetClass = component.stylesheet.bodyClass;
@@ -411,7 +410,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Main page layout structure
-  Component _buildPageLayout() {
+  Widget _buildPageLayout() {
     bool showNavigationBar = component.config.navigationBarEnabled;
     bool useTopPosition =
         component.config.navigationBarPosition == KBNavigationBarPosition.top;
@@ -466,7 +465,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Main content area
-  Component _buildMainArea() {
+  Widget _buildMainArea() {
     return ArcaneDiv(
       classes: 'kb-main-area',
       styles: const ArcaneStyleData(
@@ -480,7 +479,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Content area with main content and TOC
-  Component _buildContentArea() {
+  Widget _buildContentArea() {
     return ArcaneDiv(
       classes: 'kb-content-area',
       styles: const ArcaneStyleData(
@@ -501,7 +500,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Main content section
-  Component _buildMainContent() {
+  Widget _buildMainContent() {
     final bool hasMetadata =
         component.tags.isNotEmpty ||
         component.readingTime != null ||
@@ -510,9 +509,9 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
         component.lastModified != null;
 
     // Build live demo if component type is specified
-    Component? demoComponent;
+    Widget? demoWidget;
     if (component.componentType != null && component.demoBuilder != null) {
-      demoComponent = component.demoBuilder!(component.componentType!);
+      demoWidget = component.demoBuilder!(component.componentType!);
     }
 
     return ArcaneDiv(
@@ -522,7 +521,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
         if (component.title != null) _buildTitle(),
         if (component.description != null) _buildDescription(),
         if (hasMetadata) _buildMetadata(),
-        if (demoComponent != null) demoComponent,
+        if (demoWidget != null) demoWidget,
         div(classes: 'prose', [component.content]),
         if (component.tags.isNotEmpty) _buildTagsFooter(),
         if (component.config.ratingEnabled) _buildRating(),
@@ -545,7 +544,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Build page rating widget
-  Component _buildRating() {
+  Widget _buildRating() {
     return KBRating(
       pagePath: component.currentPath,
       config: RatingConfig(
@@ -557,7 +556,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Build metadata row with reading time, author, date
-  Component _buildMetadata() {
+  Widget _buildMetadata() {
     return ArcaneDiv(
       classes: 'kb-page-metadata',
       styles: const ArcaneStyleData(
@@ -582,7 +581,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
             ),
             children: [
               ArcaneIcon.clock(size: IconSize.sm),
-              ArcaneText('${component.readingTime} min read'),
+              Text('${component.readingTime} min read'),
             ],
           ),
 
@@ -598,7 +597,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
             ),
             children: [
               ArcaneIcon.user(size: IconSize.sm),
-              ArcaneText(component.author!),
+              Text(component.author!),
             ],
           ),
 
@@ -614,7 +613,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
             ),
             children: [
               ArcaneIcon.calendar(size: IconSize.sm),
-              ArcaneText(component.date!),
+              Text(component.date!),
             ],
           ),
 
@@ -630,7 +629,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
             ),
             children: [
               ArcaneIcon.edit(size: IconSize.sm),
-              ArcaneText(
+              Text(
                 'Updated ${_formatLastModified(component.lastModified!)}',
               ),
             ],
@@ -660,7 +659,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
                     ),
                     children: [
                       ArcaneIcon.tag(size: IconSize.xs),
-                      ArcaneText(tag),
+                      Text(tag),
                     ],
                   ),
                 )
@@ -671,7 +670,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Build tags footer section
-  Component _buildTagsFooter() {
+  Widget _buildTagsFooter() {
     return ArcaneDiv(
       classes: 'kb-tags-footer',
       styles: const ArcaneStyleData(
@@ -687,7 +686,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
             textColor: TextColor.mutedForeground,
             margin: MarginPreset.bottomSm,
           ),
-          children: const [ArcaneText('Tags')],
+          children: const [Text('Tags')],
         ),
         ArcaneDiv(
           styles: const ArcaneStyleData(
@@ -712,7 +711,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
                   ),
                   children: [
                     ArcaneIcon.tag(size: IconSize.sm),
-                    ArcaneText(tag),
+                    Text(tag),
                   ],
                 ),
               )
@@ -723,7 +722,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// Build breadcrumbs from current path
-  Component _buildBreadcrumbs() {
+  Widget _buildBreadcrumbs() {
     final String path = component.currentPath;
     final List<String> segments = path
         .split('/')
@@ -803,7 +802,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
     }
   }
 
-  Component _buildTitle() {
+  Widget _buildTitle() {
     return ArcaneDiv(
       styles: const ArcaneStyleData(
         margin: MarginPreset.bottomLg,
@@ -811,23 +810,23 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
         fontWeight: FontWeight.bold,
         textColor: TextColor.primary,
       ),
-      children: [ArcaneText(component.title!)],
+      children: [Text(component.title!)],
     );
   }
 
-  Component _buildDescription() {
+  Widget _buildDescription() {
     return ArcaneDiv(
       styles: const ArcaneStyleData(
         margin: MarginPreset.bottomXl,
         textColor: TextColor.mutedForeground,
         fontSize: FontSize.lg,
       ),
-      children: [ArcaneText(component.description!)],
+      children: [Text(component.description!)],
     );
   }
 
   /// Table of contents sidebar
-  Component _buildTableOfContents() {
+  Widget _buildTableOfContents() {
     return ArcaneDiv(
       styles: const ArcaneStyleData(
         position: Position.sticky,
@@ -845,7 +844,7 @@ class _ThemedKBPageState extends jaspr.State<ThemedKBPage> {
   }
 
   /// JavaScript for static site functionality
-  Iterable<Component> _buildScripts() sync* {
+  Iterable<Widget> _buildScripts() sync* {
     yield script(content: component.scripts.generate());
     // Component interactivity scripts from arcane_jaspr
     yield const ArcaneScriptsComponent();

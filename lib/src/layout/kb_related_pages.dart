@@ -1,14 +1,13 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv, ArcaneLink;
-import 'package:arcane_jaspr/web.dart' show Component, StatelessComponent;
 
 import '../config/site_config.dart';
 import '../navigation/nav_item.dart';
 import '../navigation/nav_section.dart';
 import '../navigation/nav_builder.dart';
 
-/// Component that displays related pages based on shared tags.
-class KBRelatedPages extends StatelessComponent {
+/// Widget that displays related pages based on shared tags.
+class KBRelatedPages extends StatelessWidget {
   final SiteConfig config;
   final NavManifest manifest;
   final String currentPath;
@@ -24,7 +23,7 @@ class KBRelatedPages extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     if (currentTags.isEmpty) return const ArcaneDiv(children: []);
 
     // Find all pages with at least one shared tag
@@ -47,7 +46,7 @@ class KBRelatedPages extends StatelessComponent {
             textColor: TextColor.mutedForeground,
             margin: MarginPreset.bottomMd,
           ),
-          children: [ArcaneText('Related Pages')],
+          children: [Text('Related Pages')],
         ),
         ArcaneDiv(
           classes: 'kb-related-grid',
@@ -111,7 +110,7 @@ class KBRelatedPages extends StatelessComponent {
     return results;
   }
 
-  Component _buildRelatedCard(_RelatedPage page) {
+  Widget _buildRelatedCard(_RelatedPage page) {
     return ArcaneLink(
       href: config.fullPath(page.path),
       classes: 'kb-related-card',
@@ -125,7 +124,7 @@ class KBRelatedPages extends StatelessComponent {
         borderRadius: Radius.md,
         textDecoration: TextDecoration.none,
       ),
-      child: ArcaneColumn(
+      child: Column(
         gapSize: Gap.xs,
         children: [
           ArcaneDiv(
@@ -133,7 +132,7 @@ class KBRelatedPages extends StatelessComponent {
               fontWeight: FontWeight.w500,
               textColor: TextColor.primary,
             ),
-            children: [ArcaneText(page.title)],
+            children: [Text(page.title)],
           ),
           if (page.description != null)
             ArcaneDiv(
@@ -142,7 +141,7 @@ class KBRelatedPages extends StatelessComponent {
                 textColor: TextColor.mutedForeground,
               ),
               children: [
-                ArcaneText(page.description!.length > 100
+                Text(page.description!.length > 100
                     ? '${page.description!.substring(0, 100)}...'
                     : page.description!),
               ],
@@ -163,7 +162,7 @@ class KBRelatedPages extends StatelessComponent {
                         borderRadius: Radius.sm,
                         textColor: TextColor.mutedForeground,
                       ),
-                      children: [ArcaneText(tag)],
+                      children: [Text(tag)],
                     ))
                 .toList(),
           ),

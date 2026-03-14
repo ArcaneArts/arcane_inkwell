@@ -476,9 +476,9 @@ KnowledgeBaseApp.create(
   stylesheet: stylesheet,
   demoBuilder: (String componentType) {
     if (componentType == 'ButtonDemo') {
-      return ArcaneButton(
+      return Button(
         onPressed: () {},
-        child: const ArcaneText('Demo'),
+        child: const Text('Demo'),
       );
     }
     return null;

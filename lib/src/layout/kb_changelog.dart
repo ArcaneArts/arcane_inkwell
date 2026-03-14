@@ -1,11 +1,10 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv, ArcaneLink;
-import 'package:arcane_jaspr/web.dart' show Component, StatelessComponent;
 
 import '../utils/changelog_parser.dart';
 
 /// A styled changelog timeline component.
-class KBChangelog extends StatelessComponent {
+class KBChangelog extends StatelessWidget {
   final List<ChangelogVersion> versions;
   final int? maxVersions;
   final String? githubUrl;
@@ -17,7 +16,7 @@ class KBChangelog extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     final List<ChangelogVersion> displayVersions = maxVersions != null
         ? versions.take(maxVersions!).toList()
         : versions;
@@ -32,7 +31,7 @@ class KBChangelog extends StatelessComponent {
     );
   }
 
-  Component _buildVersion(ChangelogVersion version) {
+  Widget _buildVersion(ChangelogVersion version) {
     return ArcaneDiv(
       classes: 'kb-changelog-version',
       styles: const ArcaneStyleData(
@@ -65,7 +64,7 @@ class KBChangelog extends StatelessComponent {
                 fontSize: FontSize.sm,
                 fontWeight: FontWeight.w600,
               ),
-              children: [ArcaneText('v${version.version}')],
+              children: [Text('v${version.version}')],
             ),
             // Date
             if (version.date != null)
@@ -74,7 +73,7 @@ class KBChangelog extends StatelessComponent {
                   fontSize: FontSize.sm,
                   textColor: TextColor.mutedForeground,
                 ),
-                children: [ArcaneText(version.date!)],
+                children: [Text(version.date!)],
               ),
             // GitHub release link
             if (githubUrl != null)
@@ -88,12 +87,12 @@ class KBChangelog extends StatelessComponent {
                   textColor: TextColor.mutedForeground,
                   textDecoration: TextDecoration.none,
                 ),
-                child: ArcaneRow(
+                child: Row(
                   gapSize: Gap.xs,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ArcaneIcon.externalLink(size: IconSize.xs),
-                    const ArcaneText('Release'),
+                    const Text('Release'),
                   ],
                 ),
               ),
@@ -109,7 +108,7 @@ class KBChangelog extends StatelessComponent {
     );
   }
 
-  Component _buildSection(String name, List<String> items) {
+  Widget _buildSection(String name, List<String> items) {
     if (items.isEmpty) return const ArcaneDiv(children: []);
 
     return ArcaneDiv(
@@ -130,7 +129,7 @@ class KBChangelog extends StatelessComponent {
           ),
           children: [
             _getSectionIcon(name),
-            ArcaneText(name),
+            Text(name),
           ],
         ),
         // Items
@@ -153,9 +152,9 @@ class KBChangelog extends StatelessComponent {
                         styles: ArcaneStyleData(
                           textColor: TextColor.mutedForeground,
                         ),
-                        children: [ArcaneText('-')],
+                        children: [Text('-')],
                       ),
-                      ArcaneText(item),
+                      Text(item),
                     ],
                   ))
               .toList(),
@@ -164,7 +163,7 @@ class KBChangelog extends StatelessComponent {
     );
   }
 
-  Component _getSectionIcon(String name) {
+  Widget _getSectionIcon(String name) {
     final String lowerName = name.toLowerCase();
 
     if (lowerName.contains('add')) {

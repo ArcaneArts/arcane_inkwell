@@ -26,7 +26,7 @@
 library arcane_inkwell;
 
 // Re-export jaspr and arcane_jaspr for convenience (hide conflicts)
-export 'package:jaspr/jaspr.dart' hide State;
+export 'package:jaspr/jaspr.dart' hide State, Text;
 export 'package:jaspr_content/jaspr_content.dart'
     hide TableOfContents, TocEntry;
 export 'package:arcane_jaspr/arcane_jaspr.dart'

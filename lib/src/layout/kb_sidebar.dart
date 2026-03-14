@@ -1,6 +1,6 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/web.dart'
-    show Component, RawText, StatelessComponent, Styles, a, button, div, img, nav, span;
+    show RawText, Styles, a, button, div, img, nav, span;
 
 import '../config/site_config.dart';
 import '../navigation/nav_item.dart';
@@ -9,7 +9,7 @@ import '../navigation/nav_builder.dart';
 
 /// The sidebar navigation component for knowledge base pages.
 /// Matches the arcane_jaspr_codex pattern.
-class KBSidebar extends StatelessComponent {
+class KBSidebar extends StatelessWidget {
   final SiteConfig config;
   final NavManifest manifest;
   final String currentPath;
@@ -29,7 +29,7 @@ class KBSidebar extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     bool showHeader = showBranding || showSearch || showThemeToggle;
 
     return div(classes: 'kb-sidebar', [
@@ -70,8 +70,8 @@ class KBSidebar extends StatelessComponent {
   }
 
   /// Build the sidebar header with branding and controls
-  Component _buildHeader() {
-    List<Component> children = <Component>[];
+  Widget _buildHeader() {
+    List<Widget> children = <Widget>[];
 
     if (showBranding) {
       children.add(
@@ -81,11 +81,11 @@ class KBSidebar extends StatelessComponent {
             styles: const Styles(raw: {'text-decoration': 'none'}),
             [
               div(classes: 'sidebar-brand-title', [
-                Component.text(config.name),
+                Widget.text(config.name),
               ]),
               if (config.description != null)
                 div(classes: 'sidebar-brand-subtitle', [
-                  Component.text(config.description!),
+                  Widget.text(config.description!),
                 ]),
             ],
           ),
@@ -134,40 +134,40 @@ class KBSidebar extends StatelessComponent {
   }
 
   /// Build a fixed section that's always expanded (no toggle)
-  Component _buildFixedSection(
+  Widget _buildFixedSection(
     String title,
-    Component icon,
-    List<Component> items,
+    Widget icon,
+    List<Widget> items,
   ) {
     return div(classes: 'sidebar-section', [
       // Section header
       div(classes: 'sidebar-section-header', [
         icon,
-        span([Component.text(title)]),
+        span([Widget.text(title)]),
       ]),
       // Tree items container
-      div(classes: 'sidebar-tree', [for (final Component item in items) item]),
+      div(classes: 'sidebar-tree', [for (final Widget item in items) item]),
     ]);
   }
 
   /// Build a collapsible section using native details/summary
-  Component _buildCollapsibleSection(NavSection section, {int depth = 0}) {
+  Widget _buildCollapsibleSection(NavSection section, {int depth = 0}) {
     final bool shouldExpand =
         section.shouldExpandFor(currentPath) || !section.collapsed;
 
     return div(classes: 'sidebar-section', [
-      Component.element(
+      Widget.element(
         tag: 'details',
         classes: 'sidebar-details',
         attributes: shouldExpand ? {'open': ''} : {},
         children: [
-          Component.element(
+          Widget.element(
             tag: 'summary',
             classes: 'sidebar-summary',
             styles: _treeRowStyles(depth, isFolder: true),
             children: [
               if (section.icon != null) _buildIcon(section.icon!),
-              span([Component.text(section.title)]),
+              span([Widget.text(section.title)]),
               span(classes: 'sidebar-chevron', [
                 ArcaneIcon.chevronDown(size: IconSize.sm),
               ]),
@@ -187,7 +187,7 @@ class KBSidebar extends StatelessComponent {
   }
 
   /// Build a navigation item that links to a page
-  Component _buildNavItem(NavItem item, {int depth = 0}) {
+  Widget _buildNavItem(NavItem item, {int depth = 0}) {
     final String fullHref = config.fullPath(item.path);
     final bool isActive = _isActive(item.path);
 
@@ -198,7 +198,7 @@ class KBSidebar extends StatelessComponent {
         styles: _treeRowStyles(depth, isFolder: false),
         [
           if (item.icon != null) _buildIcon(item.icon!),
-          Component.text(item.title),
+          Widget.text(item.title),
         ],
       ),
     ]);
@@ -222,7 +222,7 @@ class KBSidebar extends StatelessComponent {
   /// - Raw SVG markup: `<svg>...</svg>`
   /// - SVG file URL: `/icons/my-icon.svg` or `https://example.com/icon.svg`
   /// - Lucide icon name: `rocket`, `file-text`, etc.
-  Component _buildIcon(String iconName) {
+  Widget _buildIcon(String iconName) {
     // Raw SVG markup
     if (iconName.trimLeft().startsWith('<svg')) {
       return span(
@@ -255,7 +255,7 @@ class KBSidebar extends StatelessComponent {
   }
 
   /// Map Lucide icon name strings to ArcaneIcon components.
-  Component _buildLucideIcon(String iconName) {
+  Widget _buildLucideIcon(String iconName) {
     return switch (iconName) {
       // Documents & Files
       'file-text' => ArcaneIcon.fileText(size: IconSize.sm),

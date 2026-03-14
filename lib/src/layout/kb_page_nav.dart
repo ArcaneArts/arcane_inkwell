@@ -1,6 +1,5 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv, ArcaneLink;
-import 'package:arcane_jaspr/web.dart' show Component, StatelessComponent;
 
 import '../config/site_config.dart';
 import '../navigation/nav_item.dart';
@@ -16,7 +15,7 @@ class PageNavLink {
 }
 
 /// Page navigation component showing previous and next articles.
-class KBPageNav extends StatelessComponent {
+class KBPageNav extends StatelessWidget {
   final SiteConfig config;
   final NavManifest manifest;
   final String currentPath;
@@ -28,7 +27,7 @@ class KBPageNav extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     // Get flat list of all pages
     final List<PageNavLink> allPages = _flattenPages();
     if (allPages.isEmpty) return const ArcaneDiv(children: []);
@@ -81,10 +80,10 @@ class KBPageNav extends StatelessComponent {
               flex: FlexPreset.expand,
               textDecoration: TextDecoration.none,
             ),
-            child: ArcaneColumn(
+            child: Column(
               gapSize: Gap.xs,
               children: [
-                ArcaneRow(
+                Row(
                   gapSize: Gap.xs,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -94,7 +93,7 @@ class KBPageNav extends StatelessComponent {
                         fontSize: FontSize.sm,
                         textColor: TextColor.mutedForeground,
                       ),
-                      children: [ArcaneText('Previous')],
+                      children: [Text('Previous')],
                     ),
                   ],
                 ),
@@ -103,7 +102,7 @@ class KBPageNav extends StatelessComponent {
                     fontWeight: FontWeight.w500,
                     textColor: TextColor.primary,
                   ),
-                  children: [ArcaneText(prevPage.title)],
+                  children: [Text(prevPage.title)],
                 ),
               ],
             ),
@@ -132,11 +131,11 @@ class KBPageNav extends StatelessComponent {
               textAlign: TextAlign.right,
               textDecoration: TextDecoration.none,
             ),
-            child: ArcaneColumn(
+            child: Column(
               gapSize: Gap.xs,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                ArcaneRow(
+                Row(
                   gapSize: Gap.xs,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -145,7 +144,7 @@ class KBPageNav extends StatelessComponent {
                         fontSize: FontSize.sm,
                         textColor: TextColor.mutedForeground,
                       ),
-                      children: [ArcaneText('Next')],
+                      children: [Text('Next')],
                     ),
                     ArcaneIcon.arrowRight(size: IconSize.sm),
                   ],
@@ -155,7 +154,7 @@ class KBPageNav extends StatelessComponent {
                     fontWeight: FontWeight.w500,
                     textColor: TextColor.primary,
                   ),
-                  children: [ArcaneText(nextPage.title)],
+                  children: [Text(nextPage.title)],
                 ),
               ],
             ),
@@ -205,7 +204,7 @@ class KBPageNav extends StatelessComponent {
 }
 
 /// Subpages component that shows child pages of the current page.
-class KBSubpages extends StatelessComponent {
+class KBSubpages extends StatelessWidget {
   final SiteConfig config;
   final NavManifest manifest;
   final String currentPath;
@@ -217,7 +216,7 @@ class KBSubpages extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     // Find section matching current path
     final NavSection? currentSection = _findSection(manifest.sections);
     if (currentSection == null) return const ArcaneDiv(children: []);
@@ -241,7 +240,7 @@ class KBSubpages extends StatelessComponent {
             textColor: TextColor.mutedForeground,
             margin: MarginPreset.bottomMd,
           ),
-          children: [ArcaneText('In this section')],
+          children: [Text('In this section')],
         ),
         ArcaneDiv(
           classes: 'kb-subpages-grid',
@@ -262,7 +261,7 @@ class KBSubpages extends StatelessComponent {
                   background: Background.surface,
                   textDecoration: TextDecoration.none,
                 ),
-                child: ArcaneRow(
+                child: Row(
                   gapSize: Gap.md,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -281,7 +280,7 @@ class KBSubpages extends StatelessComponent {
                             fontWeight: FontWeight.w500,
                             textColor: TextColor.primary,
                           ),
-                          children: [ArcaneText(item.title)],
+                          children: [Text(item.title)],
                         ),
                         if (item.description != null)
                           ArcaneDiv(
@@ -289,7 +288,7 @@ class KBSubpages extends StatelessComponent {
                               fontSize: FontSize.sm,
                               textColor: TextColor.mutedForeground,
                             ),
-                            children: [ArcaneText(item.description!)],
+                            children: [Text(item.description!)],
                           ),
                       ],
                     ),
@@ -318,7 +317,7 @@ class KBSubpages extends StatelessComponent {
                   background: Background.surface,
                   textDecoration: TextDecoration.none,
                 ),
-                child: ArcaneRow(
+                child: Row(
                   gapSize: Gap.md,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -337,7 +336,7 @@ class KBSubpages extends StatelessComponent {
                             fontWeight: FontWeight.w500,
                             textColor: TextColor.primary,
                           ),
-                          children: [ArcaneText(section.title)],
+                          children: [Text(section.title)],
                         ),
                         ArcaneDiv(
                           styles: const ArcaneStyleData(
@@ -345,7 +344,7 @@ class KBSubpages extends StatelessComponent {
                             textColor: TextColor.mutedForeground,
                           ),
                           children: [
-                            ArcaneText('${section.items.length} pages'),
+                            Text('${section.items.length} pages'),
                           ],
                         ),
                       ],
@@ -379,7 +378,7 @@ class KBSubpages extends StatelessComponent {
     return null;
   }
 
-  Component _buildIcon(String iconName) {
+  Widget _buildIcon(String iconName) {
     return switch (iconName) {
       'rocket' => ArcaneIcon.rocket(size: IconSize.md),
       'server' => ArcaneIcon.server(size: IconSize.md),

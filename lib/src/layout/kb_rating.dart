@@ -1,7 +1,7 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv;
 import 'package:arcane_jaspr/web.dart'
-    show Component, StatelessComponent, Styles, button, div, span;
+    show Styles, button, div, span;
 
 /// Callback type for handling rating submissions.
 ///
@@ -160,7 +160,7 @@ class RatingCounts {
 ///   });
 /// });
 /// ```
-class KBRating extends StatelessComponent {
+class KBRating extends StatelessWidget {
   /// The URL path of the current page.
   final String pagePath;
 
@@ -177,7 +177,7 @@ class KBRating extends StatelessComponent {
   });
 
   @override
-  Component build(BuildContext context) {
+  Widget build(BuildContext context) {
     if (!config.enabled) {
       return const ArcaneDiv(children: []);
     }
@@ -211,7 +211,7 @@ class KBRating extends StatelessComponent {
                 textColor: TextColor.mutedForeground,
                 fontWeight: FontWeight.w500,
               ),
-              children: [ArcaneText(config.promptText)],
+              children: [Text(config.promptText)],
             ),
 
             // Rating buttons
@@ -260,7 +260,7 @@ class KBRating extends StatelessComponent {
               ),
               children: [
                 ArcaneIcon.check(size: IconSize.sm),
-                ArcaneText(config.thankYouText),
+                Text(config.thankYouText),
               ],
             ),
           ],
@@ -269,10 +269,10 @@ class KBRating extends StatelessComponent {
     );
   }
 
-  Component _buildRatingButton({
+  Widget _buildRatingButton({
     required bool isHelpful,
     required String label,
-    required Component icon,
+    required Widget icon,
     int? count,
   }) {
     return button(
@@ -298,7 +298,7 @@ class KBRating extends StatelessComponent {
       }),
       [
         icon,
-        Component.text(label),
+        Widget.text(label),
         if (count != null)
           span(
             classes: 'kb-rating-count',
@@ -307,7 +307,7 @@ class KBRating extends StatelessComponent {
               'color': 'hsl(var(--muted-foreground))',
               'margin-left': '0.25rem',
             }),
-            [Component.text('($count)')],
+            [Widget.text('($count)')],
           ),
       ],
     );

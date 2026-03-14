@@ -46,7 +46,7 @@ class KnowledgeBaseApp {
   /// and returns a ContentApp ready to be passed to Jaspr.initializeApp().
   ///
   /// The optional [demoBuilder] callback is called for each page that has a
-  /// `component` field in its frontmatter. Return a Component to render as
+  /// `component` field in its frontmatter. Return a Widget to render as
   /// a live demo above the page content, or null to skip.
   ///
   /// Set [generateSearchIndex] to true (default) to generate a search-index.json
