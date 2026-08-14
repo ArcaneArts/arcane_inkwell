@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Rounded callouts, active navigation, and top-bar groups no longer use
+  one-sided borders, clipped hotspots, or asymmetric inset highlights. Status
+  is expressed with complete perimeter borders, fills, icon tiles, and
+  symmetric rings.
 - Single-stylesheet knowledge bases (those passing only `stylesheet:` to `KnowledgeBaseApp.create`, with no `stylesheetOptions`) rendered a completely blank page. The style-slot system synthesizes one slot with id `default`, but the active-slot id resolved to `''` on both the server (`KBLayout`) and the client runtime (`_fallbackStylesheetId`), so no slot ever matched and every slot stayed `display:none`/`hidden`. A single synthesized slot is now always active server-side, and the client fallback id is `default`, so single-theme docs render correctly. Multi-stylesheet sites are unaffected.
 - `DefaultKnowledgeBaseRenderers.showTopBarBranding` returned a hardcoded `false`, so KBs using the default renderers (e.g. single-stylesheet apps) left the top bar's left side empty (only a desktop-hidden hamburger) and pushed the brand into the sidebar. It now returns `data.showNavigationBar && data.useTopPosition` (matching the shadcn/neon/neubrutalism renderers), so the brand renders top-left in the standard position when the nav bar is top-positioned.
 

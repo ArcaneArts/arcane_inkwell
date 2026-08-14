@@ -948,7 +948,6 @@ figure.kb-media-video video {
   border-radius: var(--radius-lg, 12px);
   border: 1px solid color-mix(in srgb, var(--kb-callout-accent) 24%, var(--border));
   background:
-    radial-gradient(circle at 1.45rem 1.45rem, color-mix(in srgb, var(--kb-callout-accent) 18%, transparent), transparent 7rem),
     linear-gradient(180deg, var(--kb-callout-soft), transparent 72%),
     var(--card, var(--background));
   box-shadow: 0 14px 34px color-mix(in srgb, var(--kb-callout-accent) 8%, transparent);
@@ -1048,10 +1047,7 @@ figure.kb-media-video video {
   --kb-alert-accent: var(--info, #3b82f6);
   margin: 1rem 0;
   padding: 0.7rem 1rem;
-  border-left: 0.25rem solid var(--kb-alert-accent);
-  border-top: 0;
-  border-right: 0;
-  border-bottom: 0;
+  border: 1px solid var(--kb-alert-accent);
   border-radius: 0.25rem;
   background: color-mix(in srgb, var(--kb-alert-accent) 5%, var(--background));
   color: var(--foreground);

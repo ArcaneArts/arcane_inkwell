@@ -315,12 +315,11 @@ html.light #arcane-root[class*="neon-"],
 #arcane-root[class*="neon-"] .kb-topbar-right {
   gap: 0.45rem;
   padding: 0.22rem;
-  clip-path: var(--kb-neon-clip-sm);
   border: 1px solid var(--kb-neon-line-soft);
   border-radius: 0.32rem;
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--kb-neon-panel-strong) 78%, transparent), color-mix(in srgb, var(--kb-neon-panel) 72%, transparent));
-  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--kb-neon-node) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kb-neon-node) 18%, transparent);
 }
 
 #arcane-root[class*="neon-"] .kb-topbar-left {
@@ -379,8 +378,8 @@ html.light #arcane-root[class*="neon-"],
 }
 
 #arcane-root[class*="neon-"] .sidebar-link.active {
-  border-left-color: var(--kb-neon-node) !important;
-  box-shadow: inset 2px 0 0 var(--kb-neon-node) !important;
+  outline-color: var(--kb-neon-node) !important;
+  box-shadow: inset 0 0 0 1px var(--kb-neon-node), 0 0 12px color-mix(in srgb, var(--kb-neon-node) 22%, transparent) !important;
 }
 
 #arcane-root[class*="shadcn-"] .kb-landing-prose {
