@@ -2,6 +2,7 @@ library;
 
 import 'dart:io';
 
+import 'package:arcane_jaspr_kb/arcane_jaspr_kb.dart';
 import 'package:arcane_jaspr_neon/arcane_jaspr_neon.dart';
 import 'package:arcane_jaspr_neubrutalism/arcane_jaspr_neubrutalism.dart';
 import 'package:arcane_jaspr_shadcn/arcane_jaspr_shadcn.dart';

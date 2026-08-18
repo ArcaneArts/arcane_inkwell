@@ -17,6 +17,8 @@ dependencies:
     path: ../../arcane_jaspr/packages/arcane_jaspr_neon
   arcane_jaspr_neubrutalism:
     path: ../../arcane_jaspr/packages/arcane_jaspr_neubrutalism
+  arcane_jaspr_kb:
+    path: ../../arcane_jaspr/packages/arcane_jaspr_kb
   jaspr: ^0.23.1
   jaspr_content: ^0.5.2
 

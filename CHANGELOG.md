@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [x.x.x]
+## [1.4.0] - 2026-08-18
 
 ### Fixed
 
+- Example docs site failed to compile (and broke the GitHub Pages deploy):
+  `main.server.dart` still constructed `ShadcnKnowledgeBaseRenderers`,
+  `NeonKnowledgeBaseRenderers`, and `NeubrutalismKnowledgeBaseRenderers`,
+  which moved to the `arcane_jaspr_kb` package. The example now depends on
+  and imports `arcane_jaspr_kb`.
 - Rounded callouts, active navigation, and top-bar groups no longer use
   one-sided borders, clipped hotspots, or asymmetric inset highlights. Status
   is expressed with complete perimeter borders, fills, icon tiles, and
