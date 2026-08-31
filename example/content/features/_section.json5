@@ -1,7 +1,7 @@
 {
   // Visual demonstrations of all features
   "title": "Features",
-  "icon": "sparkles",
+  "icon": "component",
   "order": 2,
   "collapsed": false
 }

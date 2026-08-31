@@ -55,116 +55,122 @@ class KBPageNav extends StatelessWidget {
     }
 
     return ArcaneDiv(
-      classes: <String>['kb-page-nav'],
+      classes: <String>['kb-page-nav-section'],
       styles: const ArcaneStyleData(
-        display: Display.flex,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        gap: Gap.lg,
         margin: MarginPreset.topXl,
         padding: PaddingPreset.topLg,
-        borderTop: BorderPreset.subtle,
       ),
       children: [
-        // Previous link
-        if (prevPage != null)
-          ArcaneLink(
-            href: config.fullPath(prevPage.path),
-            classes: <String>['kb-page-nav-link kb-page-nav-prev'],
-            styles: const ArcaneStyleData(
-              display: Display.flex,
-              flexDirection: FlexDirection.column,
-              gap: Gap.xs,
-              padding: PaddingPreset.md,
-              border: BorderPreset.subtle,
-              borderRadius: Radius.md,
-              flex: FlexPreset.expand,
-              textDecoration: TextDecoration.none,
-            ),
-            child: Column(
-              gapSize: Gap.xs,
-              children: [
-                Row(
+        const ArcaneDiv(
+          classes: <String>['kb-section-divider'],
+          children: <Widget>[],
+        ),
+        ArcaneDiv(
+          classes: <String>['kb-page-nav'],
+          styles: const ArcaneStyleData(
+            display: Display.flex,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            gap: Gap.lg,
+          ),
+          children: <Widget>[
+            // Previous link
+            if (prevPage != null)
+              ArcaneLink(
+                href: config.fullPath(prevPage.path),
+                classes: <String>['kb-page-nav-link kb-page-nav-prev'],
+                styles: const ArcaneStyleData(
+                  display: Display.flex,
+                  flexDirection: FlexDirection.column,
+                  gap: Gap.xs,
+                  padding: PaddingPreset.md,
+                  flex: FlexPreset.expand,
+                  textDecoration: TextDecoration.none,
+                ),
+                child: Column(
                   gapSize: Gap.xs,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    KBIcon.build('arrow-left', size: IconSize.sm),
-                    const ArcaneDiv(
-                      styles: ArcaneStyleData(
-                        fontSize: FontSize.sm,
-                        textColor: TextColor.mutedForeground,
+                    Row(
+                      gapSize: Gap.xs,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        KBIcon.build('arrow-left', size: IconSize.sm),
+                        const ArcaneDiv(
+                          styles: ArcaneStyleData(
+                            fontSize: FontSize.sm,
+                            textColor: TextColor.mutedForeground,
+                          ),
+                          children: [Text('Previous')],
+                        ),
+                      ],
+                    ),
+                    ArcaneDiv(
+                      styles: const ArcaneStyleData(
+                        fontWeight: FontWeight.w500,
+                        textColor: TextColor.primary,
                       ),
-                      children: [Text('Previous')],
+                      children: [Text(prevPage.title)],
                     ),
                   ],
                 ),
-                ArcaneDiv(
-                  styles: const ArcaneStyleData(
-                    fontWeight: FontWeight.w500,
-                    textColor: TextColor.primary,
-                  ),
-                  children: [Text(prevPage.title)],
-                ),
-              ],
-            ),
-          )
-        else
-          const ArcaneDiv(
-            classes: <String>['kb-page-nav-spacer'],
-            styles: ArcaneStyleData(flex: FlexPreset.expand),
-            children: [],
-          ),
+              )
+            else
+              const ArcaneDiv(
+                classes: <String>['kb-page-nav-spacer'],
+                styles: ArcaneStyleData(flex: FlexPreset.expand),
+                children: [],
+              ),
 
-        // Next link
-        if (nextPage != null)
-          ArcaneLink(
-            href: config.fullPath(nextPage.path),
-            classes: <String>['kb-page-nav-link kb-page-nav-next'],
-            styles: const ArcaneStyleData(
-              display: Display.flex,
-              flexDirection: FlexDirection.column,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              gap: Gap.xs,
-              padding: PaddingPreset.md,
-              border: BorderPreset.subtle,
-              borderRadius: Radius.md,
-              flex: FlexPreset.expand,
-              textAlign: TextAlign.right,
-              textDecoration: TextDecoration.none,
-            ),
-            child: Column(
-              gapSize: Gap.xs,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
+            // Next link
+            if (nextPage != null)
+              ArcaneLink(
+                href: config.fullPath(nextPage.path),
+                classes: <String>['kb-page-nav-link kb-page-nav-next'],
+                styles: const ArcaneStyleData(
+                  display: Display.flex,
+                  flexDirection: FlexDirection.column,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  gap: Gap.xs,
+                  padding: PaddingPreset.md,
+                  flex: FlexPreset.expand,
+                  textAlign: TextAlign.right,
+                  textDecoration: TextDecoration.none,
+                ),
+                child: Column(
                   gapSize: Gap.xs,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const ArcaneDiv(
-                      styles: ArcaneStyleData(
-                        fontSize: FontSize.sm,
-                        textColor: TextColor.mutedForeground,
-                      ),
-                      children: [Text('Next')],
+                    Row(
+                      gapSize: Gap.xs,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const ArcaneDiv(
+                          styles: ArcaneStyleData(
+                            fontSize: FontSize.sm,
+                            textColor: TextColor.mutedForeground,
+                          ),
+                          children: [Text('Next')],
+                        ),
+                        KBIcon.build('arrow-right', size: IconSize.sm),
+                      ],
                     ),
-                    KBIcon.build('arrow-right', size: IconSize.sm),
+                    ArcaneDiv(
+                      styles: const ArcaneStyleData(
+                        fontWeight: FontWeight.w500,
+                        textColor: TextColor.primary,
+                      ),
+                      children: [Text(nextPage.title)],
+                    ),
                   ],
                 ),
-                ArcaneDiv(
-                  styles: const ArcaneStyleData(
-                    fontWeight: FontWeight.w500,
-                    textColor: TextColor.primary,
-                  ),
-                  children: [Text(nextPage.title)],
-                ),
-              ],
-            ),
-          )
-        else
-          const ArcaneDiv(
-            classes: <String>['kb-page-nav-spacer'],
-            styles: ArcaneStyleData(flex: FlexPreset.expand),
-            children: [],
-          ),
+              )
+            else
+              const ArcaneDiv(
+                classes: <String>['kb-page-nav-spacer'],
+                styles: ArcaneStyleData(flex: FlexPreset.expand),
+                children: [],
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -174,14 +180,12 @@ class KBPageNav extends StatelessWidget {
     final List<PageNavLink> pages = [];
 
     // Add root items
-    for (final NavItem item in manifest.sortedItems) {
-      if (!item.hidden) {
-        pages.add(PageNavLink(title: item.title, path: item.path));
-      }
+    for (final NavItem item in manifest.visibleItems) {
+      pages.add(PageNavLink(title: item.title, path: item.path));
     }
 
     // Add sections recursively
-    for (final NavSection section in manifest.sortedSections) {
+    for (final NavSection section in manifest.visibleSections) {
       _flattenSection(section, pages);
     }
 
@@ -190,14 +194,12 @@ class KBPageNav extends StatelessWidget {
 
   void _flattenSection(NavSection section, List<PageNavLink> pages) {
     // Add items in this section
-    for (final NavItem item in section.sortedItems) {
-      if (!item.hidden) {
-        pages.add(PageNavLink(title: item.title, path: item.path));
-      }
+    for (final NavItem item in section.visibleItems) {
+      pages.add(PageNavLink(title: item.title, path: item.path));
     }
 
     // Add nested sections
-    for (final NavSection nested in section.sortedSections) {
+    for (final NavSection nested in section.visibleSections) {
       _flattenSection(nested, pages);
     }
   }
@@ -222,7 +224,7 @@ class KBSubpages extends StatelessWidget {
     if (currentSection == null) return const ArcaneDiv(children: []);
 
     final List<NavItem> subpages = currentSection.visibleItems;
-    final List<NavSection> subsections = currentSection.sortedSections;
+    final List<NavSection> subsections = currentSection.visibleSections;
 
     if (subpages.isEmpty && subsections.isEmpty) {
       return const ArcaneDiv(children: []);
@@ -246,19 +248,20 @@ class KBSubpages extends StatelessWidget {
           classes: <String>['kb-subpages-grid'],
           styles: const ArcaneStyleData(display: Display.grid, gap: Gap.md),
           children: [
+            const ArcaneDiv(
+              classes: <String>['kb-section-divider'],
+              children: <Widget>[],
+            ),
             // Child pages
             ...subpages.map(
               (NavItem item) => ArcaneLink(
                 href: config.fullPath(item.path),
-                classes: <String>['kb-subpage-card'],
+                classes: <String>['kb-subpage-row'],
                 styles: const ArcaneStyleData(
                   display: Display.flex,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   gap: Gap.md,
                   padding: PaddingPreset.md,
-                  border: BorderPreset.subtle,
-                  borderRadius: Radius.md,
-                  background: Background.surface,
                   textDecoration: TextDecoration.none,
                 ),
                 child: Row(
@@ -292,14 +295,6 @@ class KBSubpages extends StatelessWidget {
                           ),
                       ],
                     ),
-                    ArcaneDiv(
-                      styles: const ArcaneStyleData(
-                        textColor: TextColor.mutedForeground,
-                      ),
-                      children: [
-                        KBIcon.build('arrow-right', size: IconSize.sm),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -308,15 +303,12 @@ class KBSubpages extends StatelessWidget {
             ...subsections.map(
               (NavSection section) => ArcaneLink(
                 href: config.fullPath(section.path),
-                classes: <String>['kb-subpage-card kb-subpage-section'],
+                classes: <String>['kb-subpage-row kb-subpage-section'],
                 styles: const ArcaneStyleData(
                   display: Display.flex,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   gap: Gap.md,
                   padding: PaddingPreset.md,
-                  border: BorderPreset.subtle,
-                  borderRadius: Radius.md,
-                  background: Background.surface,
                   textDecoration: TextDecoration.none,
                 ),
                 child: Row(
@@ -347,16 +339,10 @@ class KBSubpages extends StatelessWidget {
                             fontSize: FontSize.sm,
                             textColor: TextColor.mutedForeground,
                           ),
-                          children: [Text('${section.items.length} pages')],
+                          children: [
+                            Text('${section.visibleItems.length} pages'),
+                          ],
                         ),
-                      ],
-                    ),
-                    ArcaneDiv(
-                      styles: const ArcaneStyleData(
-                        textColor: TextColor.mutedForeground,
-                      ),
-                      children: [
-                        KBIcon.build('chevron-right', size: IconSize.sm),
                       ],
                     ),
                   ],

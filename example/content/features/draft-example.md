@@ -16,9 +16,9 @@ This page is marked as a draft using `draft: true` in the frontmatter.
 
 ## How Draft Mode Works
 
-1. **Navigation**: Draft pages are hidden from the sidebar navigation
-2. **Direct Access**: You can still access draft pages directly via their URL
-3. **Draft Banner**: A banner appears at the top indicating the page is a draft
+1. **Routes**: Draft pages are not added to the generated route table.
+2. **Navigation**: Draft pages are excluded from sidebar, page, and related navigation.
+3. **Indexes**: Draft pages are excluded from search and sitemap output.
 
 ## When to Use Drafts
 
@@ -39,4 +39,4 @@ draft: true
 ---
 ```
 
-When you're ready to publish, simply remove the `draft: true` line or set it to `false`.
+To publish this page, remove the `draft: true` line or set it to `false`.

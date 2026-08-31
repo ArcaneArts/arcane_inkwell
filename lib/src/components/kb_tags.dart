@@ -17,17 +17,17 @@ class KBTagList extends StatelessWidget {
     classes: <String>['kb-tag-list kb-tag-list-${size.name}'],
     children: <Widget>[
       for (String tag in tags)
-        KBTagChip(label: tag, size: size, showIcon: showIcon),
+        KBTag(label: tag, size: size, showIcon: showIcon),
     ],
   );
 }
 
-class KBTagChip extends StatelessWidget {
+class KBTag extends StatelessWidget {
   final String label;
   final KBTagSize size;
   final bool showIcon;
 
-  const KBTagChip({
+  const KBTag({
     required this.label,
     this.size = KBTagSize.sm,
     this.showIcon = false,

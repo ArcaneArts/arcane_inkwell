@@ -487,12 +487,6 @@ class KBIcon {
         classes: className,
         attributes: attributes,
       ),
-      'sparkles' => lucide.Sparkles(
-        width: dimension,
-        height: dimension,
-        classes: className,
-        attributes: attributes,
-      ),
       'sun' => lucide.Sun(
         width: dimension,
         height: dimension,

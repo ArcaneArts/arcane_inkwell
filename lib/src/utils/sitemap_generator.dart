@@ -24,7 +24,8 @@ class SitemapGenerator {
 
     buffer.writeln('<?xml version="1.0" encoding="UTF-8"?>');
     buffer.writeln(
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    );
 
     final String baseUrl = siteUrl ?? '';
 
@@ -54,11 +55,15 @@ class SitemapGenerator {
   }
 
   void _addSections(
-      List<NavSection> sections, StringBuffer buffer, String baseUrl) {
+    List<NavSection> sections,
+    StringBuffer buffer,
+    String baseUrl,
+  ) {
     for (final NavSection section in sections) {
       // Add section index if it has one (check for index item or add section path)
-      final bool hasIndex =
-          section.items.any((item) => item.path == section.path);
+      final bool hasIndex = section.items.any(
+        (item) => item.path == section.path,
+      );
       if (!hasIndex) {
         // Add section path as a page
         final String fullUrl = '$baseUrl${config.fullPath(section.path)}';

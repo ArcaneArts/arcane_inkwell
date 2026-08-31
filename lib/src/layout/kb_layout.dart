@@ -173,19 +173,6 @@ class KBLayout extends PageLayoutBase {
       }
     }
 
-    List<String> externalCssUrls = _externalCssUrls(effectiveStylesheetOptions);
-    if (externalCssUrls.isNotEmpty) {
-      yield const link(rel: 'preconnect', href: 'https://fonts.googleapis.com');
-      yield const link(
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        attributes: {'crossorigin': ''},
-      );
-      for (String url in externalCssUrls) {
-        yield link(rel: 'stylesheet', href: url);
-      }
-    }
-
     // Load custom styles.css after theme variables
     yield link(rel: 'stylesheet', href: '$assetPrefix/styles.css');
 
@@ -347,26 +334,23 @@ class KBLayout extends PageLayoutBase {
     return result;
   }
 
-  List<String> _externalCssUrls(List<KBStylesheetOption> options) {
-    List<String> urls = <String>[];
-    for (KBStylesheetOption option in options) {
-      for (_PaletteEntry palette in _palettesFor(option)) {
-        for (String url in palette.stylesheet.externalCssUrls) {
-          if (!urls.contains(url)) {
-            urls.add(url);
-          }
-        }
-      }
-    }
-    return urls;
-  }
-
   static String rewriteAssetUrlsForBasePath(String css, String assetPrefix) {
     final String normalizedPrefix =
         assetPrefix.endsWith('/') && assetPrefix.isNotEmpty
         ? assetPrefix.substring(0, assetPrefix.length - 1)
         : assetPrefix;
-    String rewritten = css;
+    final String lucideFontUrl =
+        '$normalizedPrefix/assets/fonts/lucide/lucide.woff2';
+    String rewritten = css.replaceAllMapped(
+      RegExp(r'''src\s*:\s*[^;}]*fonts/lucide/[^;}]*;''', caseSensitive: false),
+      (Match match) {
+        final String source = match.group(0) ?? '';
+        if (RegExp(r'https?://', caseSensitive: false).hasMatch(source)) {
+          return source;
+        }
+        return "src: url('$lucideFontUrl') format('woff2');";
+      },
+    );
     if (normalizedPrefix.isNotEmpty) {
       rewritten = rewritten.replaceAll(
         "url('/assets/",
@@ -381,63 +365,6 @@ class KBLayout extends PageLayoutBase {
         'url($normalizedPrefix/assets/',
       );
     }
-    rewritten = _withLucideRootFallback(rewritten, normalizedPrefix);
-    return rewritten;
-  }
-
-  static String _withLucideRootFallback(String css, String normalizedPrefix) {
-    final RegExp lucideSrcPattern = RegExp(
-      "(@font-face\\s*\\{[^\\}]*font-family:\\s*'lucide';[^\\}]*?src:\\s*)([^;]+)(;)",
-      multiLine: true,
-      dotAll: true,
-    );
-    final List<String> woff2Urls = <String>[
-      if (normalizedPrefix.isNotEmpty)
-        '$normalizedPrefix/assets/fonts/lucide/lucide.woff2',
-      '/assets/fonts/lucide/lucide.woff2',
-      '/fonts/lucide/lucide.woff2',
-      'assets/fonts/lucide/lucide.woff2',
-      'fonts/lucide/lucide.woff2',
-      '../assets/fonts/lucide/lucide.woff2',
-      '../fonts/lucide/lucide.woff2',
-      '../../assets/fonts/lucide/lucide.woff2',
-      '../../fonts/lucide/lucide.woff2',
-      'https://cdn.jsdelivr.net/gh/ArcaneArts/arcane_jaspr@master/assets/fonts/lucide/lucide.woff2',
-    ];
-    final List<String> woffUrls = <String>[
-      if (normalizedPrefix.isNotEmpty)
-        '$normalizedPrefix/assets/fonts/lucide/lucide.woff',
-      '/assets/fonts/lucide/lucide.woff',
-      '/fonts/lucide/lucide.woff',
-      'assets/fonts/lucide/lucide.woff',
-      'fonts/lucide/lucide.woff',
-      '../assets/fonts/lucide/lucide.woff',
-      '../fonts/lucide/lucide.woff',
-      '../../assets/fonts/lucide/lucide.woff',
-      '../../fonts/lucide/lucide.woff',
-    ];
-    final List<String> ttfUrls = <String>[
-      if (normalizedPrefix.isNotEmpty)
-        '$normalizedPrefix/assets/fonts/lucide/lucide.ttf',
-      '/assets/fonts/lucide/lucide.ttf',
-      '/fonts/lucide/lucide.ttf',
-      'assets/fonts/lucide/lucide.ttf',
-      'fonts/lucide/lucide.ttf',
-      '../assets/fonts/lucide/lucide.ttf',
-      '../fonts/lucide/lucide.ttf',
-      '../../assets/fonts/lucide/lucide.ttf',
-      '../../fonts/lucide/lucide.ttf',
-    ];
-    final List<String> candidates = <String>[
-      ...woff2Urls.map((String url) => "url('$url') format('woff2')"),
-      ...woffUrls.map((String url) => "url('$url') format('woff')"),
-      ...ttfUrls.map((String url) => "url('$url') format('truetype')"),
-    ];
-    final String rewrittenSrc = candidates.join(',\n       ');
-    final String rewritten = css.replaceFirstMapped(
-      lucideSrcPattern,
-      (Match match) => '${match.group(1)!}$rewrittenSrc${match.group(3)!}',
-    );
     return rewritten;
   }
 
@@ -605,7 +532,8 @@ class _ThemedKBPageState extends State<ThemedKBPage> {
       // explicitly via KBStylesheetOption.knowledgeBaseRenderers. Anything that
       // does not supply one falls back to the default docs chrome.
       KnowledgeBaseRenderers renderers =
-          option.knowledgeBaseRenderers ?? const DefaultKnowledgeBaseRenderers();
+          option.knowledgeBaseRenderers ??
+          const DefaultKnowledgeBaseRenderers();
       ArcaneStylesheet slotStylesheet = option.stylesheet;
       String slotClass = renderers is DefaultKnowledgeBaseRenderers
           ? renderers.slotClass

@@ -4,7 +4,7 @@ description: Visual demonstrations of Arcane Lexicon behavior
 order: 0
 ---
 
-This section showcases built-in markdown rendering, navigation UX, and rich block components.
+This section contains examples of built-in markdown rendering, navigation UX, and rich block components.
 
 ## Navigation and Layout
 
@@ -20,8 +20,7 @@ This section showcases built-in markdown rendering, navigation UX, and rich bloc
 - [Callouts](/features/callouts)
 - [Media Embeds](/features/media)
 
-## Rich Markdown Showcase
+## Rich markdown examples
 
 - [Rich Markdown Blocks](/features/rich-markdown)
 - [Tags Metadata](/features/tags)
-

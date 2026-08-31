@@ -41,8 +41,10 @@ class ReadingTimeExtension implements PageExtension {
         .replaceAll(RegExp(r'<[^>]+>'), '');
 
     // Count words
-    final List<String> words =
-        text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    final List<String> words = text
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
     final int wordCount = words.length;
 
     // Calculate reading time (minimum 1 minute)
@@ -50,12 +52,11 @@ class ReadingTimeExtension implements PageExtension {
     final int finalTime = readingTime < 1 ? 1 : readingTime;
 
     // Add to page data
-    page.apply(data: {
-      'page': {
-        'readingTime': finalTime,
-        'wordCount': wordCount,
+    page.apply(
+      data: {
+        'page': {'readingTime': finalTime, 'wordCount': wordCount},
       },
-    });
+    );
 
     return nodes;
   }

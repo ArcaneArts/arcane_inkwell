@@ -534,11 +534,8 @@ Create more markdown files in this folder. Arcane Lexicon will add them to the s
 Create a folder with its own `_section.json5` file to make a nested section.
 ''';
 
-  String _styles() =>
-      '''@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root {
-  --font-sans: var(--arcane-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  String _styles() => ''':root {
+  --font-sans: var(--arcane-font-sans, ui-sans-serif, system-ui, sans-serif);
   --font-mono: var(--arcane-font-mono, 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', monospace);
 }
 

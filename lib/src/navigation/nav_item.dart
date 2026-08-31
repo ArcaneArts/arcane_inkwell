@@ -6,7 +6,7 @@ class NavItem {
   /// The URL path for this item.
   final String path;
 
-  /// Optional icon name (Lucide icon).
+  /// Optional single Lucide icon name.
   final String? icon;
 
   /// Sort order (lower = first).
@@ -15,7 +15,7 @@ class NavItem {
   /// Whether this item is hidden from navigation.
   final bool hidden;
 
-  /// Whether this item is a draft (hidden from nav + shows draft badge).
+  /// Whether this item is a draft and excluded from published outputs.
   final bool draft;
 
   /// Optional description for search indexing.
@@ -67,7 +67,8 @@ class NavItem {
       hidden: frontmatter['hidden'] as bool? ?? false,
       draft: frontmatter['draft'] as bool? ?? false,
       description: frontmatter['description'] as String?,
-      tags: (frontmatter['tags'] as List<dynamic>?)
+      tags:
+          (frontmatter['tags'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],
@@ -88,9 +89,11 @@ class NavItem {
         .replaceAll('-', ' ')
         .replaceAll('_', ' ')
         .split(' ')
-        .map((word) => word.isEmpty
-            ? ''
-            : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}')
+        .map(
+          (word) => word.isEmpty
+              ? ''
+              : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}',
+        )
         .join(' ');
   }
 

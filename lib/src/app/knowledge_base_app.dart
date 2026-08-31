@@ -2,6 +2,7 @@ import 'dart:io' as io;
 
 import 'package:arcane_jaspr/arcane_jaspr.dart' hide ReadingTimeExtension;
 import 'package:jaspr_content/jaspr_content.dart';
+import 'package:yaml/yaml.dart';
 
 import '../config/site_config.dart';
 import '../navigation/nav_builder.dart';
@@ -219,23 +220,14 @@ class KnowledgeBaseApp {
     required List<PageExtension> extensions,
     required List<CustomComponent> components,
   }) {
-    if (landingSourcePath == null) {
-      return ContentApp(
-        directory: config.contentDirectory,
-        parsers: const <PageParser>[MarkdownParser()],
-        layouts: <PageLayout>[layout],
-        extensions: extensions,
-        components: components,
-      );
-    }
-
-    String landingContent = io.File(
-      '${config.contentDirectory}/$landingSourcePath',
-    ).readAsStringSync();
     Set<String> ignoredSourcePaths = _ignoredSourcePaths(landingSourcePath);
+    List<RouteLoader> loaders = <RouteLoader>[];
 
-    return ContentApp.custom(
-      loaders: <RouteLoader>[
+    if (landingSourcePath != null) {
+      String landingContent = io.File(
+        '${config.contentDirectory}/$landingSourcePath',
+      ).readAsStringSync();
+      loaders.add(
         MemoryLoader(
           pages: <MemoryPage>[
             MemoryPage(
@@ -245,14 +237,24 @@ class KnowledgeBaseApp {
             ),
           ],
         ),
-        _FilteredFilesystemLoader(
-          config.contentDirectory,
-          ignoredSourcePaths: ignoredSourcePaths,
-        ),
-      ],
+      );
+    }
+
+    loaders.add(
+      _FilteredFilesystemLoader(
+        config.contentDirectory,
+        ignoredSourcePaths: ignoredSourcePaths,
+      ),
+    );
+
+    return ContentApp.custom(
+      loaders: loaders,
       configResolver: PageConfig.all(
         dataLoaders: <DataLoader>[
           FilesystemDataLoader('${config.contentDirectory}/_data'),
+          MemoryDataLoader(<String, Object?>{
+            'site': <String, Object?>{'base': _documentBase(config.baseUrl)},
+          }),
         ],
         parsers: const <PageParser>[MarkdownParser()],
         layouts: <PageLayout>[layout],
@@ -260,6 +262,13 @@ class KnowledgeBaseApp {
         components: components,
       ),
     );
+  }
+
+  static String _documentBase(String baseUrl) {
+    if (baseUrl.isEmpty || baseUrl == '/') {
+      return '/';
+    }
+    return baseUrl.endsWith('/') ? baseUrl : '$baseUrl/';
   }
 
   static Future<String?> _resolveLandingSourcePath(SiteConfig config) async {
@@ -345,11 +354,37 @@ class _FilteredFilesystemLoader extends FilesystemLoader {
   });
 
   @override
-  Future<List<FilePageSource>> loadPageSources() =>
-      super.loadPageSources().then(
-        (List<FilePageSource> sources) => <FilePageSource>[
-          for (FilePageSource source in sources)
-            if (!ignoredSourcePaths.contains(source.path)) source,
-        ],
-      );
+  Future<List<FilePageSource>> loadPageSources() async {
+    List<FilePageSource> sources = await super.loadPageSources();
+    List<FilePageSource> publishedSources = <FilePageSource>[];
+
+    for (FilePageSource source in sources) {
+      if (ignoredSourcePaths.contains(source.path)) {
+        continue;
+      }
+      String content = await source.file.readAsString();
+      if (_isUnpublished(content)) {
+        continue;
+      }
+      publishedSources.add(source);
+    }
+
+    return publishedSources;
+  }
+
+  static bool _isUnpublished(String content) {
+    RegExp frontmatterPattern = RegExp(
+      r'^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)',
+    );
+    RegExpMatch? match = frontmatterPattern.firstMatch(content);
+    if (match == null) {
+      return false;
+    }
+
+    Object? parsed = loadYaml(match.group(1) ?? '');
+    if (parsed is! YamlMap) {
+      return false;
+    }
+    return parsed['draft'] == true || parsed['hidden'] == true;
+  }
 }

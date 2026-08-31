@@ -11,7 +11,7 @@ author: Arcane Arts
 date: 2025-01-13
 ---
 
-The page rating system allows visitors to provide feedback on documentation pages with a simple thumbs up/down interface. Ratings are stored client-side and can be integrated with Firebase Firestore for persistence.
+The page rating system gives visitors thumbs-up and thumbs-down controls. Ratings stay in local storage by default; configure Firebase Firestore to persist them.
 
 ## Enabling Ratings
 

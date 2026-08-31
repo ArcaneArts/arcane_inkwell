@@ -5,4 +5,4 @@ icon: zap
 order: 0
 ---
 
-This section covers advanced features for power users who want to customize and extend their documentation sites.
+This section covers package customization and extension hooks.

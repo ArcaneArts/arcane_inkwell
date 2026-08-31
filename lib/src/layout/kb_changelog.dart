@@ -9,11 +9,7 @@ class KBChangelog extends StatelessWidget {
   final int? maxVersions;
   final String? githubUrl;
 
-  const KBChangelog({
-    required this.versions,
-    this.maxVersions,
-    this.githubUrl,
-  });
+  const KBChangelog({required this.versions, this.maxVersions, this.githubUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +32,13 @@ class KBChangelog extends StatelessWidget {
       classes: <String>['kb-changelog-version'],
       styles: const ArcaneStyleData(
         margin: MarginPreset.bottomXl,
-        padding: PaddingPreset.lg,
-        background: Background.surface,
-        border: BorderPreset.subtle,
-        borderRadius: Radius.md,
+        padding: PaddingPreset.verticalLg,
       ),
       children: [
+        const ArcaneDiv(
+          classes: <String>['kb-section-divider'],
+          children: <Widget>[],
+        ),
         // Version header
         ArcaneDiv(
           classes: <String>['kb-changelog-header'],
@@ -51,16 +48,13 @@ class KBChangelog extends StatelessWidget {
             gap: Gap.md,
             margin: MarginPreset.bottomMd,
             padding: PaddingPreset.bottomMd,
-            borderBottom: BorderPreset.subtle,
           ),
           children: [
             // Version badge
             ArcaneDiv(
+              classes: <String>['kb-changelog-version-label'],
               styles: const ArcaneStyleData(
                 display: Display.inlineFlex,
-                padding: PaddingPreset.sm,
-                background: Background.primary,
-                borderRadius: Radius.md,
                 fontSize: FontSize.sm,
                 fontWeight: FontWeight.w600,
               ),
@@ -98,12 +92,16 @@ class KBChangelog extends StatelessWidget {
               ),
           ],
         ),
+        const ArcaneDiv(
+          classes: <String>['kb-section-divider'],
+          children: <Widget>[],
+        ),
 
         // Sections
-        ...version.sectionNames.map((String sectionName) => _buildSection(
-              sectionName,
-              version[sectionName],
-            )),
+        ...version.sectionNames.map(
+          (String sectionName) =>
+              _buildSection(sectionName, version[sectionName]),
+        ),
       ],
     );
   }
@@ -113,9 +111,7 @@ class KBChangelog extends StatelessWidget {
 
     return ArcaneDiv(
       classes: <String>['kb-changelog-section'],
-      styles: const ArcaneStyleData(
-        margin: MarginPreset.bottomMd,
-      ),
+      styles: const ArcaneStyleData(margin: MarginPreset.bottomMd),
       children: [
         // Section title with icon
         ArcaneDiv(
@@ -127,36 +123,33 @@ class KBChangelog extends StatelessWidget {
             fontWeight: FontWeight.w600,
             fontSize: FontSize.sm,
           ),
-          children: [
-            _getSectionIcon(name),
-            Text(name),
-          ],
+          children: [_getSectionIcon(name), Text(name)],
         ),
         // Items
         ArcaneDiv(
-          styles: const ArcaneStyleData(
-            paddingStringCustom: '0 0 0 1.5rem',
-          ),
+          styles: const ArcaneStyleData(paddingStringCustom: '0 0 0 1.5rem'),
           children: items
-              .map((String item) => ArcaneDiv(
-                    styles: const ArcaneStyleData(
-                      display: Display.flex,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      gap: Gap.sm,
-                      margin: MarginPreset.bottomXs,
-                      fontSize: FontSize.sm,
-                      textColor: TextColor.onSurfaceVariant,
-                    ),
-                    children: [
-                      const ArcaneDiv(
-                        styles: ArcaneStyleData(
-                          textColor: TextColor.mutedForeground,
-                        ),
-                        children: [Text('-')],
+              .map(
+                (String item) => ArcaneDiv(
+                  styles: const ArcaneStyleData(
+                    display: Display.flex,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    gap: Gap.sm,
+                    margin: MarginPreset.bottomXs,
+                    fontSize: FontSize.sm,
+                    textColor: TextColor.onSurfaceVariant,
+                  ),
+                  children: [
+                    const ArcaneDiv(
+                      styles: ArcaneStyleData(
+                        textColor: TextColor.mutedForeground,
                       ),
-                      Text(item),
-                    ],
-                  ))
+                      children: [Text('-')],
+                    ),
+                    Text(item),
+                  ],
+                ),
+              )
               .toList(),
         ),
       ],

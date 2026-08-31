@@ -1,4 +1,4 @@
-/// A package for creating beautiful knowledge base websites from markdown files.
+/// Creates knowledge base websites from markdown files.
 ///
 /// Arcane Lexicon transforms a directory of markdown files into a fully-featured
 /// documentation site with auto-generated navigation, search, theming, and more.
@@ -61,7 +61,7 @@ export 'src/layout/kb_page_nav.dart';
 export 'src/layout/kb_related_pages.dart';
 export 'src/layout/kb_changelog.dart';
 export 'src/layout/kb_rating.dart';
-export 'src/components/kb_tag_chips.dart';
+export 'src/components/kb_tags.dart';
 export 'src/components/rich_markdown_components.dart';
 
 // Scripts

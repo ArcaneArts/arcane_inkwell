@@ -1,0 +1,13 @@
+.dart_tool/
+**/.dart_tool/
+build/
+**/build/
+node_modules/
+**/node_modules/
+*.lock
+**/*.lock
+.idea/
+**/.idea/
+.run/
+.codegraph/
+docs/

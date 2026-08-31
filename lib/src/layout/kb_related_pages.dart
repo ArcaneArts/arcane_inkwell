@@ -1,7 +1,5 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv, ArcaneLink;
-import 'package:arcane_lexicon/src/components/kb_tag_chips.dart';
-
 import '../config/site_config.dart';
 import '../navigation/nav_item.dart';
 import '../navigation/nav_section.dart';
@@ -37,7 +35,6 @@ class KBRelatedPages extends StatelessWidget {
       styles: const ArcaneStyleData(
         margin: MarginPreset.topXl,
         padding: PaddingPreset.topLg,
-        borderTop: BorderPreset.subtle,
       ),
       children: [
         const ArcaneDiv(
@@ -52,10 +49,15 @@ class KBRelatedPages extends StatelessWidget {
         ArcaneDiv(
           classes: <String>['kb-related-grid'],
           styles: const ArcaneStyleData(display: Display.grid, gap: Gap.md),
-          children: relatedPages
-              .take(maxItems)
-              .map((_RelatedPage page) => _buildRelatedCard(page))
-              .toList(),
+          children: <Widget>[
+            const ArcaneDiv(
+              classes: <String>['kb-section-divider'],
+              children: <Widget>[],
+            ),
+            ...relatedPages
+                .take(maxItems)
+                .map((_RelatedPage page) => _buildRelatedRow(page)),
+          ],
         ),
       ],
     );
@@ -66,10 +68,10 @@ class KBRelatedPages extends StatelessWidget {
     final Set<String> currentTagSet = currentTags.toSet();
 
     // Collect all pages from manifest
-    void collectFromItems(List<NavItem> items, String section) {
+    void collectFromItems(List<NavItem> items) {
       for (final NavItem item in items) {
         if (item.path == currentPath) continue;
-        if (item.hidden) continue;
+        if (item.hidden || item.draft) continue;
         if (item.tags.isEmpty) continue;
 
         final Set<String> itemTagSet = item.tags.toSet();
@@ -83,26 +85,22 @@ class KBRelatedPages extends StatelessWidget {
               description: item.description,
               sharedTags: sharedTags.toList(),
               relevance: sharedTags.length,
-              section: section,
             ),
           );
         }
       }
     }
 
-    void collectFromSections(List<NavSection> sections, String parentSection) {
+    void collectFromSections(List<NavSection> sections) {
       for (final NavSection section in sections) {
-        final String sectionPath = parentSection.isEmpty
-            ? section.title
-            : '$parentSection / ${section.title}';
-        collectFromItems(section.items, sectionPath);
-        collectFromSections(section.sections, sectionPath);
+        collectFromItems(section.visibleItems);
+        collectFromSections(section.visibleSections);
       }
     }
 
     // Collect from root items and sections
-    collectFromItems(manifest.items, '');
-    collectFromSections(manifest.sections, '');
+    collectFromItems(manifest.visibleItems);
+    collectFromSections(manifest.visibleSections);
 
     // Sort by relevance (most shared tags first)
     results.sort((a, b) => b.relevance.compareTo(a.relevance));
@@ -110,18 +108,14 @@ class KBRelatedPages extends StatelessWidget {
     return results;
   }
 
-  Widget _buildRelatedCard(_RelatedPage page) {
+  Widget _buildRelatedRow(_RelatedPage page) {
     return ArcaneLink(
       href: config.fullPath(page.path),
-      classes: <String>['kb-related-card'],
+      classes: <String>['kb-related-row'],
       styles: const ArcaneStyleData(
-        display: Display.flex,
-        flexDirection: FlexDirection.column,
+        display: Display.block,
         gap: Gap.xs,
         padding: PaddingPreset.md,
-        background: Background.surface,
-        border: BorderPreset.subtle,
-        borderRadius: Radius.md,
         textDecoration: TextDecoration.none,
       ),
       child: Column(
@@ -148,16 +142,6 @@ class KBRelatedPages extends StatelessWidget {
                 ),
               ],
             ),
-          ArcaneDiv(
-            styles: const ArcaneStyleData(margin: MarginPreset.topXs),
-            children: <Widget>[
-              KBTagList(
-                tags: page.sharedTags,
-                size: KBTagSize.xs,
-                showIcon: false,
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -170,7 +154,6 @@ class _RelatedPage {
   final String? description;
   final List<String> sharedTags;
   final int relevance;
-  final String section;
 
   const _RelatedPage({
     required this.title,
@@ -178,6 +161,5 @@ class _RelatedPage {
     this.description,
     required this.sharedTags,
     required this.relevance,
-    required this.section,
   });
 }

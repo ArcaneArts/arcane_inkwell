@@ -8,7 +8,7 @@ class NavSection {
   /// The URL path prefix for this section.
   final String path;
 
-  /// Optional icon name (Lucide icon).
+  /// Optional single Lucide icon name.
   final String? icon;
 
   /// Sort order (lower = first).
@@ -47,24 +47,6 @@ class NavSection {
       icon: config['icon'] as String?,
       order: config['order'] as int? ?? 999,
       collapsed: config['collapsed'] as bool? ?? true,
-      items: items,
-      sections: sections,
-    );
-  }
-
-  /// Create from _section.yaml data.
-  /// @deprecated Use [fromConfig] instead.
-  factory NavSection.fromYaml({
-    required String path,
-    required Map<String, dynamic> yaml,
-    required String fallbackTitle,
-    List<NavItem> items = const [],
-    List<NavSection> sections = const [],
-  }) {
-    return NavSection.fromConfig(
-      path: path,
-      config: yaml,
-      fallbackTitle: fallbackTitle,
       items: items,
       sections: sections,
     );
@@ -110,6 +92,14 @@ class NavSection {
   /// Get visible items (not hidden or draft).
   List<NavItem> get visibleItems =>
       sortedItems.where((item) => !item.hidden && !item.draft).toList();
+
+  /// Get child sections that contain at least one published page.
+  List<NavSection> get visibleSections =>
+      sortedSections.where((section) => section.hasVisibleContent).toList();
+
+  /// Whether this section or one of its descendants contains a published page.
+  bool get hasVisibleContent =>
+      visibleItems.isNotEmpty || visibleSections.isNotEmpty;
 
   /// Check if this section should be expanded for a given path.
   bool shouldExpandFor(String currentPath) {

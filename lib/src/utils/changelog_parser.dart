@@ -43,8 +43,9 @@ class ChangelogParser {
       multiLine: true,
     );
 
-    final List<RegExpMatch> matches =
-        versionPattern.allMatches(content).toList();
+    final List<RegExpMatch> matches = versionPattern
+        .allMatches(content)
+        .toList();
 
     for (int i = 0; i < matches.length; i++) {
       final RegExpMatch match = matches[i];
@@ -53,18 +54,17 @@ class ChangelogParser {
 
       // Get content between this version and the next (or end of file)
       final int startIndex = match.end;
-      final int endIndex =
-          i + 1 < matches.length ? matches[i + 1].start : content.length;
+      final int endIndex = i + 1 < matches.length
+          ? matches[i + 1].start
+          : content.length;
       final String versionContent = content.substring(startIndex, endIndex);
 
       // Parse sections within this version
       final Map<String, List<String>> sections = _parseSections(versionContent);
 
-      versions.add(ChangelogVersion(
-        version: version,
-        date: date,
-        sections: sections,
-      ));
+      versions.add(
+        ChangelogVersion(version: version, date: date, sections: sections),
+      );
     }
 
     return versions;
@@ -74,13 +74,11 @@ class ChangelogParser {
     final Map<String, List<String>> sections = {};
 
     // Match section headers (### Added, ### Changed, etc.)
-    final RegExp sectionPattern = RegExp(
-      r'^###\s+(.+)$',
-      multiLine: true,
-    );
+    final RegExp sectionPattern = RegExp(r'^###\s+(.+)$', multiLine: true);
 
-    final List<RegExpMatch> matches =
-        sectionPattern.allMatches(content).toList();
+    final List<RegExpMatch> matches = sectionPattern
+        .allMatches(content)
+        .toList();
 
     for (int i = 0; i < matches.length; i++) {
       final RegExpMatch match = matches[i];
@@ -88,8 +86,9 @@ class ChangelogParser {
 
       // Get content between this section and the next (or end)
       final int startIndex = match.end;
-      final int endIndex =
-          i + 1 < matches.length ? matches[i + 1].start : content.length;
+      final int endIndex = i + 1 < matches.length
+          ? matches[i + 1].start
+          : content.length;
       final String sectionContent = content.substring(startIndex, endIndex);
 
       // Parse list items

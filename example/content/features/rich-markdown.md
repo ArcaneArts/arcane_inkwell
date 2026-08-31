@@ -15,7 +15,7 @@ This page renders the default rich markdown component set that Arcane Lexicon re
 
 ## Cards and Tiles
 
-<CardGroup cols={3}>
+<CardGroup>
   <Card title="Installation" href="/guide/basics/installation" icon="rocket">
     Start by adding the package and running the app.
   </Card>
@@ -23,16 +23,16 @@ This page renders the default rich markdown component set that Arcane Lexicon re
     Configure global behavior and layout flags.
   </Card>
   <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_lexicon" icon="github">
-    External links get a top-right external indicator.
+    External links keep the same flat row hierarchy.
   </Card>
 </CardGroup>
 
-<Tiles cols={3}>
+<Tiles>
   <Tile title="Internal Link" href="/reference/components" icon="book">
-    Internal tiles use the internal direction indicator.
+    Internal tiles render as direct navigation rows.
   </Tile>
   <Tile title="External Link" href="https://docs.page/schultek/jaspr" icon="globe">
-    External tiles use the external-link indicator.
+    External tiles use the same restrained row treatment.
   </Tile>
   <Tile title="Static Tile" icon="activity">
     Tile with no `href` renders as static content.
@@ -119,7 +119,7 @@ This page renders the default rich markdown component set that Arcane Lexicon re
 
 <Tooltip tip="This uses the native title tooltip.">Hover for tooltip</Tooltip>
 
-<Icon name="sparkles" size="sm" />
+<Icon name="server" size="sm" />
 <Icon name="palette" size="sm" />
 <Icon name="lightbulb" size="sm" />
 

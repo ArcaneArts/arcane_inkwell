@@ -39,14 +39,14 @@ class SearchIndexEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'path': path,
-        'category': category,
-        if (description != null) 'description': description,
-        if (keywords.isNotEmpty) 'keywords': keywords,
-        if (excerpt != null) 'excerpt': excerpt,
-        if (icon != null) 'icon': icon,
-      };
+    'title': title,
+    'path': path,
+    'category': category,
+    if (description != null) 'description': description,
+    if (keywords.isNotEmpty) 'keywords': keywords,
+    if (excerpt != null) 'excerpt': excerpt,
+    if (icon != null) 'icon': icon,
+  };
 }
 
 /// Generates a search index JSON file from the navigation manifest.
@@ -57,10 +57,7 @@ class SearchIndexGenerator {
   final SiteConfig config;
   final NavManifest manifest;
 
-  const SearchIndexGenerator({
-    required this.config,
-    required this.manifest,
-  });
+  const SearchIndexGenerator({required this.config, required this.manifest});
 
   /// Generate the search index as a list of entries.
   List<SearchIndexEntry> generateEntries() {

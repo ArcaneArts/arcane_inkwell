@@ -79,7 +79,7 @@ KnowledgeBaseApp.create(
   config: config,
   stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.midnight),
   // or
-  // stylesheet: const NeonStylesheet(theme: NeonTheme.blue),
+  // stylesheet: const NeonStylesheet(theme: NeonTheme.green),
   // or
   // stylesheet: const NeubrutalismStylesheet(theme: NeubrutalismTheme.yellow),
 )
@@ -105,4 +105,3 @@ content/
     site-config.md
     components.md
 ```
-

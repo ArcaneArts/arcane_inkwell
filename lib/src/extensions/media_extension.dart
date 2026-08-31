@@ -209,7 +209,8 @@ class MediaExtension implements PageExtension {
     params.add('rel=0');
     final String urlParams = params.isNotEmpty ? '?${params.join('&')}' : '';
     final String title = attrMap['title'] ?? 'YouTube video player';
-    final String primaryUrl = 'https://www.youtube.com/embed/$videoId$urlParams';
+    final String primaryUrl =
+        'https://www.youtube.com/embed/$videoId$urlParams';
     final String fallbackUrl =
         'https://www.youtube-nocookie.com/embed/$videoId$urlParams';
     final String watchUrl = 'https://www.youtube.com/watch?v=$videoId';

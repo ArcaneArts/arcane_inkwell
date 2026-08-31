@@ -1,6 +1,6 @@
 # Arcane Lexicon
 
-Transform markdown directories into beautiful documentation websites with auto-generated navigation, search, theming, and rich markdown components. Built on Jaspr.
+Transform markdown directories into documentation websites with generated navigation, search, theming, and rich markdown components. Built on Jaspr.
 
 **[Live Demo](https://arcanearts.github.io/arcane_lexicon/)** | **[GitHub](https://github.com/ArcaneArts/arcane_lexicon)**
 
@@ -221,12 +221,12 @@ The legacy demo runner still serves the repository example at `http://localhost:
 dart tool/arcane_lexicon_demo.dart
 ```
 
-## Package Docs Coverage
+## Package docs coverage
 
-Implementation-matching docs and showcases live in:
+The package examples and matching reference docs live in:
 
 - `example/content/reference` (API + behavior reference)
-- `example/content/features` (visual showcase pages)
+- `example/content/features` (visual examples)
 - `example/content/guide` (workflow-oriented setup and utility usage)
 
 ## License

@@ -17,7 +17,7 @@ Arcane Lexicon exports utility classes that you can wire into your build or rele
 The default rich markdown set includes small docs/site utility components for common reference content:
 
 - `<Kbd>` and `<Key>` for keyboard shortcuts.
-- `<FilePath>` and `<PathChip>` for file paths, routes, and config keys.
+- `<FilePath>` for file paths, routes, and config keys.
 - `<Endpoint>` for REST or site endpoint references.
 - `<ResourceGrid>` and `<Resource>` for compact related docs, downloads, and external resources.
 
@@ -26,7 +26,7 @@ Use <Kbd>⌘</Kbd> + <Kbd>K</Kbd> to open search.
 Edit <FilePath>content/guide/basics/configuration.md</FilePath>.
 <Endpoint method="GET" path="/search-index.json" />
 
-<ResourceGrid cols={2}>
+<ResourceGrid>
   <Resource title="Configuration" href="/guide/basics/configuration" icon="settings" label="Guide">
     Configure site-wide behavior and section metadata.
   </Resource>

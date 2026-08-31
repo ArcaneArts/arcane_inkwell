@@ -27,18 +27,17 @@ tags:
 
 ## Where Tags Are Used
 
-- Displayed in page metadata/footer chips by the default layout.
+- Displayed as plain metadata/footer labels by the default layout.
 - Included in generated search-index entries (`SearchIndexGenerator`).
 - Available to custom components/layout logic.
 
 ## Current Default Layout Behavior
 
-The default `KBLayout` does not auto-render `KBRelatedPages`. If you want related-page cards, use `KBRelatedPages` explicitly in a custom layout composition.
+The default `KBLayout` does not auto-render `KBRelatedPages`. If you want related-page rows, use `KBRelatedPages` explicitly in a custom layout composition.
 
-## Best Practices
+## Tag guidelines
 
 1. Use consistent lowercase tag naming.
 2. Prefer specific tags (`api-reference`) over generic tags (`api`).
 3. Keep 3-6 tags per page.
 4. Keep tags as a YAML list for reliable parsing.
-

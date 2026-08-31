@@ -53,7 +53,7 @@ component: AuthDemo
 | `layout` | `String` | none | Use `kb` for the Arcane Lexicon layout |
 | `title` | `String?` | filename-derived title | Page title |
 | `description` | `String?` | `null` | Page summary/meta description |
-| `icon` | `String?` | `null` | Icon name, SVG URL, or raw SVG markup |
+| `icon` | `String?` | `null` | Single built-in Lucide icon name |
 | `order` | `int` | `999` | Sort order within section |
 | `hidden` | `bool` | `false` | Hide from navigation but keep URL accessible |
 | `draft` | `bool` | `false` | Hide from nav and mark page as draft |
@@ -78,14 +78,13 @@ These are added by runtime extensions/layout processing:
 
 ### `hidden: true`
 
-- Hidden from sidebar/nav manifests.
-- Still directly routable if URL is known.
+- Excluded from generated routes and navigation manifests.
+- Excluded from search indexes, page navigation, related pages, and sitemap output.
 
 ### `draft: true`
 
-- Hidden from navigation.
-- Marked with draft badge where applicable.
-- Excluded from search index generation and sitemap utilities when those utilities are used.
+- Excluded from generated routes and navigation manifests.
+- Excluded from search indexes, page navigation, related pages, and sitemap output.
 
 ## Ordering
 
@@ -108,4 +107,3 @@ When `title` is missing, title is derived from filename.
 
 - Keep `tags` as a YAML list for reliable parsing.
 - `previous`/`next` frontmatter links are not currently consumed by the default `KBPageNav`; navigation order is derived from manifest ordering.
-

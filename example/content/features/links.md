@@ -9,7 +9,7 @@ date: 2025-01-11
 
 ## Internal Links
 
-Internal links work as expected:
+Internal links preserve the provided route:
 - [Home](/)
 - [Typography](/features/typography)
 - [Guide Section](/guide)

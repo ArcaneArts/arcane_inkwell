@@ -1,6 +1,6 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/web.dart' as dom;
-import 'package:arcane_lexicon/src/components/kb_tag_chips.dart';
+import 'package:arcane_lexicon/src/components/kb_tags.dart';
 import 'package:arcane_lexicon/src/config/site_config.dart';
 import 'package:arcane_lexicon/src/icons/kb_icon.dart';
 import 'package:arcane_lexicon/src/layout/kb_page_nav.dart';
@@ -142,7 +142,7 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
           sidebar(
             data,
             showBranding: sidebarShowsBranding,
-            showSearch: data.showSidebarControls && data.config.searchEnabled,
+            showSearch: data.config.searchEnabled,
             showThemeToggle:
                 data.showSidebarControls && data.config.themeToggleEnabled,
           ),
@@ -192,6 +192,7 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
               attributes: const <String, String>{
                 'type': 'button',
                 'aria-label': 'Toggle sidebar',
+                'aria-expanded': 'false',
                 'data-kb-sidebar-toggle': 'true',
               },
               <Widget>[ArcaneIcon.panelLeft(size: IconSize.sm)],
@@ -288,6 +289,10 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
               'type': 'text',
               'placeholder': 'Search docs...',
               'autocomplete': 'off',
+              'aria-label': 'Search documentation',
+              'aria-autocomplete': 'list',
+              'aria-expanded': 'false',
+              'role': 'combobox',
               'data-kb-search-input': 'true',
             },
           ),
@@ -298,7 +303,12 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
       ),
       dom.div(
         classes: 'search-results $prefix-kb-search-results',
-        attributes: const <String, String>{'data-kb-search-results': 'true'},
+        attributes: const <String, String>{
+          'data-kb-search-results': 'true',
+          'role': 'listbox',
+          'aria-label': 'Search results',
+          'hidden': '',
+        },
         <Widget>[],
       ),
     ],
@@ -386,8 +396,16 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
         showThemeToggle ||
         showStylesheetSwitcher ||
         showPaletteSwitcher;
+    bool mobileSearchOnly = showSearch && !data.showSidebarControls;
+    bool mobileHeaderOnly =
+        mobileSearchOnly &&
+        !showBranding &&
+        !showThemeToggle &&
+        !showStylesheetSwitcher &&
+        !showPaletteSwitcher;
     return dom.aside(
-      classes: sidebarClass,
+      classes:
+          '$sidebarClass${mobileSearchOnly ? ' kb-sidebar-search-mobile-only' : ''}',
       styles: dom.Styles(
         raw: <String, String>{
           '--kb-sidebar-width': data.config.sidebarWidth,
@@ -404,6 +422,13 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
               showThemeToggle: showThemeToggle,
               showStylesheetSwitcher: showStylesheetSwitcher,
               showPaletteSwitcher: showPaletteSwitcher,
+              mobileOnly: mobileHeaderOnly,
+            ),
+          if (showHeader)
+            dom.div(
+              classes:
+                  'kb-section-divider${mobileHeaderOnly ? ' kb-sidebar-divider-mobile-only' : ''}',
+              <Widget>[],
             ),
           dom.nav(classes: 'sidebar-nav $prefix-kb-sidebar-nav', <Widget>[
             if (data.manifest.visibleItems.isNotEmpty)
@@ -416,7 +441,7 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
                     navItem(data, item),
                 ],
               ),
-            for (NavSection section in data.manifest.sortedSections)
+            for (NavSection section in data.manifest.visibleSections)
               collapsibleSection(data, section, depth: 0),
           ]),
         ]),
@@ -431,6 +456,7 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
     required bool showThemeToggle,
     required bool showStylesheetSwitcher,
     required bool showPaletteSwitcher,
+    bool mobileOnly = false,
   }) {
     bool hasControls =
         showSearch ||
@@ -438,7 +464,8 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
         showStylesheetSwitcher ||
         showPaletteSwitcher;
     return dom.div(
-      classes: 'sidebar-header $prefix-kb-sidebar-header',
+      classes:
+          'sidebar-header $prefix-kb-sidebar-header${mobileOnly ? ' kb-sidebar-header-mobile-only' : ''}',
       <Widget>[
         if (showBranding)
           dom.div(classes: 'sidebar-brand $prefix-kb-sidebar-brand', <Widget>[
@@ -508,7 +535,6 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
               classes: 'sidebar-summary $prefix-kb-sidebar-summary',
               styles: treeRowStyles(data, depth, isFolder: true),
               children: <Widget>[
-                if (section.icon != null) icon(data, section.icon!),
                 dom.span(<Widget>[Widget.text(section.title)]),
                 dom.span(
                   classes: 'sidebar-chevron $prefix-kb-sidebar-chevron',
@@ -524,7 +550,7 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
             dom.div(classes: 'sidebar-tree $prefix-kb-sidebar-tree', <Widget>[
               for (NavItem item in section.visibleItems)
                 navItem(data, item, depth: depth + 1),
-              for (NavSection nested in section.sortedSections)
+              for (NavSection nested in section.visibleSections)
                 collapsibleSection(data, nested, depth: depth + 1),
             ]),
           ],
@@ -568,39 +594,9 @@ class DefaultKnowledgeBaseRenderers extends KnowledgeBaseRenderers {
     return dom.Styles(raw: rawStyles);
   }
 
-  Widget icon(KnowledgeBaseRenderData data, String iconName) {
-    if (iconName.trimLeft().startsWith('<svg')) {
-      return dom.span(
-        classes: 'sidebar-icon sidebar-icon-svg $prefix-kb-sidebar-icon',
-        styles: const dom.Styles(
-          raw: <String, String>{
-            'display': 'inline-flex',
-            'align-items': 'center',
-            'justify-content': 'center',
-            'width': '16px',
-            'height': '16px',
-          },
-        ),
-        <Widget>[dom.RawText(iconName)],
-      );
-    }
-    if (iconName.endsWith('.svg')) {
-      return dom.img(
-        classes: 'sidebar-icon sidebar-icon-svg $prefix-kb-sidebar-icon',
-        src: iconName.startsWith('/')
-            ? data.config.fullPath(iconName)
-            : iconName,
-        alt: '',
-        styles: const dom.Styles(
-          raw: <String, String>{'width': '16px', 'height': '16px'},
-        ),
-      );
-    }
-    return KBIcon.build(
-      iconName,
-      classes: 'sidebar-icon $prefix-kb-sidebar-icon',
-    );
-  }
+  /// Build one navigation icon from a Lucide icon name.
+  Widget icon(KnowledgeBaseRenderData data, String iconName) =>
+      KBIcon.build(iconName, classes: 'sidebar-icon $prefix-kb-sidebar-icon');
 
   @override
   Widget mainArea(KnowledgeBaseRenderData data, Widget contentArea) =>

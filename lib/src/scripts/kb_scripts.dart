@@ -513,6 +513,7 @@ document.addEventListener('change', function(e) {
 
   var basePath = '$basePath';
   var searchState = new WeakMap();
+  var nextSearchResultsId = 0;
 
   function activeScopeFor(input) {
     return input.closest('[data-kb-style-slot]') || getActiveKbSlot();
@@ -597,11 +598,11 @@ document.addEventListener('change', function(e) {
     if (!searchResults) return;
     var items = searchResults.querySelectorAll('a[data-index]');
     items.forEach(function(item, i) {
-      if (i === state.selectedIndex) {
-        item.style.background = 'var(--accent)';
-        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      } else {
-        item.style.background = 'transparent';
+      var selected = i === state.selectedIndex;
+      item.classList.toggle('is-selected', selected);
+      item.setAttribute('aria-selected', selected ? 'true' : 'false');
+      if (selected) {
+        item.scrollIntoView({ block: 'nearest' });
       }
     });
   }
@@ -612,27 +613,43 @@ document.addEventListener('change', function(e) {
     if (!searchResults) return;
     state.currentResults = results;
     state.selectedIndex = -1;
+    searchResults.replaceChildren();
+    searchResults.hidden = false;
+    searchResults.style.display = 'block';
+    input.setAttribute('aria-expanded', 'true');
     if (results.length === 0) {
-      searchResults.innerHTML = '<div style="padding: 12px; color: var(--muted-foreground); text-align: center;">No results found</div>';
-      searchResults.style.display = 'block';
+      var empty = document.createElement('div');
+      empty.className = 'kb-search-empty';
+      empty.setAttribute('role', 'status');
+      empty.textContent = 'No results found';
+      searchResults.appendChild(empty);
       return;
     }
-    var html = results.map(function(item, index) {
-      var fullHref = basePath + item.href;
-      return '<a href="' + fullHref + '" data-index="' + index + '" style="display: block; padding: 10px 12px; text-decoration: none; border-bottom: 1px solid var(--border); transition: background 0.15s;">' +
-        '<div style="font-weight: 500; color: var(--foreground);">' + item.title + '</div>' +
-        '<div style="font-size: 12px; color: var(--muted-foreground);">' + item.category + '</div>' +
-      '</a>';
-    }).join('');
-    searchResults.innerHTML = html;
-    searchResults.style.display = 'block';
 
-    // Attach hover handlers to new elements
-    searchResults.querySelectorAll('a[data-index]').forEach(function(link) {
+    results.forEach(function(item, index) {
+      var fullHref = basePath + item.href;
+      var link = document.createElement('a');
+      link.className = 'kb-search-result';
+      link.href = fullHref;
+      link.dataset.index = String(index);
+      link.setAttribute('role', 'option');
+      link.setAttribute('aria-selected', 'false');
+
+      var title = document.createElement('div');
+      title.className = 'kb-search-result-title';
+      title.textContent = item.title;
+      link.appendChild(title);
+
+      var category = document.createElement('div');
+      category.className = 'kb-search-result-category';
+      category.textContent = item.category;
+      link.appendChild(category);
+
       link.addEventListener('mouseenter', function() {
         state.selectedIndex = parseInt(this.dataset.index, 10);
         updateHighlight(input);
       });
+      searchResults.appendChild(link);
     });
   }
 
@@ -641,13 +658,15 @@ document.addEventListener('change', function(e) {
     var state = stateForInput(input);
     if (!searchResults) return;
     searchResults.style.display = 'none';
+    searchResults.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
     state.selectedIndex = -1;
     state.currentResults = [];
   }
 
   function isResultsVisible(input) {
     var searchResults = resultsForInput(input);
-    return !!searchResults && searchResults.style.display === 'block';
+    return !!searchResults && !searchResults.hidden;
   }
 
   function navigateToSelected(input) {
@@ -663,8 +682,17 @@ document.addEventListener('change', function(e) {
   }
 
   function initializeInput(input) {
+    var searchResults = resultsForInput(input);
+    if (searchResults) {
+      if (!searchResults.id) {
+        nextSearchResultsId += 1;
+        searchResults.id = 'kb-search-results-' + nextSearchResultsId;
+      }
+      input.setAttribute('aria-controls', searchResults.id);
+    }
     if (input.getAttribute('data-kb-search-initialized') === 'true') return;
     input.setAttribute('data-kb-search-initialized', 'true');
+    input.setAttribute('aria-expanded', 'false');
 
     input.addEventListener('input', function() {
       var state = refreshState(this);
@@ -1054,6 +1082,9 @@ proseBlocks.forEach(function(pre) {
   var copyBtn = document.createElement('button');
   copyBtn.className = 'copy-code-btn';
   copyBtn.setAttribute('type', 'button');
+  copyBtn.setAttribute('aria-label', 'Copy code');
+  copyBtn.setAttribute('title', 'Copy code');
+  copyBtn.setAttribute('aria-live', 'polite');
   copyBtn.innerHTML = copyIconSvg;
   wrapper.appendChild(copyBtn);
 
@@ -1067,9 +1098,11 @@ proseBlocks.forEach(function(pre) {
     navigator.clipboard.writeText(text).then(function() {
       btn.innerHTML = checkIconSvg;
       btn.classList.add('copied');
+      btn.setAttribute('aria-label', 'Copied');
       setTimeout(function() {
         btn.innerHTML = copyIconSvg;
         btn.classList.remove('copied');
+        btn.setAttribute('aria-label', 'Copy code');
       }, ${KBScriptConfig.copyFeedbackTimeout});
     }).catch(function() {
       var textarea = document.createElement('textarea');
@@ -1082,9 +1115,11 @@ proseBlocks.forEach(function(pre) {
         document.execCommand('copy');
         btn.innerHTML = checkIconSvg;
         btn.classList.add('copied');
+        btn.setAttribute('aria-label', 'Copied');
         setTimeout(function() {
           btn.innerHTML = copyIconSvg;
           btn.classList.remove('copied');
+          btn.setAttribute('aria-label', 'Copy code');
         }, ${KBScriptConfig.copyFeedbackTimeout});
       } catch(e) {}
       document.body.removeChild(textarea);
@@ -1547,29 +1582,86 @@ if (!window.__kbSidebarInitialized) {
   }, true);
 }
 
+function setSidebarOpen(scope, open, restoreFocus) {
+  var sidebar = scope.querySelector('.kb-sidebar');
+  if (!sidebar) return;
+  if (!sidebar.id) {
+    var slotId = scope.getAttribute('data-kb-style-slot') || 'default';
+    sidebar.id = 'kb-sidebar-' + slotId;
+  }
+  var mobile = window.matchMedia('(max-width: 900px)').matches;
+  var nextOpen = mobile && open;
+  sidebar.classList.toggle('open', nextOpen);
+  sidebar.setAttribute('aria-hidden', mobile && !nextOpen ? 'true' : 'false');
+  if (mobile && !nextOpen) {
+    sidebar.setAttribute('inert', '');
+  } else {
+    sidebar.removeAttribute('inert');
+  }
+  var toggles = scope.querySelectorAll('[data-kb-sidebar-toggle], .kb-hamburger');
+  toggles.forEach(function(toggle) {
+    toggle.setAttribute('aria-controls', sidebar.id);
+    toggle.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  });
+  if (restoreFocus && !nextOpen && toggles.length > 0) {
+    toggles[0].focus();
+  }
+}
+
 window.__kbInitializeSidebarChrome = function() {
   document.querySelectorAll('[data-kb-sidebar-toggle], .kb-hamburger').forEach(function(hamburger) {
     if (hamburger.getAttribute('data-kb-sidebar-toggle-init') === 'true') return;
     hamburger.setAttribute('data-kb-sidebar-toggle-init', 'true');
+    hamburger.setAttribute('aria-expanded', 'false');
     hamburger.addEventListener('click', function() {
       var scope = hamburger.closest('[data-kb-style-slot]') || getActiveKbSlot();
       var sidebar = scope.querySelector('.kb-sidebar');
-      if (sidebar) sidebar.classList.toggle('open');
+      if (!sidebar) return;
+      setSidebarOpen(scope, !sidebar.classList.contains('open'), false);
     });
   });
   document.querySelectorAll('.kb-sidebar').forEach(function(sidebar) {
+    var scope = sidebar.closest('[data-kb-style-slot]') || getActiveKbSlot();
+    setSidebarOpen(scope, sidebar.classList.contains('open'), false);
     if (sidebar.getAttribute('data-kb-sidebar-close-init') === 'true') return;
     sidebar.setAttribute('data-kb-sidebar-close-init', 'true');
     sidebar.addEventListener('click', function(e) {
       var target = e.target;
-      if (!target || !target.closest) return;
-      if (!target.closest('a')) return;
-      if (window.innerWidth <= 768) {
-        sidebar.classList.remove('open');
+      if (!target || !target.closest || !target.closest('a')) return;
+      if (window.matchMedia('(max-width: 900px)').matches) {
+        setSidebarOpen(scope, false, false);
       }
     });
   });
 };
+
+if (!window.__kbSidebarDismissInitialized) {
+  window.__kbSidebarDismissInitialized = true;
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    var scope = getActiveKbSlot();
+    var sidebar = scope.querySelector('.kb-sidebar.open');
+    if (!sidebar) return;
+    e.preventDefault();
+    setSidebarOpen(scope, false, true);
+  });
+  document.addEventListener('click', function(e) {
+    if (!window.matchMedia('(max-width: 900px)').matches) return;
+    var target = e.target;
+    if (!target || !target.closest) return;
+    if (target.closest('.kb-sidebar, [data-kb-sidebar-toggle], .kb-hamburger')) return;
+    var scope = getActiveKbSlot();
+    if (scope.querySelector('.kb-sidebar.open')) {
+      setSidebarOpen(scope, false, false);
+    }
+  });
+  window.addEventListener('resize', function() {
+    document.querySelectorAll('[data-kb-style-slot]').forEach(function(scope) {
+      var sidebar = scope.querySelector('.kb-sidebar');
+      if (sidebar) setSidebarOpen(scope, sidebar.classList.contains('open'), false);
+    });
+  });
+}
 
 window.__kbInitializeSidebarChrome();
 window.__kbApplySidebarCollapseState();
@@ -1650,8 +1742,9 @@ if (autoHideTopBar) {
 
   static String _ratingFunctionality() => '''
 // ===== PAGE RATING =====
-var ratingContainer = document.querySelector('.kb-rating');
-if (ratingContainer) {
+document.querySelectorAll('.kb-rating').forEach(function(ratingContainer) {
+  if (ratingContainer.getAttribute('data-kb-rating-initialized') === 'true') return;
+  ratingContainer.setAttribute('data-kb-rating-initialized', 'true');
   var ratingButtons = ratingContainer.querySelectorAll('.kb-rating-btn');
   var promptSection = ratingContainer.querySelector('.kb-rating-prompt');
   var thanksSection = ratingContainer.querySelector('.kb-rating-thanks');
@@ -1660,21 +1753,11 @@ if (ratingContainer) {
   // Check if user already rated this page
   var ratedKey = 'kb-rated-' + pagePath;
   if (localStorage.getItem(ratedKey)) {
-    if (promptSection) promptSection.style.display = 'none';
-    if (thanksSection) thanksSection.style.display = 'block';
+    if (promptSection) promptSection.hidden = true;
+    if (thanksSection) thanksSection.hidden = false;
   }
 
   ratingButtons.forEach(function(btn) {
-    // Hover effects
-    btn.addEventListener('mouseenter', function() {
-      this.style.borderColor = 'hsl(var(--primary))';
-      this.style.color = 'hsl(var(--foreground))';
-    });
-    btn.addEventListener('mouseleave', function() {
-      this.style.borderColor = 'hsl(var(--border))';
-      this.style.color = 'hsl(var(--muted-foreground))';
-    });
-
     // Click handler
     btn.addEventListener('click', function() {
       var isHelpful = this.dataset.helpful === 'true';
@@ -1684,8 +1767,8 @@ if (ratingContainer) {
       localStorage.setItem(ratedKey, isHelpful ? 'helpful' : 'not-helpful');
 
       // Show thank you message
-      if (promptSection) promptSection.style.display = 'none';
-      if (thanksSection) thanksSection.style.display = 'block';
+      if (promptSection) promptSection.hidden = true;
+      if (thanksSection) thanksSection.hidden = false;
 
       // Dispatch custom event for Firebase integration
       // Your Firebase code can listen for this event:
@@ -1712,9 +1795,8 @@ if (ratingContainer) {
         }
       }));
 
-      console.log('Rating submitted:', { path: path, helpful: isHelpful });
     });
   });
-}
+});
 ''';
 }

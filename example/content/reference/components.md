@@ -19,22 +19,22 @@ Arcane Lexicon ships two component layers:
 
 The following components are registered by default through `KBRichMarkdownComponents.defaults()`.
 
-### Link Cards
+### Link Rows
 
 #### CardGroup + Card
 
 ```markdown
-<CardGroup cols={3}>
+<CardGroup>
   <Card title="Quick Start" href="/guide/basics/installation" icon="rocket">
     Install and launch your docs app.
   </Card>
   <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_lexicon" icon="github">
-    External links show the external-link indicator.
+    External links use the same quiet row treatment.
   </Card>
 </CardGroup>
 ```
 
-<CardGroup cols={3}>
+<CardGroup>
   <Card title="Quick Start" href="/guide/basics/installation" icon="rocket">
     Install and launch your docs app.
   </Card>
@@ -42,21 +42,21 @@ The following components are registered by default through `KBRichMarkdownCompon
     Configure global behavior and layout toggles.
   </Card>
   <Card title="GitHub" href="https://github.com/ArcaneArts/arcane_lexicon" icon="github">
-    External links show the external-link indicator.
+    External links use the same quiet row treatment.
   </Card>
 </CardGroup>
 
 #### Tiles + Tile
 
 ```markdown
-<Tiles cols={3}>
+<Tiles>
   <Tile title="Docs" href="/" icon="book">Internal navigation tile.</Tile>
   <Tile title="Discord" href="https://discord.gg/arcane" icon="message-circle">External support link.</Tile>
   <Tile title="Status" icon="activity">Tile without href acts as static content.</Tile>
 </Tiles>
 ```
 
-<Tiles cols={3}>
+<Tiles>
   <Tile title="Docs" href="/" icon="book">Internal navigation tile.</Tile>
   <Tile title="Discord" href="https://discord.gg/arcane" icon="message-circle">External support link.</Tile>
   <Tile title="Status" icon="activity">Tile without href acts as static content.</Tile>
@@ -262,10 +262,10 @@ The following components are registered by default through `KBRichMarkdownCompon
 #### Icon
 
 ```markdown
-<Icon name="sparkles" size="sm" />
+<Icon name="server" size="sm" />
 ```
 
-<Icon name="sparkles" size="sm" />
+<Icon name="server" size="sm" />
 <Icon name="palette" size="sm" />
 <Icon name="lightbulb" size="sm" />
 
@@ -298,7 +298,7 @@ Edit <FilePath>content/reference/components.md</FilePath> before rebuilding.
 #### ResourceGrid + Resource
 
 ```markdown
-<ResourceGrid cols={2}>
+<ResourceGrid>
   <Resource title="Authoring Guide" href="/guide/basics/configuration" icon="book-open" label="Guide">
     Frontmatter, section config, and site config basics.
   </Resource>
@@ -308,7 +308,7 @@ Edit <FilePath>content/reference/components.md</FilePath> before rebuilding.
 </ResourceGrid>
 ```
 
-<ResourceGrid cols={2}>
+<ResourceGrid>
   <Resource title="Authoring Guide" href="/guide/basics/configuration" icon="book-open" label="Guide">
     Frontmatter, section config, and site config basics.
   </Resource>

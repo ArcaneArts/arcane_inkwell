@@ -56,10 +56,8 @@ class KBCardGroupComponent extends CustomComponentBase {
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
-    int cols = _KBRichParsers.toBoundedInt(attributes['cols'], 3, 1, 4);
     return ArcaneDiv(
-      classes: <String>['kb-card-group kb-card-group-cols-$cols'],
-      styles: ArcaneStyleData(raw: <String, String>{'--kb-card-cols': '$cols'}),
+      classes: <String>['kb-card-group'],
       children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
     );
   }
@@ -75,41 +73,38 @@ class KBCardComponent extends CustomComponentBase {
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
     String title = attributes['title']?.trim() ?? 'Card';
     String href = attributes['href']?.trim() ?? '#';
-    String iconName = attributes['icon']?.trim() ?? 'grid';
+    String? iconName = attributes['icon']?.trim();
+    bool hasIcon = iconName != null && iconName.isNotEmpty;
     bool external = _KBRichParsers.isExternalLink(href);
     String classes = external
         ? 'kb-card kb-card-external'
         : 'kb-card kb-card-internal';
 
-    Widget cardContent = Column(
-      gapSize: Gap.sm,
+    Widget cardContent = ArcaneDiv(
+      classes: <String>[
+        'kb-card-content',
+        if (!hasIcon) 'kb-card-content-no-icon',
+      ],
       children: <Widget>[
+        if (hasIcon)
+          ArcaneDiv(
+            classes: <String>['kb-card-icon'],
+            children: <Widget>[KBIcon.build(iconName, size: IconSize.md)],
+          ),
         ArcaneDiv(
-          classes: <String>['kb-card-top'],
+          classes: <String>['kb-card-copy'],
           children: <Widget>[
             ArcaneDiv(
-              classes: <String>['kb-card-leading'],
-              children: <Widget>[
-                ArcaneDiv(
-                  classes: <String>['kb-card-icon'],
-                  children: <Widget>[KBIcon.build(iconName, size: IconSize.md)],
-                ),
-              ],
+              classes: <String>['kb-card-title'],
+              children: <Widget>[Text(title)],
             ),
             ArcaneDiv(
-              classes: <String>['kb-card-indicator'],
+              classes: <String>['kb-card-body'],
               children: <Widget>[
-                external
-                    ? KBIcon.build('external-link', size: IconSize.sm)
-                    : KBIcon.build('link', size: IconSize.sm),
+                child ?? const ArcaneDiv(children: <Widget>[]),
               ],
             ),
           ],
-        ),
-        ArcaneDiv(classes: <String>['kb-card-title'], children: <Widget>[Text(title)]),
-        ArcaneDiv(
-          classes: <String>['kb-card-body'],
-          children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
         ),
       ],
     );
@@ -122,7 +117,11 @@ class KBCardComponent extends CustomComponentBase {
       );
     }
 
-    return ArcaneLink(href: href, classes: <String>[classes], child: cardContent);
+    return ArcaneLink(
+      href: href,
+      classes: <String>[classes],
+      child: cardContent,
+    );
   }
 }
 
@@ -137,7 +136,6 @@ class KBColumnsComponent extends CustomComponentBase {
     int cols = _KBRichParsers.toBoundedInt(attributes['cols'], 2, 1, 4);
     return ArcaneDiv(
       classes: <String>['kb-columns kb-columns-$cols'],
-      styles: ArcaneStyleData(raw: <String, String>{'--kb-columns': '$cols'}),
       children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
     );
   }
@@ -166,10 +164,8 @@ class KBTilesComponent extends CustomComponentBase {
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
-    int cols = _KBRichParsers.toBoundedInt(attributes['cols'], 3, 1, 4);
     return ArcaneDiv(
-      classes: <String>['kb-tiles kb-tiles-cols-$cols'],
-      styles: ArcaneStyleData(raw: <String, String>{'--kb-tile-cols': '$cols'}),
+      classes: <String>['kb-tiles'],
       children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
     );
   }
@@ -185,7 +181,8 @@ class KBTileComponent extends CustomComponentBase {
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
     String title = attributes['title']?.trim() ?? 'Tile';
     String href = attributes['href']?.trim() ?? '';
-    String iconName = attributes['icon']?.trim() ?? 'grid';
+    String? iconName = attributes['icon']?.trim();
+    bool hasIcon = iconName != null && iconName.isNotEmpty;
     bool hasHref = href.isNotEmpty;
     bool external = _KBRichParsers.isExternalLink(href);
     String classes = hasHref
@@ -195,36 +192,39 @@ class KBTileComponent extends CustomComponentBase {
         : 'kb-tile kb-tile-static';
 
     Widget tileContent = ArcaneDiv(
-      classes: <String>['kb-tile-content'],
+      classes: <String>[
+        'kb-tile-content',
+        if (!hasIcon) 'kb-tile-content-no-icon',
+      ],
       children: <Widget>[
+        if (hasIcon)
+          ArcaneDiv(
+            classes: <String>['kb-tile-icon'],
+            children: <Widget>[KBIcon.build(iconName, size: IconSize.md)],
+          ),
         ArcaneDiv(
-          classes: <String>['kb-tile-top'],
+          classes: <String>['kb-tile-copy'],
           children: <Widget>[
             ArcaneDiv(
-              classes: <String>['kb-tile-icon'],
-              children: <Widget>[KBIcon.build(iconName, size: IconSize.md)],
+              classes: <String>['kb-tile-title'],
+              children: <Widget>[Text(title)],
             ),
-            if (hasHref)
-              ArcaneDiv(
-                classes: <String>['kb-tile-indicator'],
-                children: <Widget>[
-                  external
-                      ? KBIcon.build('external-link', size: IconSize.sm)
-                      : KBIcon.build('link', size: IconSize.sm),
-                ],
-              ),
+            ArcaneDiv(
+              classes: <String>['kb-tile-body'],
+              children: <Widget>[
+                child ?? const ArcaneDiv(children: <Widget>[]),
+              ],
+            ),
           ],
-        ),
-        ArcaneDiv(classes: <String>['kb-tile-title'], children: <Widget>[Text(title)]),
-        ArcaneDiv(
-          classes: <String>['kb-tile-body'],
-          children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
         ),
       ],
     );
 
     if (!hasHref) {
-      return ArcaneDiv(classes: <String>[classes], children: <Widget>[tileContent]);
+      return ArcaneDiv(
+        classes: <String>[classes],
+        children: <Widget>[tileContent],
+      );
     }
 
     if (external) {
@@ -235,7 +235,11 @@ class KBTileComponent extends CustomComponentBase {
       );
     }
 
-    return ArcaneLink(href: href, classes: <String>[classes], child: tileContent);
+    return ArcaneLink(
+      href: href,
+      classes: <String>[classes],
+      child: tileContent,
+    );
   }
 }
 
@@ -281,7 +285,10 @@ class KBStepComponent extends CustomComponentBase {
     return ArcaneDiv(
       classes: <String>['kb-step'],
       children: <Widget>[
-        const ArcaneDiv(classes: <String>['kb-step-marker'], children: <Widget>[]),
+        const ArcaneDiv(
+          classes: <String>['kb-step-marker'],
+          children: <Widget>[],
+        ),
         ArcaneDiv(
           classes: <String>['kb-step-main'],
           children: <Widget>[
@@ -443,15 +450,6 @@ class KBBannerComponent extends CustomComponentBase {
           classes: <String>['kb-banner-body'],
           children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
         ),
-        if (href.isNotEmpty)
-          ArcaneDiv(
-            classes: <String>['kb-banner-indicator'],
-            children: <Widget>[
-              external
-                  ? KBIcon.build('external-link', size: IconSize.sm)
-                  : KBIcon.build('arrow-right', size: IconSize.sm),
-            ],
-          ),
       ],
     );
 
@@ -462,7 +460,11 @@ class KBBannerComponent extends CustomComponentBase {
     }
 
     if (external) {
-      return ArcaneLink.external(href: href, classes: <String>[classes], child: inner);
+      return ArcaneLink.external(
+        href: href,
+        classes: <String>[classes],
+        child: inner,
+      );
     }
 
     return ArcaneLink(href: href, classes: <String>[classes], child: inner);
@@ -487,7 +489,10 @@ class KBPanelComponent extends CustomComponentBase {
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
     String title = attributes['title']?.trim() ?? '';
-    String iconName = attributes['icon']?.trim() ?? 'sparkles';
+    String? iconName = attributes['icon']?.trim();
+    if (iconName?.isEmpty ?? false) {
+      iconName = null;
+    }
     return ArcaneDiv(
       classes: <String>['kb-panel'],
       children: <Widget>[
@@ -495,10 +500,11 @@ class KBPanelComponent extends CustomComponentBase {
           ArcaneDiv(
             classes: <String>['kb-panel-title'],
             children: <Widget>[
-              ArcaneDiv(
-                classes: <String>['kb-panel-icon'],
-                children: <Widget>[KBIcon.build(iconName, size: IconSize.sm)],
-              ),
+              if (iconName != null)
+                ArcaneDiv(
+                  classes: <String>['kb-panel-icon'],
+                  children: <Widget>[KBIcon.build(iconName, size: IconSize.sm)],
+                ),
               Text(title),
             ],
           ),
@@ -525,7 +531,10 @@ class KBFrameComponent extends CustomComponentBase {
       classes: <String>['kb-frame'],
       children: <Widget>[
         if (label.isNotEmpty)
-          ArcaneDiv(classes: <String>['kb-frame-label'], children: <Widget>[Text(label)]),
+          ArcaneDiv(
+            classes: <String>['kb-frame-label'],
+            children: <Widget>[Text(label)],
+          ),
         ArcaneDiv(
           classes: <String>['kb-frame-body'],
           children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
@@ -610,8 +619,10 @@ class KBIconComponent extends CustomComponentBase {
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
-    String iconName =
-        attributes['name']?.trim() ?? attributes['icon']?.trim() ?? 'sparkles';
+    String? iconName = attributes['name']?.trim() ?? attributes['icon']?.trim();
+    if (iconName == null || iconName.isEmpty) {
+      return const ArcaneDiv(children: <Widget>[]);
+    }
     IconSize size = _KBRichParsers.toIconSize(attributes['size']);
     return ArcaneDiv(
       classes: <String>['kb-inline-icon'],
@@ -644,7 +655,7 @@ class KBPathComponent extends CustomComponentBase {
   const KBPathComponent();
 
   @override
-  Pattern get pattern => RegExp(r'^(FilePath|PathChip)$', caseSensitive: false);
+  Pattern get pattern => RegExp(r'^FilePath$', caseSensitive: false);
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
@@ -705,12 +716,8 @@ class KBResourceGridComponent extends CustomComponentBase {
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
-    int cols = _KBRichParsers.toBoundedInt(attributes['cols'], 2, 1, 4);
     return ArcaneDiv(
-      classes: <String>['kb-resource-grid kb-resource-grid-cols-$cols'],
-      styles: ArcaneStyleData(
-        raw: <String, String>{'--kb-resource-cols': '$cols'},
-      ),
+      classes: <String>['kb-resource-grid'],
       children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
     );
   }
@@ -733,35 +740,28 @@ class KBResourceComponent extends CustomComponentBase {
       classes: <String>['kb-resource-content'],
       children: <Widget>[
         ArcaneDiv(
-          classes: <String>['kb-resource-top'],
+          classes: <String>['kb-resource-icon'],
+          children: <Widget>[KBIcon.build(iconName, size: IconSize.sm)],
+        ),
+        ArcaneDiv(
+          classes: <String>['kb-resource-copy'],
           children: <Widget>[
-            ArcaneDiv(
-              classes: <String>['kb-resource-icon'],
-              children: <Widget>[KBIcon.build(iconName, size: IconSize.sm)],
-            ),
             if (label.isNotEmpty)
               ArcaneDiv(
                 classes: <String>['kb-resource-label'],
                 children: <Widget>[Text(label)],
               ),
-            if (href.isNotEmpty)
-              ArcaneDiv(
-                classes: <String>['kb-resource-indicator'],
-                children: <Widget>[
-                  external
-                      ? KBIcon.build('external-link', size: IconSize.xs)
-                      : KBIcon.build('arrow-right', size: IconSize.xs),
-                ],
-              ),
+            ArcaneDiv(
+              classes: <String>['kb-resource-title'],
+              children: <Widget>[Text(title)],
+            ),
+            ArcaneDiv(
+              classes: <String>['kb-resource-body'],
+              children: <Widget>[
+                child ?? const ArcaneDiv(children: <Widget>[]),
+              ],
+            ),
           ],
-        ),
-        ArcaneDiv(
-          classes: <String>['kb-resource-title'],
-          children: <Widget>[Text(title)],
-        ),
-        ArcaneDiv(
-          classes: <String>['kb-resource-body'],
-          children: <Widget>[child ?? const ArcaneDiv(children: <Widget>[])],
         ),
       ],
     );
@@ -773,7 +773,11 @@ class KBResourceComponent extends CustomComponentBase {
       return ArcaneDiv(classes: <String>[classes], children: <Widget>[content]);
     }
     if (external) {
-      return ArcaneLink.external(href: href, classes: <String>[classes], child: content);
+      return ArcaneLink.external(
+        href: href,
+        classes: <String>[classes],
+        child: content,
+      );
     }
     return ArcaneLink(href: href, classes: <String>[classes], child: content);
   }
@@ -804,7 +808,10 @@ class KBCodeGroupComponent extends CustomComponentBase {
             classes: <String>['kb-code-group-title'],
             children: <Widget>[Text(title)],
           ),
-        ArcaneDiv(classes: <String>['kb-code-group-body'], children: bodyChildren),
+        ArcaneDiv(
+          classes: <String>['kb-code-group-body'],
+          children: bodyChildren,
+        ),
       ],
     );
   }
@@ -833,7 +840,7 @@ class KBFieldGroupComponent extends CustomComponentBase {
   const KBFieldGroupComponent();
 
   @override
-  Pattern get pattern => RegExp(r'^(FieldGroup|Fields)$');
+  Pattern get pattern => RegExp(r'^FieldGroup$');
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
@@ -870,7 +877,10 @@ class KBParamFieldComponent extends CustomComponentBase {
               classes: <String>['kb-field-badge kb-field-location'],
               children: <Widget>[Text(location)],
             ),
-            ArcaneDiv(classes: <String>['kb-field-type'], children: <Widget>[Text(type)]),
+            ArcaneDiv(
+              classes: <String>['kb-field-type'],
+              children: <Widget>[Text(type)],
+            ),
             if (required)
               const ArcaneDiv(
                 classes: <String>['kb-field-badge kb-field-required'],
@@ -933,7 +943,10 @@ class KBResponseFieldComponent extends CustomComponentBase {
               classes: <String>['kb-field-name'],
               children: <Widget>[Text(fieldName)],
             ),
-            ArcaneDiv(classes: <String>['kb-field-type'], children: <Widget>[Text(type)]),
+            ArcaneDiv(
+              classes: <String>['kb-field-type'],
+              children: <Widget>[Text(type)],
+            ),
             if (required)
               const ArcaneDiv(
                 classes: <String>['kb-field-badge kb-field-required'],
@@ -994,10 +1007,6 @@ class KBTreeFolderComponent extends CustomComponentBase {
               classes: 'kb-tree-folder-summary',
               children: <Widget>[
                 ArcaneDiv(
-                  classes: <String>['kb-tree-folder-icon'],
-                  children: <Widget>[KBIcon.build('folder', size: IconSize.sm)],
-                ),
-                ArcaneDiv(
                   classes: <String>['kb-tree-folder-label'],
                   children: <Widget>[Text(label)],
                 ),
@@ -1027,7 +1036,7 @@ class KBTreeFileComponent extends CustomComponentBase {
   const KBTreeFileComponent();
 
   @override
-  Pattern get pattern => RegExp(r'^(Tree\.File|TreeItem)$');
+  Pattern get pattern => RegExp(r'^Tree\.File$');
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
@@ -1051,7 +1060,10 @@ class KBTreeFileComponent extends CustomComponentBase {
           ],
         ),
         if (child != null)
-          ArcaneDiv(classes: <String>['kb-tree-file-extra'], children: <Widget>[child]),
+          ArcaneDiv(
+            classes: <String>['kb-tree-file-extra'],
+            children: <Widget>[child],
+          ),
       ],
     );
   }
@@ -1076,7 +1088,7 @@ class KBColorItemComponent extends CustomComponentBase {
   const KBColorItemComponent();
 
   @override
-  Pattern get pattern => RegExp(r'^(Color\.Item|ColorItem)$');
+  Pattern get pattern => RegExp(r'^Color\.Item$');
 
   @override
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
@@ -1089,12 +1101,7 @@ class KBColorItemComponent extends CustomComponentBase {
       children: <Widget>[
         ArcaneDiv(
           classes: <String>['kb-color-swatch'],
-          styles: ArcaneStyleData(
-            raw: <String, String>{
-              '--kb-color-value': value,
-              'background': value,
-            },
-          ),
+          styles: ArcaneStyleData(backgroundCustom: value),
           children: <Widget>[],
         ),
         ArcaneDiv(
@@ -1109,7 +1116,10 @@ class KBColorItemComponent extends CustomComponentBase {
               children: <Widget>[Text(value)],
             ),
             if (child != null)
-              ArcaneDiv(classes: <String>['kb-color-extra'], children: <Widget>[child]),
+              ArcaneDiv(
+                classes: <String>['kb-color-extra'],
+                children: <Widget>[child],
+              ),
           ],
         ),
       ],
@@ -1127,16 +1137,19 @@ class KBViewComponent extends CustomComponentBase {
   Widget apply(String name, Map<String, String> attributes, Widget? child) {
     String title =
         attributes['title']?.trim() ?? attributes['name']?.trim() ?? 'View';
+    String? iconName = attributes['icon']?.trim();
+    bool hasIcon = iconName != null && iconName.isNotEmpty;
     return ArcaneDiv(
       classes: <String>['kb-view'],
       children: <Widget>[
         ArcaneDiv(
           classes: <String>['kb-view-title'],
           children: <Widget>[
-            ArcaneDiv(
-              classes: <String>['kb-view-icon'],
-              children: <Widget>[KBIcon.build('layers', size: IconSize.sm)],
-            ),
+            if (hasIcon)
+              ArcaneDiv(
+                classes: <String>['kb-view-icon'],
+                children: <Widget>[KBIcon.build(iconName, size: IconSize.sm)],
+              ),
             Text(title),
           ],
         ),

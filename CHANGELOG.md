@@ -5,6 +5,89 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-08-31
+
+### Added
+
+- Design-contract tests prevent decorative gradients, colored glows, pill
+  labels, rounded one-sided borders, remote font loading, and retired nested
+  surface markup from returning to the default knowledge-base layer.
+- A Playwright policy checks every generated example route at 375, 768, and
+  1440 pixels, including sidebar, search, theme, and disclosure states. Its
+  mutation tests cover each forbidden visual treatment before deployment.
+- A writing-policy test rejects AI citation tokens, AI-referrer query
+  parameters, and high-confidence stock assistant phrases in published copy.
+- **Markdown Alert Styles**
+  - Added CSS styles for `markdown-alert` classes (jaspr_content's built-in GitHub-style callouts)
+  - Supports all 5 alert types: note (blue), tip (green), important (purple), warning (amber), caution (red)
+  - Dark mode support with appropriate color adjustments
+  - These styles complement the existing `kb-callout` styles for CalloutExtension
+- **Search Index Export**
+  - `SearchIndexGenerator` - Generates a `search-index.json` file from the navigation manifest
+  - Automatically writes `web/search-index.json` during build (enabled by default)
+  - JSON includes: title, path, category, description, keywords, excerpt, and icon for each page
+  - Enables external sites to fetch and search documentation content
+  - Can be disabled via `generateSearchIndex: false` in `KnowledgeBaseApp.create()`
+
+### Changed
+
+- Disclosure summaries now render one semantic icon at most, search focus uses
+  an outline instead of a shadow ring, and nested rich surfaces collapse to
+  the outer frame.
+- Card, Tile, and View rich-markdown components now render icon markup only
+  when the author supplies an `icon` attribute.
+- Neon theme documentation now defines the green-and-grayscale, flat-surface
+  contract and explicitly excludes gradients, glows, and frosted glass.
+- Rich-markdown columns now use fixed one-to-four-column classes, and color
+  swatches use the dedicated flat-background field instead of raw style maps.
+- Draft and hidden content is now excluded from static routes, serialized
+  manifests, page navigation, related pages, subpages, sidebars, and search.
+- Panels and inline icon components no longer invent a decorative icon when no
+  icon is requested.
+- Knowledge-base cards, tiles, resources, related pages, subpages, previous and
+  next navigation, callouts, panels, fields, trees, and landing content now use
+  flat rows, neutral dividers, and open sections.
+- Card, tile, resource, banner, and changelog markup no longer renders icon
+  backplates, redundant trailing indicators, or framed badge treatments.
+- Generated projects and the example site now use local or system font stacks;
+  Lexicon no longer injects stylesheet-provided remote font URLs.
+- Page navigation, related-page lists, changelog entries, and rating prompts now
+  use neutral divider elements instead of public one-sided border style fields.
+- Search results are built with text-safe DOM nodes and expose combobox/listbox
+  state; code-copy and rating feedback now announce their state to assistive
+  technology.
+- README and example prose now use direct technical descriptions in place of
+  promotional filler.
+
+### Fixed
+
+- Static builds now emit the configured subpath as the document base, load the
+  compiled client from that base, and ship the canonical Lucide WOFF2 asset at
+  the generated font URL.
+- Search remains reachable from the mobile sidebar when the top navigation is
+  enabled, and closed drawers are inert, escape-dismissible, and synchronized
+  with their toggle's expanded state.
+- Removed overlay and drawer shadows from the default knowledge-base chrome so
+  hidden search and mobile states follow the flat-surface contract.
+- The example binds `jaspr_content` typography tokens to the bundled Arcane
+  font families instead of inheriting its Open Sans and JetBrains Mono stacks.
+
+### Removed
+
+- Removed raw SVG markup and local or remote SVG URL support from navigation
+  icons. Page and section navigation icons now accept one built-in Lucide icon
+  name and render exclusively through `KBIcon`.
+- Removed the remote Lucide font fallback, the public `KBTagChip` API, and the
+  `PathChip` rich-markdown alias.
+- Removed Lucide fallback-path expansion from asset URL rewriting. Lexicon now
+  prefixes only the canonical `/assets/fonts/lucide/lucide.woff2` URL supplied
+  by the active stylesheet and does not repair unsupported sources.
+- Removed the public `sparkles` icon name and its documentation.
+- Removed `NavSection.fromYaml` and the retired `Fields`, `TreeItem`, and
+  `ColorItem` rich-markdown aliases without compatibility shims.
+- Decorative component gradients, frosted surfaces, colored glow shadows, pill
+  tag and badge shapes, and nested framed-card styling from `KBStyles`.
+
 ## [1.4.0] - 2026-08-18
 
 ### Fixed
@@ -47,23 +130,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Docs Pipeline Compatibility**
   - Restored analyzer compatibility after the ArcaneJaspr surface split so the docs package no longer fails on missing `Component`, `ArcaneDiv`, `ArcaneLink`, or raw DOM helpers
-
-## [x.x.x]
-
-### Added
-
-- **Markdown Alert Styles**
-  - Added CSS styles for `markdown-alert` classes (jaspr_content's built-in GitHub-style callouts)
-  - Supports all 5 alert types: note (blue), tip (green), important (purple), warning (amber), caution (red)
-  - Dark mode support with appropriate color adjustments
-  - These styles complement the existing `kb-callout` styles for CalloutExtension
-
-- **Search Index Export**
-  - `SearchIndexGenerator` - Generates a `search-index.json` file from the navigation manifest
-  - Automatically writes `web/search-index.json` during build (enabled by default)
-  - JSON includes: title, path, category, description, keywords, excerpt, and icon for each page
-  - Enables external sites to fetch and search documentation content
-  - Can be disabled via `generateSearchIndex: false` in `KnowledgeBaseApp.create()`
 
 ## [1.0.0] - 2025-01-11
 

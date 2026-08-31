@@ -17,7 +17,7 @@ Arcane Lexicon navigation is generated from the content tree and section configs
 - Built from folders/files in `contentDirectory`.
 - Controlled with `_section.json5` or `_section.yaml`.
 - Supports section collapse memory via localStorage.
-- Supports Lucide icon names, SVG URLs, and raw SVG markup in section/page icons.
+- Supports one built-in Lucide icon name for each section or page icon.
 
 ## Top/Bottom Navigation Bar
 
@@ -76,4 +76,3 @@ SiteConfig(
 ```
 
 It tracks heading anchors and highlights the active section during scroll.
-

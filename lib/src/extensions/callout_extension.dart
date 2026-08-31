@@ -40,9 +40,7 @@ class CalloutExtension implements PageExtension {
 
   ElementNode _markdownAlertNode(_CalloutTransform callout) => ElementNode(
     'div',
-    <String, String>{
-      'class': 'markdown-alert markdown-alert-${callout.type}',
-    },
+    <String, String>{'class': 'markdown-alert markdown-alert-${callout.type}'},
     <Node>[
       ElementNode(
         'p',
@@ -135,10 +133,7 @@ class CalloutExtension implements PageExtension {
       node.tag,
       <String, String>{
         ...node.attributes,
-        'class': _normalizedAlertClasses(
-          node.attributes['class'] ?? '',
-          type,
-        ),
+        'class': _normalizedAlertClasses(node.attributes['class'] ?? '', type),
       },
       <Node>[
         if (!hasTitle)

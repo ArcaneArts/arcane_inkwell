@@ -26,18 +26,9 @@ class NavBuilder {
     final rootItems = <NavItem>[];
     final rootSections = <NavSection>[];
 
-    await _scanDirectory(
-      contentDir,
-      '',
-      '',
-      rootItems,
-      rootSections,
-    );
+    await _scanDirectory(contentDir, '', '', rootItems, rootSections);
 
-    return NavManifest(
-      items: rootItems,
-      sections: rootSections,
-    );
+    return NavManifest(items: rootItems, sections: rootSections);
   }
 
   Future<void> _scanDirectory(
@@ -104,14 +95,16 @@ class NavBuilder {
         if (folderName.startsWith('.')) continue;
 
         // Check for section config in this subdirectory first to see if ignored
-        final Map<String, dynamic>? subSectionConfig =
-            await _loadSectionConfig(entity.path);
+        final Map<String, dynamic>? subSectionConfig = await _loadSectionConfig(
+          entity.path,
+        );
 
         // Skip ignored folders
         if (subSectionConfig?['ignore'] == true) continue;
 
-        final sectionPath =
-            pathPrefix.isEmpty ? '/$folderName' : '$pathPrefix/$folderName';
+        final sectionPath = pathPrefix.isEmpty
+            ? '/$folderName'
+            : '$pathPrefix/$folderName';
         String sectionSourcePrefix = sourcePrefix.isEmpty
             ? folderName
             : '$sourcePrefix/$folderName';
@@ -232,7 +225,10 @@ class NavBuilder {
 
   /// Parse YAML frontmatter from markdown content.
   Map<String, dynamic> _parseFrontmatter(String content) {
-    final frontmatterRegex = RegExp(r'^---\s*\n([\s\S]*?)\n---', multiLine: true);
+    final frontmatterRegex = RegExp(
+      r'^---\s*\n([\s\S]*?)\n---',
+      multiLine: true,
+    );
     final match = frontmatterRegex.firstMatch(content);
 
     if (match == null) return {};
@@ -260,10 +256,7 @@ class NavManifest {
   /// Root-level navigation sections.
   final List<NavSection> sections;
 
-  const NavManifest({
-    required this.items,
-    required this.sections,
-  });
+  const NavManifest({required this.items, required this.sections});
 
   /// Get all items sorted by order.
   List<NavItem> get sortedItems {
@@ -291,11 +284,16 @@ class NavManifest {
   List<NavItem> get visibleItems =>
       sortedItems.where((item) => !item.hidden && !item.draft).toList();
 
+  /// Get root sections that contain at least one published page.
+  List<NavSection> get visibleSections => sortedSections
+      .where((NavSection section) => section.hasVisibleContent)
+      .toList();
+
   /// Convert to JSON for client-side use.
   Map<String, dynamic> toJson() {
     return {
-      'items': items.map(_itemToJson).toList(),
-      'sections': sections.map(_sectionToJson).toList(),
+      'items': visibleItems.map(_itemToJson).toList(),
+      'sections': visibleSections.map(_sectionToJson).toList(),
     };
   }
 
@@ -323,8 +321,8 @@ class NavManifest {
       'icon': section.icon,
       'order': section.order,
       'collapsed': section.collapsed,
-      'items': section.items.map(_itemToJson).toList(),
-      'sections': section.sections.map(_sectionToJson).toList(),
+      'items': section.visibleItems.map(_itemToJson).toList(),
+      'sections': section.visibleSections.map(_sectionToJson).toList(),
     };
   }
 
@@ -349,9 +347,8 @@ class NavManifest {
       hidden: json['hidden'] as bool? ?? false,
       draft: json['draft'] as bool? ?? false,
       description: json['description'] as String?,
-      tags: (json['tags'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
           const [],
       excerpt: json['excerpt'] as String?,
       author: json['author'] as String?,
@@ -378,16 +375,16 @@ class NavManifest {
 
   /// Get total page count.
   int get totalPages {
-    int count = items.length;
-    for (final section in sections) {
+    int count = visibleItems.length;
+    for (final NavSection section in visibleSections) {
       count += _countSectionPages(section);
     }
     return count;
   }
 
   int _countSectionPages(NavSection section) {
-    int count = section.items.length;
-    for (final nested in section.sections) {
+    int count = section.visibleItems.length;
+    for (final NavSection nested in section.visibleSections) {
       count += _countSectionPages(nested);
     }
     return count;

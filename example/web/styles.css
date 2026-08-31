@@ -1,11 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 :root {
-  --font-sans: var(--arcane-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
-  --font-mono: var(--arcane-font-mono, 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', monospace);
+  --font-sans: 'Akzidenz-GroteskPro';
+  --font-heading: 'ITCAvantGardeStd';
+  --font-mono: 'Hack';
 }
 
-*, *::before, *::after {
+/* jaspr_content defines its own typography tokens after theme CSS. Keep
+   rendered articles on the font families bundled with Arcane. */
+#arcane-root {
+  --content-font: var(--font-sans);
+  --content-code-font: var(--font-mono);
+}
+
+#arcane-root code,
+#arcane-root kbd,
+#arcane-root pre,
+#arcane-root samp {
+  font-family: var(--font-mono) !important;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -28,11 +43,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-img, svg, video, canvas {
+img,
+svg,
+video,
+canvas {
   max-width: 100%;
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -58,12 +79,11 @@ button, input, select, textarea {
   height: 1.75rem;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-sm, 0.25rem);
   background: transparent;
   color: var(--muted-foreground);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  transition: opacity 0.15s ease, color 0.15s ease;
 }
 
 .code-block-wrapper:hover .copy-code-btn,
@@ -73,372 +93,12 @@ button, input, select, textarea {
 }
 
 .copy-code-btn:hover {
-  background: color-mix(in srgb, var(--foreground) 8%, transparent);
   color: var(--foreground);
 }
 
 .copy-code-btn svg {
   width: 0.875rem;
   height: 0.875rem;
-}
-
-#arcane-root.dark[class*="neubrutalism-"] {
-  --background: #101011;
-  --foreground: #f4f4f5;
-  --secondary-background: #1a1a1c;
-  --card: #1d1d20;
-  --card-foreground: #f4f4f5;
-  --card-hover: #29292d;
-  --popover: #1a1a1c;
-  --popover-foreground: #f4f4f5;
-  --muted: #29292d;
-  --muted-foreground: #dadae0;
-  --border: #54545a;
-  --input: #202024;
-  --nb-dark-inverse-black: #eaeaef;
-  --nb-dark-inverse-black-soft: rgba(234, 234, 239, 0.48);
-  --nb-on-dark-inverse-black: #000000;
-  --nb-line: color-mix(in srgb, var(--nb-dark-inverse-black) 54%, var(--background));
-  --nb-shadow-color: var(--nb-dark-inverse-black-soft);
-  --nb-on-background: #f4f4f5;
-  --nb-on-secondary-background: #f4f4f5;
-  --nb-on-card: #f4f4f5;
-  --nb-on-paper: #f4f4f5;
-  --nb-on-paper-soft: #e2e2e7;
-  --nb-paper: #1d1d20;
-  --nb-paper-soft: #29292d;
-  --nb-control-paper: #202024;
-  --nb-control-foreground: #f4f4f5;
-  --nb-tooltip-foreground: #ffffff;
-  --nb-surface-foreground: #f4f4f5;
-  --nb-selection-bg: #29292d;
-  --nb-selection-line: #686870;
-  --nb-landing-band-bg: #29292d;
-  --nb-on-landing-band: #f4f4f5;
-  --nb-terminal-bg: var(--nb-dark-inverse-black);
-  --nb-terminal-foreground: var(--nb-on-dark-inverse-black);
-  --nb-shadow-xs: 1px 1px 0 0 var(--nb-shadow-color);
-  --nb-shadow-sm: 2px 2px 0 0 var(--nb-shadow-color);
-  --nb-shadow-md: 3px 3px 0 0 var(--nb-shadow-color);
-  --nb-shadow-lg: 4px 4px 0 0 var(--nb-shadow-color);
-  --nb-shadow-xl: 5px 5px 0 0 var(--nb-shadow-color);
-}
-
-html.dark #arcane-root.neubrutalism-greyscale,
-#arcane-root.dark.neubrutalism-greyscale {
-  --main: #eaeaef;
-  --main-foreground: #000000;
-  --accent: #eaeaef;
-  --accent-foreground: #000000;
-  --nb-accent: #eaeaef;
-  --nb-on-main: #000000;
-  --nb-on-accent: #000000;
-}
-
-#arcane-root[class*="neubrutalism-"] .kb-topbar-inner {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-terminal-row,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-terminal-row {
-  --nb-local-foreground: var(--nb-terminal-foreground);
-  background: var(--nb-terminal-bg) !important;
-  color: var(--nb-local-foreground) !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-terminal-row .kb-landing-terminal-label,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-terminal-row .kb-landing-terminal-value,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-terminal-row .kb-landing-terminal-label,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-terminal-row .kb-landing-terminal-value {
-  color: var(--nb-local-foreground) !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-card,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-list-item,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-secondary,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-card,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-list-item,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-secondary {
-  --nb-local-foreground: var(--nb-on-paper);
-  background: var(--nb-paper) !important;
-  color: var(--nb-local-foreground) !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-grid,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-grid {
-  gap: clamp(1.45rem, 2.4vw, 2rem);
-  margin-top: 1.35rem;
-  margin-bottom: 1.5rem;
-  padding-right: 0.45rem;
-  padding-bottom: 0.55rem;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-band,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-band {
-  gap: clamp(1.5rem, 2.8vw, 2.15rem);
-  margin-top: 1.35rem;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-list,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-list {
-  gap: 1.15rem;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-hero,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-card,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-band,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-terminal,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-list-item,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-hero,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-card,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-band,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-terminal,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-list-item {
-  box-shadow: 0.3rem 0.3rem 0 var(--nb-shadow-color) !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-kicker,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-actions a,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-list-index,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-kicker,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-actions a,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-list-index {
-  box-shadow: 0.16rem 0.16rem 0 var(--nb-shadow-color) !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-band,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-band {
-  --nb-local-foreground: var(--nb-on-landing-band);
-  background: var(--nb-landing-band-bg) !important;
-  color: var(--nb-local-foreground) !important;
-}
-
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-card h2,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-card p,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-card a,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-list-title,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-list-copy,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-band h2,
-html.dark #arcane-root[class*="neubrutalism-"] .kb-landing-band p,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-card h2,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-card p,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-card a,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-list-title,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-list-copy,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-band h2,
-#arcane-root.dark[class*="neubrutalism-"] .kb-landing-band p {
-  color: var(--nb-local-foreground, var(--foreground)) !important;
-}
-
-.kb-landing-terminal-dot:nth-child(1) {
-  background: #ff5f57 !important;
-}
-
-.kb-landing-terminal-dot:nth-child(2) {
-  background: #ffbd2e !important;
-}
-
-.kb-landing-terminal-dot:nth-child(3) {
-  background: #28c840 !important;
-}
-
-.kb-landing-terminal-body {
-  gap: 0.95rem;
-  padding: clamp(1rem, 1.8vw, 1.25rem);
-}
-
-.kb-landing-terminal-row {
-  gap: 0.45rem;
-  padding: 0.95rem;
-}
-
-.kb-landing-grid {
-  gap: clamp(1.25rem, 2vw, 1.75rem);
-  margin-top: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.kb-landing-card {
-  gap: 1rem;
-  padding: clamp(1.2rem, 1.8vw, 1.6rem);
-}
-
-.kb-landing-band {
-  gap: clamp(1.45rem, 2.4vw, 2.15rem);
-  margin-top: 1.25rem;
-  padding: clamp(1.5rem, 2.2vw, 2rem);
-}
-
-.kb-landing-list {
-  gap: 1rem;
-}
-
-#arcane-root[class*="neon-"] {
-  --kb-neon-line: color-mix(in srgb, var(--neon-accent) 24%, var(--border));
-  --kb-neon-line-soft: color-mix(in srgb, var(--neon-accent) 14%, var(--border));
-  --kb-neon-node: var(--neon-accent);
-  --kb-neon-node-soft: color-mix(in srgb, var(--neon-accent) 18%, transparent);
-  --kb-neon-node-alt: color-mix(in srgb, var(--primary) 72%, var(--foreground));
-  --kb-neon-shadow-soft: 0 0 22px color-mix(in srgb, var(--neon-accent) 10%, transparent);
-}
-
-html.dark #arcane-root[class*="neon-"],
-#arcane-root.dark[class*="neon-"] {
-  --kb-neon-line: color-mix(in srgb, var(--neon-accent) 28%, #3E3E42);
-  --kb-neon-line-soft: color-mix(in srgb, var(--neon-accent) 16%, #3E3E42);
-  --kb-neon-node: var(--neon-accent);
-  --kb-neon-node-soft: color-mix(in srgb, var(--neon-accent) 18%, transparent);
-  --kb-neon-node-alt: color-mix(in srgb, var(--neon-accent) 74%, #F2F0EA);
-  --kb-neon-shadow-panel: 0 22px 70px rgba(0, 0, 0, 0.5), 0 0 24px color-mix(in srgb, var(--neon-accent) 8%, transparent);
-  --kb-neon-shadow-soft: 0 0 18px color-mix(in srgb, var(--neon-accent) 10%, transparent);
-}
-
-html.light #arcane-root[class*="neon-"],
-#arcane-root.light[class*="neon-"] {
-  --kb-neon-line: color-mix(in srgb, var(--neon-accent) 24%, var(--border));
-  --kb-neon-line-soft: color-mix(in srgb, var(--neon-accent) 14%, var(--border));
-  --kb-neon-node: var(--neon-accent);
-  --kb-neon-node-soft: color-mix(in srgb, var(--neon-accent) 18%, transparent);
-  --kb-neon-node-alt: color-mix(in srgb, var(--neon-accent) 74%, var(--foreground));
-  --kb-neon-shadow-panel: 0 18px 42px color-mix(in srgb, var(--neon-accent) 12%, transparent), 0 1px 0 rgba(255, 255, 255, 0.95);
-  --kb-neon-shadow-soft: 0 10px 24px color-mix(in srgb, var(--neon-accent) 10%, transparent);
-}
-
-#arcane-root[class*="neon-"] .kb-topbar-inner {
-  padding: 0.4rem 0.55rem;
-  gap: 0.55rem;
-}
-
-#arcane-root[class*="neon-"] .kb-topbar-left,
-#arcane-root[class*="neon-"] .kb-topbar-right {
-  gap: 0.45rem;
-  padding: 0.22rem;
-  border: 1px solid var(--kb-neon-line-soft);
-  border-radius: 0.32rem;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--kb-neon-panel-strong) 78%, transparent), color-mix(in srgb, var(--kb-neon-panel) 72%, transparent));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kb-neon-node) 18%, transparent);
-}
-
-#arcane-root[class*="neon-"] .kb-topbar-left {
-  flex: 0 0 auto;
-}
-
-#arcane-root[class*="neon-"] .kb-style-switcher,
-#arcane-root[class*="neon-"] .kb-topbar-nav {
-  padding-left: 0.5rem;
-  border-left: 1px solid var(--kb-neon-line-soft);
-}
-
-#arcane-root[class*="neon-"] .kb-topbar-nav {
-  gap: 0.75rem;
-}
-
-#arcane-root[class*="neon-"] .kb-landing-prose {
-  gap: clamp(1.65rem, 2.8vw, 2.75rem);
-}
-
-#arcane-root[class*="neon-"] .kb-landing-grid {
-  gap: clamp(1.45rem, 2.6vw, 2.2rem);
-  margin-top: 1.35rem;
-  margin-bottom: 1.65rem;
-}
-
-#arcane-root[class*="neon-"] .kb-landing-band {
-  gap: clamp(1.6rem, 2.8vw, 2.35rem);
-  margin-top: 1.35rem;
-  padding: clamp(1.65rem, 2.4vw, 2.4rem);
-}
-
-#arcane-root[class*="neon-"] .kb-landing-terminal-body {
-  gap: 1rem;
-}
-
-#arcane-root[class*="neon-"] .kb-landing-list {
-  gap: 1.1rem;
-}
-
-#arcane-root[class*="neon-"] .kb-landing-list-index {
-  border: 1px solid color-mix(in srgb, var(--kb-neon-node) 72%, var(--kb-neon-line));
-  background:
-    linear-gradient(135deg, var(--kb-neon-node), color-mix(in srgb, var(--kb-neon-node) 58%, var(--kb-neon-panel-strong)));
-  color: var(--primary-foreground);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--kb-neon-node) 28%, transparent);
-}
-
-#arcane-root[class*="neon-"] .sidebar-details[open] > .sidebar-summary,
-#arcane-root[class*="neon-"] .sidebar-tree .sidebar-details[open] > .sidebar-summary,
-#arcane-root[class*="neon-"] .sidebar-tree-items .sidebar-details[open] > .sidebar-summary,
-#arcane-root[class*="neon-"] .sidebar-link.active {
-  color: var(--kb-neon-node-alt) !important;
-  background: color-mix(in srgb, var(--kb-neon-node) 14%, transparent) !important;
-  border-color: color-mix(in srgb, var(--kb-neon-node) 42%, transparent) !important;
-}
-
-#arcane-root[class*="neon-"] .sidebar-link.active {
-  outline-color: var(--kb-neon-node) !important;
-  box-shadow: inset 0 0 0 1px var(--kb-neon-node), 0 0 12px color-mix(in srgb, var(--kb-neon-node) 22%, transparent) !important;
-}
-
-#arcane-root[class*="shadcn-"] .kb-landing-prose {
-  display: grid;
-  gap: clamp(1.5rem, 2.4vw, 2.4rem);
-}
-
-#arcane-root[class*="shadcn-"] .kb-landing-prose > * + * {
-  margin-top: 0;
-}
-
-#arcane-root[class*="shadcn-"] .kb-landing-grid {
-  gap: clamp(1.25rem, 2vw, 1.8rem);
-  margin-top: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-#arcane-root[class*="shadcn-"] .kb-landing-band {
-  gap: clamp(1.45rem, 2.4vw, 2.2rem);
-  margin-top: 1.25rem;
-  padding: clamp(1.5rem, 2.4vw, 2.25rem);
-}
-
-#arcane-root[class*="shadcn-"] .kb-landing-terminal-body,
-#arcane-root[class*="shadcn-"] .kb-landing-list {
-  gap: 1rem;
-}
-
-#arcane-root[class*="neubrutalism-"] code,
-#arcane-root[class*="neubrutalism-"] kbd,
-#arcane-root[class*="neubrutalism-"] samp,
-#arcane-root[class*="neubrutalism-"] pre,
-#arcane-root[class*="neubrutalism-"] .code-block-wrapper pre,
-#arcane-root[class*="neubrutalism-"] .code-block-wrapper code,
-#arcane-root[class*="neubrutalism-"] .kb-code-group-body pre,
-#arcane-root[class*="neubrutalism-"] .kb-code-group-body code,
-#arcane-root[class*="neubrutalism-"] .arcane-demo-code,
-#arcane-root[class*="neubrutalism-"] .arcane-demo-code code {
-  font-family: var(--font-mono) !important;
-}
-
-#arcane-root[class*="neubrutalism-"] .kb-topbar-brand {
-  justify-content: flex-start !important;
-  gap: 0.45rem !important;
-  width: auto !important;
-  max-width: min(28vw, 16rem) !important;
-  padding: 0 0.7rem 0 0.5rem !important;
-}
-
-#arcane-root[class*="neubrutalism-"] .kb-topbar-brand-icon {
-  flex: 0 0 1.65rem !important;
-}
-
-#arcane-root[class*="neubrutalism-"] .kb-topbar-brand-label {
-  display: inline-block !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
 }
 
 .kb-back-to-top {
@@ -452,13 +112,12 @@ html.light #arcane-root[class*="neon-"],
   width: 2.5rem;
   height: 2.5rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--card);
+  background: var(--background);
   color: var(--muted-foreground);
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease, background 0.15s ease, color 0.15s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.15s ease;
 }
 
 .kb-back-to-top.visible {
@@ -467,6 +126,5 @@ html.light #arcane-root[class*="neon-"],
 }
 
 .kb-back-to-top:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  color: var(--foreground);
 }

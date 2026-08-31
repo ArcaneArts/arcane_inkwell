@@ -35,7 +35,7 @@ void main() async {
 
 ### ShadcnStylesheet
 
-Clean, modern design based on shadcn/ui:
+The shadcn/ui-based theme uses:
 - Rounded corners and minimal shadows
 - Border-focused design
 - Inter font family
@@ -47,11 +47,11 @@ stylesheet: const ShadcnStylesheet(theme: ShadcnTheme.midnight)
 
 ### NeonStylesheet
 
-Gamer-inspired design with neon aesthetics:
-- OLED-optimized dark backgrounds
-- Vibrant neon accent colors
-- Glow effects on shadows
-- Custom gaming-style fonts
+QualityNode's restrained game-server theme:
+- Green accents on grayscale surfaces
+- Flat panels with neutral dividers
+- Local or system fonts only
+- No gradients, glow effects, or frosted glass
 
 ```dart
 stylesheet: const NeonStylesheet(theme: NeonTheme.green)
@@ -85,7 +85,7 @@ These themes use auto-tinted surfaces derived from the primary color:
 
 ### Pastel Themes
 
-Vibrant colored surfaces with matching accents:
+Colored surfaces with matching accents:
 
 | Theme | Description |
 |-------|-------------|
@@ -114,30 +114,17 @@ ShadcnStylesheet(theme: ShadcnTheme.lavender)
 
 ## NeonTheme Options
 
-Neon accent colors for the Neon stylesheet:
+Neon has one intentionally constrained brand palette:
 
 | Theme | Color | Description |
 |-------|-------|-------------|
-| `green` | `#00f5a0` | Cyan-green neon (default) |
-| `red` | `#ef4444` | Bright red |
-| `blue` | `#00d9ff` | Electric blue |
-| `purple` | `#8b5cf6` | Vibrant purple |
-| `cyan` | `#00e5ff` | Neon cyan |
-| `pink` | `#ff2bd6` | Hot pink |
-| `orange` | `#f97316` | Bright orange |
-| `rainbow` | Animated | RGB color cycling |
+| `green` | `#059669` | QualityNode emerald (default and only option) |
 
 ### Examples
 
 ```dart
-// Emerald gamer aesthetic
+// QualityNode emerald with grayscale surfaces
 NeonStylesheet(theme: NeonTheme.green)
-
-// Cyberpunk purple
-NeonStylesheet(theme: NeonTheme.purple)
-
-// Animated rainbow
-NeonStylesheet(theme: NeonTheme.rainbow)
 ```
 
 ## NeubrutalismTheme Options
@@ -192,29 +179,10 @@ SiteConfig(
 
 ## Font Customization
 
-### ShadcnStylesheet Fonts
-
-- **Body**: Inter (loaded from Google Fonts)
-- **Monospace**: System monospace stack
-
-### NeonStylesheet Fonts
-
-The Neon theme uses custom fonts that must be included in your assets:
-
-- **Headings**: ITCAvantGardeStd
-- **Body**: Akzidenz-GroteskPro
-- **Code**: Hack
-
-> [!IMPORTANT]
-> NeonStylesheet requires font files in `/assets/fonts/`. See the arcane_jaspr documentation for font setup.
-
-### NeubrutalismStylesheet Fonts
-
-The NeuBrutalism theme loads three Google Fonts (no asset setup required):
-
-- **Headings**: Archivo Black
-- **Body**: Space Grotesk
-- **Code**: JetBrains Mono
+Arcane Lexicon does not load remote font stylesheets. Define `@font-face`
+rules in your site's `web/styles.css`, serve the files from `web/assets/fonts/`,
+and override `--font-sans`, `--font-heading`, and `--font-mono` there. Theme font
+names are fallbacks only; a production site must provide its chosen local assets.
 
 ## Custom CSS
 

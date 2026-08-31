@@ -19,7 +19,7 @@ Arcane Lexicon supports two configuration formats:
 
 ### JSON5 (Recommended)
 
-JSON5 supports comments and trailing commas, making it ideal for configuration:
+JSON5 supports comments and trailing commas in configuration files:
 
 ```json5
 {
@@ -54,7 +54,7 @@ If both `_section.json5` and `_section.yaml` exist in the same folder, JSON5 tak
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `title` | `String` | Folder name | Display title in sidebar |
-| `icon` | `String?` | `null` | Icon name, SVG path, or raw SVG (see [Icons Reference](/reference/icons)) |
+| `icon` | `String?` | `null` | Single built-in Lucide icon name (see [Icons Reference](/reference/icons)) |
 | `order` | `int` | `999` | Sort order (lower = first) |
 | `collapsed` | `bool` | `true` | Whether section is collapsed by default |
 | `ignore` | `bool` | `false` | Exclude this folder from navigation entirely |

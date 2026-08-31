@@ -1,7 +1,7 @@
 ---
 title: Icons Reference
 description: All available icons for sections and pages
-icon: sparkles
+icon: component
 order: 4
 tags:
   - reference
@@ -9,15 +9,9 @@ tags:
   - ui
 ---
 
-Arcane Lexicon supports three types of icons in frontmatter and section configuration:
-
-1. **Lucide icons** - 90+ built-in icon names
-2. **SVG files** - Reference external `.svg` files
-3. **Raw SVG** - Inline SVG markup
+Arcane Lexicon navigation icons use one Lucide icon name from the built-in set.
 
 ## Usage
-
-### Lucide Icons (Recommended)
 
 Use a Lucide icon name string:
 
@@ -34,41 +28,6 @@ icon: rocket
   "icon": "book"
 }
 ```
-
-### SVG Files
-
-Reference an SVG file by path (relative to your site root or absolute URL):
-
-```yaml
----
-title: My Page
-icon: /images/custom-icon.svg
----
-```
-
-```json5
-{
-  "title": "Guide",
-  "icon": "/assets/icons/guide.svg"
-}
-```
-
-External URLs are also supported:
-
-```yaml
-icon: https://example.com/icon.svg
-```
-
-### Raw SVG Markup
-
-Embed SVG directly (useful for simple icons):
-
-```yaml
-icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
-```
-
-> [!NOTE]
-> Raw SVG markup is rendered at 16x16 pixels and inherits the current text color via `currentColor`.
 
 ## Documents and Files
 
@@ -202,7 +161,6 @@ icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2
 | `layers` | Stacked layers |
 | `layout` | Layout grid |
 | `grid` | 3x3 grid |
-| `sparkles` | Sparkles |
 | `star` | Star |
 | `heart` | Heart |
 | `flag` | Flag |

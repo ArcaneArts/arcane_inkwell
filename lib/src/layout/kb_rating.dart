@@ -1,7 +1,6 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/html.dart' show ArcaneDiv;
-import 'package:arcane_jaspr/web.dart'
-    show Styles, button, div, span;
+import 'package:arcane_jaspr/web.dart' show button, div, span;
 
 /// Callback type for handling rating submissions.
 ///
@@ -87,10 +86,7 @@ class RatingCounts {
   final int helpful;
   final int notHelpful;
 
-  const RatingCounts({
-    required this.helpful,
-    required this.notHelpful,
-  });
+  const RatingCounts({required this.helpful, required this.notHelpful});
 }
 
 /// Page rating component with thumbs up/down buttons.
@@ -184,87 +180,87 @@ class KBRating extends StatelessWidget {
 
     return div(
       classes: 'kb-rating',
-      id: 'kb-rating',
-      attributes: <String, String>{
-        'data-path': pagePath,
-      },
-      styles: const Styles(raw: {
-        'margin-top': '2rem',
-        'padding': '1rem',
-        'border-top': '1px solid hsl(var(--border))',
-      }),
+      attributes: <String, String>{'data-path': pagePath},
       [
-        // Rating prompt section (shown before voting)
-        ArcaneDiv(
-          classes: <String>['kb-rating-prompt'],
-          styles: const ArcaneStyleData(
-            display: Display.flex,
-            flexDirection: FlexDirection.column,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            gap: Gap.md,
-          ),
-          children: [
-            // Prompt text
-            ArcaneDiv(
-              styles: const ArcaneStyleData(
-                fontSize: FontSize.sm,
-                textColor: TextColor.mutedForeground,
-                fontWeight: FontWeight.w500,
-              ),
-              children: [Text(config.promptText)],
-            ),
-
-            // Rating buttons
-            ArcaneDiv(
-              styles: const ArcaneStyleData(
-                display: Display.flex,
-                gap: Gap.md,
-              ),
-              children: [
-                // Thumbs up button
-                _buildRatingButton(
-                  isHelpful: true,
-                  label: config.helpfulText,
-                  icon: ArcaneIcon.thumbsUp(size: IconSize.sm),
-                  count: counts?.helpful,
-                ),
-
-                // Thumbs down button
-                _buildRatingButton(
-                  isHelpful: false,
-                  label: config.notHelpfulText,
-                  icon: ArcaneIcon.thumbsDown(size: IconSize.sm),
-                  count: counts?.notHelpful,
-                ),
-              ],
-            ),
-          ],
+        const ArcaneDiv(
+          classes: <String>['kb-section-divider'],
+          children: <Widget>[],
         ),
-
-        // Thank you message (shown after voting, initially hidden)
-        ArcaneDiv(
-          classes: <String>['kb-rating-thanks'],
-          styles: const ArcaneStyleData(
-            display: Display.none,
-            textAlign: TextAlign.center,
-            fontSize: FontSize.sm,
-            textColor: TextColor.mutedForeground,
-          ),
-          children: [
-            ArcaneDiv(
-              styles: const ArcaneStyleData(
-                display: Display.flex,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                gap: Gap.sm,
-              ),
-              children: [
-                ArcaneIcon.check(size: IconSize.sm),
-                Text(config.thankYouText),
-              ],
+        div(classes: 'kb-rating-content', <Widget>[
+          // Rating prompt section (shown before voting)
+          ArcaneDiv(
+            classes: <String>['kb-rating-prompt'],
+            styles: const ArcaneStyleData(
+              display: Display.flex,
+              flexDirection: FlexDirection.column,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              gap: Gap.md,
             ),
-          ],
-        ),
+            children: [
+              // Prompt text
+              ArcaneDiv(
+                styles: const ArcaneStyleData(
+                  fontSize: FontSize.sm,
+                  textColor: TextColor.mutedForeground,
+                  fontWeight: FontWeight.w500,
+                ),
+                children: [Text(config.promptText)],
+              ),
+
+              // Rating buttons
+              ArcaneDiv(
+                styles: const ArcaneStyleData(
+                  display: Display.flex,
+                  gap: Gap.md,
+                ),
+                children: [
+                  // Thumbs up button
+                  _buildRatingButton(
+                    isHelpful: true,
+                    label: config.helpfulText,
+                    icon: ArcaneIcon.thumbsUp(size: IconSize.sm),
+                    count: counts?.helpful,
+                  ),
+
+                  // Thumbs down button
+                  _buildRatingButton(
+                    isHelpful: false,
+                    label: config.notHelpfulText,
+                    icon: ArcaneIcon.thumbsDown(size: IconSize.sm),
+                    count: counts?.notHelpful,
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          // Thank you message (shown after voting, initially hidden)
+          div(
+            classes: 'kb-rating-thanks',
+            attributes: const <String, String>{
+              'hidden': '',
+              'role': 'status',
+              'aria-live': 'polite',
+            },
+            [
+              ArcaneDiv(
+                styles: const ArcaneStyleData(
+                  display: Display.flex,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  gap: Gap.sm,
+                  textAlign: TextAlign.center,
+                  fontSize: FontSize.sm,
+                  textColor: TextColor.mutedForeground,
+                ),
+                children: [
+                  ArcaneIcon.check(size: IconSize.sm),
+                  Text(config.thankYouText),
+                ],
+              ),
+            ],
+          ),
+        ]),
       ],
     );
   }
@@ -283,32 +279,11 @@ class KBRating extends StatelessWidget {
         'data-path': pagePath,
         'aria-label': label,
       },
-      styles: const Styles(raw: {
-        'display': 'inline-flex',
-        'align-items': 'center',
-        'gap': '0.5rem',
-        'padding': '0.5rem 1rem',
-        'border': '1px solid hsl(var(--border))',
-        'border-radius': '0.375rem',
-        'background': 'hsl(var(--background))',
-        'color': 'hsl(var(--muted-foreground))',
-        'font-size': '0.875rem',
-        'cursor': 'pointer',
-        'transition': 'all 0.2s',
-      }),
       [
         icon,
         Widget.text(label),
         if (count != null)
-          span(
-            classes: 'kb-rating-count',
-            styles: const Styles(raw: {
-              'font-size': '0.75rem',
-              'color': 'hsl(var(--muted-foreground))',
-              'margin-left': '0.25rem',
-            }),
-            [Widget.text('($count)')],
-          ),
+          span(classes: 'kb-rating-count', [Widget.text('($count)')]),
       ],
     );
   }

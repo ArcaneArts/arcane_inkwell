@@ -1,6 +1,6 @@
 import 'package:arcane_jaspr/arcane_jaspr.dart';
 import 'package:arcane_jaspr/web.dart'
-    show RawText, Styles, a, button, div, img, nav, span;
+    show RawText, Styles, a, button, div, nav, span;
 import 'package:arcane_lexicon/src/config/site_config.dart';
 import 'package:arcane_lexicon/src/icons/kb_icon.dart';
 import 'package:arcane_lexicon/src/navigation/nav_builder.dart';
@@ -58,6 +58,7 @@ class KBSidebar extends StatelessWidget {
       [
         div(classes: 'kb-sidebar-panel', [
           if (showHeader) _buildHeader(),
+          if (showHeader) const div(classes: 'kb-section-divider', []),
           nav(
             classes: 'sidebar-nav',
             styles: const Styles(
@@ -77,7 +78,7 @@ class KBSidebar extends StatelessWidget {
                       .map((NavItem item) => _buildNavItem(item))
                       .toList(),
                 ),
-              for (NavSection section in manifest.sortedSections)
+              for (NavSection section in manifest.visibleSections)
                 _buildCollapsibleSection(section, depth: 0),
             ],
           ),
@@ -122,14 +123,14 @@ class KBSidebar extends StatelessWidget {
         div(classes: 'sidebar-controls', [
           if (showSearch)
             const RawText('''
-<div class="sidebar-search kb-search">
+<div class="sidebar-search kb-search" data-kb-search="true">
   <div class="kb-search-input-wrap">
-    <input id="kb-search" class="kb-search-input" type="text" placeholder="Search docs..." autocomplete="off">
+    <input class="kb-search-input" type="text" placeholder="Search docs..." autocomplete="off" aria-label="Search documentation" aria-autocomplete="list" aria-expanded="false" role="combobox" data-kb-search-input="true">
     <div class="kb-search-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
     </div>
   </div>
-  <div id="search-results" class="search-results"></div>
+  <div class="search-results" role="listbox" aria-label="Search results" data-kb-search-results="true" hidden></div>
 </div>
 '''),
           if (showStylesheetSwitcher || showPaletteSwitcher)
@@ -244,7 +245,6 @@ class KBSidebar extends StatelessWidget {
             classes: 'sidebar-summary',
             styles: _treeRowStyles(depth, isFolder: true),
             children: [
-              if (section.icon != null) _buildIcon(section.icon!),
               span([Widget.text(section.title)]),
               span(classes: 'sidebar-chevron', [
                 KBIcon.build('chevron-down', classes: 'sidebar-chevron-icon'),
@@ -256,7 +256,7 @@ class KBSidebar extends StatelessWidget {
             for (final NavItem item in section.visibleItems)
               _buildNavItem(item, depth: depth + 1),
             // Nested sections
-            for (final NavSection nested in section.sortedSections)
+            for (final NavSection nested in section.visibleSections)
               _buildCollapsibleSection(nested, depth: depth + 1),
           ]),
         ],
@@ -294,40 +294,9 @@ class KBSidebar extends StatelessWidget {
     return Styles(raw: rawStyles);
   }
 
-  /// Build an icon from a name, SVG markup, or SVG URL.
-  ///
-  /// Supports:
-  /// - Raw SVG markup: `<svg>...</svg>`
-  /// - SVG file URL: `/icons/my-icon.svg` or `https://example.com/icon.svg`
-  /// - Lucide icon name: `rocket`, `file-text`, etc.
-  Widget _buildIcon(String iconName) {
-    if (iconName.trimLeft().startsWith('<svg')) {
-      return span(
-        classes: 'sidebar-icon sidebar-icon-svg',
-        styles: const Styles(
-          raw: {
-            'display': 'inline-flex',
-            'align-items': 'center',
-            'justify-content': 'center',
-            'width': '16px',
-            'height': '16px',
-          },
-        ),
-        [RawText(iconName)],
-      );
-    }
-
-    if (iconName.endsWith('.svg')) {
-      return img(
-        classes: 'sidebar-icon sidebar-icon-svg',
-        src: iconName.startsWith('/') ? config.fullPath(iconName) : iconName,
-        alt: '',
-        styles: const Styles(raw: {'width': '16px', 'height': '16px'}),
-      );
-    }
-
-    return KBIcon.build(iconName, classes: 'sidebar-icon');
-  }
+  /// Build one navigation icon from a Lucide icon name.
+  Widget _buildIcon(String iconName) =>
+      KBIcon.build(iconName, classes: 'sidebar-icon');
 
   bool _isActive(String path) {
     // Exact match only - don't highlight parent paths

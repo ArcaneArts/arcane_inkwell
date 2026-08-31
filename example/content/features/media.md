@@ -170,7 +170,7 @@ The general syntax is:
 | `attributes` | No | Space-separated key="value" or flags |
 | `(source)` | Yes | URL, path, or ID |
 
-## Best Practices
+## Media guidelines
 
 1. **Use descriptive captions** for accessibility
 2. **Prefer WebM over GIF** for smaller file sizes
